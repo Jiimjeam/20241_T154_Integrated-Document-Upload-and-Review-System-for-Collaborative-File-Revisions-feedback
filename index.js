@@ -5,11 +5,13 @@ const  students  = require('./exampleDB');
 const instructorRoute = require('./routes/INTR/instructor')
 const formsRoute = require('./routes/forms')
 const SenfacultyRoute = require('./routes/SN.FCT/Seniorfaculty')
+const programChairRoute = require('./routes/PRCR/ProgramChair')
 const CITLRoute = require('./routes/CITL/CITL')
 
 app.use('/instructor', instructorRoute);
 app.use('/forms', formsRoute);
 app.use('/Senfaculty', SenfacultyRoute);
+app.use('/programChair', programChairRoute);
 app.use('/CITL', CITLRoute);
 
 

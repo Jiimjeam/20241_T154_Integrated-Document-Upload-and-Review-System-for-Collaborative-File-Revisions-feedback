@@ -3,19 +3,19 @@ const instructor = express.Router();
 const { students } = require('../../exampleDB');  
 
 
-instructor.post('/uploadSyllabus', function(req, res) { 
+instructor.post('/upload-syllabus', function(req, res) { 
     res.send('Syllabus uploaded');
 });
 
-instructor.get('/viewSyllabus', function(req, res) { 
+instructor.get('/view-syllabus', function(req, res) { 
     res.send('Viewed syllabus');
 });
 
-instructor.get('/viewSyllabus/comments', function(req, res) { 
+instructor.get('/syllabus-comments', function(req, res) { 
     res.send('Viewed syllabus comments');
 });
 
-instructor.get('/viewSyllabusupload/History', function(req, res) { 
+instructor.get('/syllabus-upload-history', function(req, res) { 
     res.send('Viewed syllabus History');
 });
 
