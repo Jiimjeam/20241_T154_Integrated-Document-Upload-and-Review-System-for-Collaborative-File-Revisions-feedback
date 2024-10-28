@@ -1,14 +1,14 @@
 {
-  "name": "20241_t154_syllabus",
+  "name": "agta",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1", 
-    "start":"node index.js",
-    "dev":"nodemon index.js"
+    "dev": "nodemon backend/index.js"
+
   },
   "keywords": [],
   "author": "",
+  "type": "module",
   "license": "ISC",
   "description": "",
   "dependencies": {
