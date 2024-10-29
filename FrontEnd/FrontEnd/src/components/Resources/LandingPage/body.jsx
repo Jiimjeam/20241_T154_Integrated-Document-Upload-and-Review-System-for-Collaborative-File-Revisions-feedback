@@ -15,7 +15,7 @@ const Body = () => {
       <div className='relevantAuth'>
         <h3>Relevant Authrities</h3>
         <img src={CITL} alt="Nasty-Image" className="CITL-logo" /> 
-        <p>CITL</p>
+        <p>Buksu CITL</p>
       </div>
       <img src={logo} alt="File.svg" className="logo" /> 
 
