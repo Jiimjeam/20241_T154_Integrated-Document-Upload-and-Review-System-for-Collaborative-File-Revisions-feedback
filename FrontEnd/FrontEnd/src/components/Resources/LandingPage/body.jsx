@@ -3,13 +3,17 @@ import './body.css'
 import logo from '../../../assets/file-svg.svg';
 import Nasty from '../../../assets/Nasty.jpg';
 import CITL from '../../../assets/CITLlogo.jpg';
+import Navbar from './navbar';
 
 
 import TypeWriter from './typewriterAnimation'
 
 const Body = () => {
   return (
+    <>
+    <Navbar/>
     <div className='header'>
+     
       {/* <h1>Syllabus <span>Review</span></h1> */}
       <TypeWriter />
       <div className='relevantAuth'>
@@ -33,7 +37,7 @@ const Body = () => {
     </div>
 
     
-    
+    </>
   )
 }
 

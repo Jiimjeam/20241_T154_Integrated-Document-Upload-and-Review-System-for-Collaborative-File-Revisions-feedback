@@ -6,22 +6,20 @@ import InstructorDashboards from './components/Resources/INTR/INTRdashboard'
 import Uploadfile from './components/Resources/INTR/uploadFile'
 import Typewriter from './components/Resources/LandingPage/typewriterAnimation'
 import History from './components/Resources/INTR/history'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 
 import './index.css'
 
 const App = () => {
   return (
-    <div>
-       {/* <Navbar />
-      <Body />
-      <ScrollDownArrow /> */}
-
-       <InstructorDashboards />  
-      
-       {/* <History />  */}
-      
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Body/>}> </Route>
+        {/* <Route path='/login' element={<Login/>}></Route>
+        <Route path='/signin' element={<Signin/>}></Route> */}
+      </Routes>
+    </BrowserRouter>
   );
 };
 
