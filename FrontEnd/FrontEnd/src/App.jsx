@@ -8,6 +8,8 @@ import Typewriter from './components/Resources/LandingPage/typewriterAnimation'
 import History from './components/Resources/INTR/history'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+import Login from './components/forms/Login'
+import Signup from './components/forms/SignUp'
 
 import './index.css'
 

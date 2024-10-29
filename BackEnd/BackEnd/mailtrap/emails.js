@@ -1,4 +1,4 @@
-//
+
 import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplate.js";
 import { mailtrapClient, sender } from "./mailtrap.config.js";
 import { PASSWORD_RESET_REQUEST_TEMPLATE } from "./emailTemplate.js";
