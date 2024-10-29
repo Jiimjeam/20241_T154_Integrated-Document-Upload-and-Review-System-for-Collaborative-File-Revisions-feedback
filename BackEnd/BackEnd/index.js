@@ -10,8 +10,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-app.use(express.json()); //middleware
-app.use(cookieParser); //allows to parse incoming cookies
+app.use(express.json()); //middleware  
+app.use(cookieParser()); //allows to parse incoming cookies
 
 app.use("/api/auth", authRoutes)
 

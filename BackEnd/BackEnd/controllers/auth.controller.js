@@ -176,7 +176,7 @@ export const resetPassword = async (req, res) => {
         await user.save();
 
         await sendResetSuccessEmail(user.email, user.name);
-        
+
         res.status(200).json({ success: true, message: "Password reset successfully" });
 
     } catch (error) {
@@ -192,7 +192,7 @@ export const checkAuth = async (req, res) => {
             return res.status(400).json({ success: false, message: "User not found" });
         }
 
-        request.status(200).json({success: true, user})
+        res.status(200).json({success: true, user});
 
     } catch (error) {
         console.log("Error in checkAuth ", error);
