@@ -6,6 +6,7 @@ import InstructorDashboards from './components/Resources/INTR/INTRdashboard'
 import Uploadfile from './components/Resources/INTR/uploadFile'
 import Typewriter from './components/Resources/LandingPage/typewriterAnimation'
 import History from './components/Resources/INTR/history'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Login from './components/forms/Login'
 import Signup from './components/forms/SignUp'
@@ -14,7 +15,19 @@ import './index.css'
 
 const App = () => {
   return (
+<<<<<<< HEAD
     <>
+=======
+<<<<<<< HEAD
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Body/>}> </Route>
+        {/* <Route path='/login' element={<Login/>}></Route>
+        <Route path='/signin' element={<Signin/>}></Route> */}
+      </Routes>
+    </BrowserRouter>
+=======
+>>>>>>> 6c6fb024686fab141ca13ca161dce79a82dda044
     <div>
        {/* <Navbar />
       <Body />
@@ -29,7 +42,11 @@ const App = () => {
        <Signup />
       
     </div>
+<<<<<<< HEAD
     </>
+=======
+>>>>>>> 461e4510f36973d20bbaf8d493fb4202df0b4636
+>>>>>>> 6c6fb024686fab141ca13ca161dce79a82dda044
   );
 };
 
