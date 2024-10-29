@@ -13,6 +13,7 @@ import './index.css'
 
 const App = () => {
   return (
+<<<<<<< HEAD
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Body/>}> </Route>
@@ -20,6 +21,18 @@ const App = () => {
         <Route path='/signin' element={<Signin/>}></Route> */}
       </Routes>
     </BrowserRouter>
+=======
+    <div>
+       <Navbar />
+      <Body />
+      <ScrollDownArrow />
+
+       {/* <InstructorDashboards />   */}
+      
+       {/* <History />  */}
+      
+    </div>
+>>>>>>> 461e4510f36973d20bbaf8d493fb4202df0b4636
   );
 };
 

@@ -54,10 +54,10 @@ h3 {
     color: #838383;
   }
 
-  p { 
+  /* p { 
     position: relative;
     left: 25px;
-  }
+  } */
   
   
   .header h1 span {
@@ -87,7 +87,7 @@ h3 {
 
 .section1 {
   /* background: linear-gradient(135deg, #b19cd9, #ffb3b3); */
-  background: linear-gradient(135deg, #4e2a84, #7c3a3d);
+  /* background: linear-gradient(135deg, #4e2a84, #7c3a3d); */
   color: #ffffff;
   padding: 60px 0;
   display: flex;
@@ -130,14 +130,14 @@ h3 {
 
 
 .section-1-container h2 span {
-  color: #00aaff; 
+  color: #1c8ad3; 
 }
 
 
 .section-1-container p {
   font-size: 1.05em;
   line-height: 1.7;
-  color: #000000; 
+  color: #ffffff; 
   margin-top: 10px;
   font-family: 'Georgia', serif;
   padding: 0 15px;
