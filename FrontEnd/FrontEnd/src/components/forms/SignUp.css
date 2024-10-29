@@ -1,0 +1,139 @@
+.login-container {
+    width: 550px;
+    margin: 50px auto;
+    margin-top: 5.50rem;
+    padding: 30px;
+    background: #2C2A2A;
+    border-radius: 10px;
+    box-shadow: 15px 13px 5px rgba(255, 255, 255, 0.2);
+    text-align: center;
+    border: 1px solid white;
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+
+.login-container:hover {
+    box-shadow: 5px 5px 20px rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+h2 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Group alignment for horizontal input fields */
+.group1, .group2 {
+    display: flex;
+    gap: 5px;
+}
+
+.group1 .form-group, .group2 .form-group {
+    flex: 1;
+}
+
+.nameInput, .OfficePinput {
+    width: 100%;
+}
+
+
+.login-form .form-group {
+    margin-bottom: 20px;
+}
+
+.login-form label {
+    display: block;
+    font-weight: 500;
+    color: #ddd;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.login-form input {
+    width: 85%;
+    padding: 12px 14px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.login-form input:focus {
+    border-color: #007bff;
+}
+
+/* Password input container */
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #007bff;
+    transition: color 0.3s;
+}
+
+.toggle-password:hover {
+    color: #0056b3;
+}
+
+/* Button styling */
+.login-button, .google-login-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-button {
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+}
+
+.google-login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+/* Forgot Password and Sign-Up Links */
+.login-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.login-links a {
+    color: #ffffff;
+    font-size: 14px;
+    text-decoration: none;
+    margin-top: 5px;
+}
+
+.login-links a:hover {
+    text-decoration: underline;
+}
+    

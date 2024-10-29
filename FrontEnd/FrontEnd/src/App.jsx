@@ -7,21 +7,29 @@ import Uploadfile from './components/Resources/INTR/uploadFile'
 import Typewriter from './components/Resources/LandingPage/typewriterAnimation'
 import History from './components/Resources/INTR/history'
 
+import Login from './components/forms/Login'
+import Signup from './components/forms/SignUp'
 
 import './index.css'
 
 const App = () => {
   return (
+    <>
     <div>
-       <Navbar />
+       {/* <Navbar />
       <Body />
-      <ScrollDownArrow />
+      <ScrollDownArrow /> */}
 
        {/* <InstructorDashboards />   */}
       
        {/* <History />  */}
+
+       {/* <Login />   */}
+
+       <Signup />
       
     </div>
+    </>
   );
 };
 
