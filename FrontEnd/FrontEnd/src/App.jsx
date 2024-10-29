@@ -53,39 +53,30 @@
 
 
 
+import React, { useState } from 'react';
+import Modal from './components/Resources/modals';
 
+const App = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-// // App.js
-// import React, { useState } from 'react';
-// import Modal from './components/Resources/modals';
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
-// const App = () => {
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-
-//   const openModal = () => setIsModalOpen(true);
-//   const closeModal = () => setIsModalOpen(false);
-
-//   return (
-
-//     <div>
-//       <button onClick={openModal}>Open Modal</button>
+  return (
+<>
+    <div>
+      <button onClick={openModal}>Open Modal</button>
       
-//       <Modal isOpen={isModalOpen} onClose={closeModal}>
-//         <h2>Modal Title</h2>
-//         <p>This is a simple modal example.</p>
-//       </Modal>
-//     </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <h2>Modal Title</h2>
+        <p>This is a simple modal example.</p>
+      </Modal>
+    </div>
     
-//     <BrowserRouter>
-//       <Routes>
-//         <Route path='/' element={<Body/>}> </Route>
-//         {/* <Route path='/login' element={<Login/>}></Route>
-//         <Route path='/signin' element={<Signin/>}></Route> */}
-//       </Routes>
-//     </BrowserRouter>
+   
+    </>
+  );
+};
 
-//   );
-// };
-
-// export default App;
+export default App;
 
