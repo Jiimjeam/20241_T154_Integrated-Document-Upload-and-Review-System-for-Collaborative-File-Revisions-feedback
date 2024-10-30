@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import './SignUp.css';
-import googleIMG from '../../assets/google.svg'
-import eyeOpen from '../../assets/eyeOpen.svg'
-import eyeClose from '../../assets/eyeClose.svg'
-
-import TypeAnimation from '../../components/Resources/LandingPage/typewriterAnimation'
+import googleIMG from '../../../assets/google.svg'
+import eyeOpen from '../../../assets/eyeOpen.svg'
+import eyeClose from '../../../assets/eyeClose.svg'
 
 const Login = () => {
   const [name, setName] = useState('');
