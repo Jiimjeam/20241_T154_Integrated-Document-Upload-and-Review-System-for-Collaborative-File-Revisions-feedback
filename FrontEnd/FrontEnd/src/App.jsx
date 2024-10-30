@@ -1,82 +1,112 @@
-// import React from 'react';
-// import Navbar from './components/Resources/LandingPage/navbar';
-// import Body from './components/Resources/LandingPage/body';
-// import ScrollDownArrow from './components/Resources/LandingPage/downAnimation';
-// import InstructorDashboards from './components/Resources/INTR/INTRdashboard'
-// import Uploadfile from './components/Resources/INTR/uploadFile'
-// import Typewriter from './components/Resources/LandingPage/typewriterAnimation'
-// import History from './components/Resources/INTR/history'
-// // import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Navigate, Route, Routes } from "react-router-dom";
+import FloatingShape from "./components/FloatingShape";
 
-// import Login from './components/Resources/forms/Login'
-// import Signup from './components/Resources/forms/SignUp'
+import SignUpPage from "./pages/SignUpPage";
+import LoginPage from "./pages/LoginPage";
+import EmailVerificationPage from "./pages/EmailVerificationPage";
+import DashboardPage from "./pages/DashboardPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
-// import './index.css'
+import LoadingSpinner from "./components/LoadingSpinner";
 
-// const App = () => {
-//   return (
+import { Toaster } from "react-hot-toast";
+import { useAuthStore } from "./store/authStore";
+import { useEffect } from "react";
 
-//     <div>
+// protect routes that require authentication
+const ProtectedRoute = ({ children }) => {
+	const { isAuthenticated, user } = useAuthStore();
 
-//           {/* <BrowserRouter>
-//       <Routes>
-//         <Route path='/' element={<Body/>}> </Route> */}
-//         {/* <Route path='/login' element={<Login/>}></Route>
-//         <Route path='/signin' element={<Signin/>}></Route> */}
-//       {/* </Routes> */}
-//     {/* // </BrowserRouter> */}
+	if (!isAuthenticated) {
+		return <Navigate to='/login' replace />;
+	}
 
+	if (!user.isVerified) {
+		return <Navigate to='/verify-email' replace />;
+	}
 
-//       <Body />
-//       <ScrollDownArrow />
-
-//        {/* <InstructorDashboards />   */}
-      
-//        {/* <History />  */}
-
-//        {/* <Login />   */}
-
-//        {/* <Signup /> */}
-      
-//     </div>
-
- 
-
-//   );
-// };
-
-// export default App;
-
-
-
-
-
-
-
-import React, { useState } from 'react';
-import Modal from './components/Resources/modals';
-
-const App = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
-  return (
-<>
-    <div>
-      <button onClick={openModal}>Open Modal</button>
-      
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <h2>Modal Title</h2>
-        <p>This is a simple modal example.</p>
-      </Modal>
-    </div>
-    
-   
-    </>
-  );
+	return children;
 };
 
-export default App;
+// redirect authenticated users to the home page
+const RedirectAuthenticatedUser = ({ children }) => {
+	const { isAuthenticated, user } = useAuthStore();
 
+	if (isAuthenticated && user.isVerified) {
+		return <Navigate to='/' replace />;
+	}
+
+	return children;
+};
+
+function App() {
+	const { isCheckingAuth, checkAuth } = useAuthStore();
+
+	useEffect(() => {
+		checkAuth();
+	}, [checkAuth]);
+
+	if (isCheckingAuth) return <LoadingSpinner />;
+
+	return (
+		<div
+			className='min-h-screen bg-gradient-to-br
+    from-gray-900 via-green-900 to-emerald-900 flex items-center justify-center relative overflow-hidden'
+		>
+			<FloatingShape color='bg-green-500' size='w-64 h-64' top='-5%' left='10%' delay={0} />
+			<FloatingShape color='bg-emerald-500' size='w-48 h-48' top='70%' left='80%' delay={5} />
+			<FloatingShape color='bg-lime-500' size='w-32 h-32' top='40%' left='-10%' delay={2} />
+
+			<Routes>
+				<Route
+					path='/'
+					element={
+						<ProtectedRoute>
+							<DashboardPage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path='/signup'
+					element={
+						<RedirectAuthenticatedUser>
+							<SignUpPage />
+						</RedirectAuthenticatedUser>
+					}
+				/>
+				<Route
+					path='/login'
+					element={
+						<RedirectAuthenticatedUser>
+							<LoginPage />
+						</RedirectAuthenticatedUser>
+					}
+				/>
+				<Route path='/verify-email' element={<EmailVerificationPage />} />
+				<Route
+					path='/forgot-password'
+					element={
+						<RedirectAuthenticatedUser>
+							<ForgotPasswordPage />
+						</RedirectAuthenticatedUser>
+					}
+				/>
+
+				<Route
+					path='/reset-password/:token'
+					element={
+						<RedirectAuthenticatedUser>
+							<ResetPasswordPage />
+						</RedirectAuthenticatedUser>
+					}
+				/>
+				{/* catch all routes */}
+				<Route path='*' element={<Navigate to='/' replace />} />
+			</Routes>
+			<Toaster />
+		</div>
+	);
+}
+
+export default App;
