@@ -5,23 +5,33 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
 import { useAuthStore } from "../store/authStore";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const SignUpPage = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [showCaptcha, setShowCaptcha] = useState(false);
+	const [capVal, setCapVal] = useState(null);
 	const navigate = useNavigate();
 
 	const { signup, error, isLoading } = useAuthStore();
 
-	const handleSignUp = async (e) => {
+	const handleSignUpClick = (e) => {
 		e.preventDefault();
+		setShowCaptcha(true);  
+	};
 
-		try {
-			await signup(email, password, name);
-			navigate("/verify-email");
-		} catch (error) {
-			console.log(error);
+	const handleCaptchaChange = async (value) => {
+		setCapVal(value);
+		if (value) {
+			try {
+				await signup(email, password, name);
+				navigate("/verify-email");
+			} catch (error) {
+				console.log(error);
+			}
+			setShowCaptcha(false); 
 		}
 	};
 	return (
@@ -37,7 +47,7 @@ const SignUpPage = () => {
 					Create Account
 				</h2>
 
-				<form onSubmit={handleSignUp}>
+				<form onSubmit={handleSignUpClick}>
 					<Input
 						icon={User}
 						type='text'
@@ -62,6 +72,14 @@ const SignUpPage = () => {
                     
 					{error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
 					<PasswordStrengthMeter password={password} />
+
+					{showCaptcha && (
+						<ReCAPTCHA
+							sitekey="6LcpiXcqAAAAAFTRKphIkaBBXtJ0aQ_bOpRNaUG5"
+							onChange={handleCaptchaChange}
+						/>
+					)}
+
 
 					<motion.button
 						className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 

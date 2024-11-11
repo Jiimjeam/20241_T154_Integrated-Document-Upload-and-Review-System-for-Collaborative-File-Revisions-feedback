@@ -4,16 +4,45 @@ import { Mail, Lock, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import Input from "../components/Input";
 import { useAuthStore } from "../store/authStore";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-
-	const { login, isLoading, error } = useAuthStore();
+	const { login, googleLogin, isLoading, error } = useAuthStore(); 
+	const [capVal, setCapVal] = useState(null);
+	const [showCaptcha, setShowCaptcha] = useState(false);
+	const [captchaForGoogle, setCaptchaForGoogle] = useState(false);
 
 	const handleLogin = async (e) => {
 		e.preventDefault();
-		await login(email, password);
+		if (!showCaptcha) {
+			setShowCaptcha(true);
+		} else if (capVal) {
+			await login(email, password);
+		}
+	};
+
+	const handleGoogleLoginClick = (e) => {
+		e.preventDefault();
+		setCaptchaForGoogle(true);
+		setShowCaptcha(true);
+		console.log("Captcha for Google:", captchaForGoogle);  // Check if this shows true
+		console.log("Show Captcha:", showCaptcha);  // Should print true after clicking
+	};
+	
+
+	const handleCaptchaChange = async (value) => {
+		setCapVal(value);
+		if (value) {
+			if (captchaForGoogle) {
+				await googleLogin(); // Trigger Google login after successful captcha for Google
+				setCaptchaForGoogle(false);
+			} else {
+				await login(email, password); // For manual login
+			}
+			setShowCaptcha(false); // Hide captcha after use
+		}
 	};
 
 	return (
@@ -52,6 +81,13 @@ const LoginPage = () => {
 					</div>
 					{error && <p className='text-red-500 font-semibold mb-2'>{error}</p>}
 
+					{showCaptcha && (
+						<ReCAPTCHA
+							sitekey="6LcpiXcqAAAAAFTRKphIkaBBXtJ0aQ_bOpRNaUG5"
+							onChange={handleCaptchaChange}
+						/>
+					)}
+
 					<motion.button
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
@@ -59,7 +95,18 @@ const LoginPage = () => {
 						type='submit'
 						disabled={isLoading}
 					>
-						{isLoading ? <Loader className='w-6 h-6 animate-spin  mx-auto' /> : "Login"}
+						{isLoading ? <Loader className='w-6 h-6 animate-spin mx-auto' /> : "Login"}
+					</motion.button>
+
+					{/* Google login button */}
+					<motion.button
+						whileHover={{ scale: 1.02 }}
+						whileTap={{ scale: 0.98 }}
+						className='w-full mt-4 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200'
+						onClick={handleGoogleLoginClick}
+						disabled={isLoading}
+					>
+						{isLoading ? <Loader className='w-6 h-6 animate-spin mx-auto' /> : "Login with Google"}
 					</motion.button>
 				</form>
 			</div>
@@ -74,4 +121,5 @@ const LoginPage = () => {
 		</motion.div>
 	);
 };
+
 export default LoginPage;
