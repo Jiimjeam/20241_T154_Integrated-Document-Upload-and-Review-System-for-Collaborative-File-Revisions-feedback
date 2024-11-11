@@ -1,0 +1,101 @@
+body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  font-family: Arial, sans-serif;
+  color: white;
+  background-color: #333;
+  min-height: 100vh;
+  flex-direction: column; /* Stack on smaller screens */
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #2d2d2d;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profileName, .profileDept {
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.menuItem {
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #ffffff;
+  margin-bottom: 10px;
+  background-color: transparent;
+  border-radius: 10px;
+  transition: background-color 0.1s ease 0.1s;
+  display: flex;
+  align-items: center;
+}
+
+.history {
+  width: 24px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.logoutButton {
+  margin-top: auto;
+  color: #ffffff;
+  background-color: transparent;
+  border: 1px solid #888;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  width: 100%;
+}
+
+/* Media Queries for Responsiveness */
+@media (min-width: 600px) {
+  .container {
+    flex-direction: row;
+  }
+  
+  .sidebar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 599px) {
+  .sidebar {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .menuItem, .logoutButton {
+    font-size: 0.9rem;
+  }
+  
+  .mainContent {
+    padding: 10px;
+  }
+}

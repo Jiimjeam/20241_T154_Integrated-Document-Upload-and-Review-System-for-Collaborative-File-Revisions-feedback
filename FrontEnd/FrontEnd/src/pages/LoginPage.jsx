@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, Loader } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import Input from "../components/Input";
 import { useAuthStore } from "../store/authStore";
@@ -9,6 +9,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false); // Password visibility toggle
 	const { login, googleLogin, isLoading, error } = useAuthStore(); 
 	const [capVal, setCapVal] = useState(null);
 	const [showCaptcha, setShowCaptcha] = useState(false);
@@ -27,21 +28,20 @@ const LoginPage = () => {
 		e.preventDefault();
 		setCaptchaForGoogle(true);
 		setShowCaptcha(true);
-		console.log("Captcha for Google:", captchaForGoogle);  // Check if this shows true
-		console.log("Show Captcha:", showCaptcha);  // Should print true after clicking
+		console.log("Captcha for Google:", captchaForGoogle);
+		console.log("Show Captcha:", showCaptcha);
 	};
-	
 
 	const handleCaptchaChange = async (value) => {
 		setCapVal(value);
 		if (value) {
 			if (captchaForGoogle) {
-				await googleLogin(); // Trigger Google login after successful captcha for Google
+				await googleLogin();
 				setCaptchaForGoogle(false);
 			} else {
-				await login(email, password); // For manual login
+				await login(email, password);
 			}
-			setShowCaptcha(false); // Hide captcha after use
+			setShowCaptcha(false);
 		}
 	};
 
@@ -66,13 +66,22 @@ const LoginPage = () => {
 						onChange={(e) => setEmail(e.target.value)}
 					/>
 
-					<Input
-						icon={Lock}
-						type='password'
-						placeholder='Password'
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-					/>
+					<div className="relative">
+						<Input
+							icon={Lock}
+							type={showPassword ? 'text' : 'password'} // Toggle type based on showPassword
+							placeholder='Password'
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+						/>
+						{/* Eye icon for toggling password visibility */}
+						<div
+							className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+							onClick={() => setShowPassword(!showPassword)}
+						>
+							{showPassword ? <EyeOff size={20} color="#50C878" /> : <Eye size={20} color="#50C878" />}
+						</div>
+					</div>
 
 					<div className='flex items-center mb-6'>
 						<Link to='/forgot-password' className='text-sm text-green-400 hover:underline'>
