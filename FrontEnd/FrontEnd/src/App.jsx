@@ -11,6 +11,8 @@ import LoadingSpinner from "./components/LoadingSpinner";
 
 import LandingPage from './components/LandingPage/body';
 
+import Sidebar from "./components/INTR/dashboard2";
+
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";

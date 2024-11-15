@@ -10,9 +10,20 @@ html {
 }
 
 .navbar {
-  margin-top: 20px;
+  margin-top: 30px;
   padding: 0;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.Login { 
+  border: solid 1px black;
+  padding: 3px;
+
+  text-align: center;
+  width: 70px;
+  height: auto;
+  border-radius: 4px;
+  background-color:#4e9dd1;
 }
 
 
@@ -27,7 +38,7 @@ html {
 /* Style for the list items */
 .navbar li {
   color: white;
-  font-size: 27px;
+  font-size: 20px;
  
 }
 
@@ -47,6 +58,14 @@ html {
 }
 
 
-.navbar a:hover {
+.Register a:hover {
+  color: #24e04d;
+}
+
+.about a:hover {
   color: #4e9dd1;
+}
+
+.Login a:hover {
+  color: #000000;
 }
