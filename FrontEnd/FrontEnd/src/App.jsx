@@ -8,6 +8,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LoadingSpinner from "./components/LoadingSpinner";
+import FileUpload from "./components/FileUpload";
 
 import LandingPage from './components/LandingPage/body';
 
@@ -57,7 +58,7 @@ function App() {
 
 			<Routes>
 				<Route path='/' element={<LandingPage />} />
-
+				<Route path='/upload' element={<FileUpload />} />
 				<Route
 					path='/dashboard'
 					element={

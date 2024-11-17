@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useAuthStore } from "../store/authStore";
 import { formatDate } from "../utils/date";
+import FileUpload from "../components/FileUpload";
 
 const DashboardPage = () => {
 	const { user, logout } = useAuthStore();
@@ -52,6 +53,7 @@ const DashboardPage = () => {
 						{formatDate(user.lastLogin)}
 					</p>
 				</motion.div>
+				<FileUpload />
 			</div>
 
 			<motion.div
