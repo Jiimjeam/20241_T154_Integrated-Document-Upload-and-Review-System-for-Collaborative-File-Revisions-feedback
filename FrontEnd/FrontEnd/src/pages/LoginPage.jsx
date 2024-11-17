@@ -12,41 +12,37 @@ import buksuLOGO from '../assets/buksu-white.png'
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false); // Password visibility toggle
+	const [showPassword, setShowPassword] = useState(false); 
 	const { login, googleLogin, isLoading, error } = useAuthStore();
 	const [capVal, setCapVal] = useState(null);
 	const [showCaptcha, setShowCaptcha] = useState(false);
 	const [captchaForGoogle, setCaptchaForGoogle] = useState(false);
 
 	const handleLogin = async (e) => {
-		e.preventDefault();
-		if (!showCaptcha) {
-			setShowCaptcha(true);
-		} else if (capVal) {
-			await login(email, password);
-		}
-	};
+        e.preventDefault();
+        setShowCaptcha(true); 
+    };
 
-	const handleGoogleLoginClick = (e) => {
-		e.preventDefault();
-		setCaptchaForGoogle(true);
-		setShowCaptcha(true);
-		console.log("Captcha for Google:", captchaForGoogle);
-		console.log("Show Captcha:", showCaptcha);
-	};
+	const handleGoogleLogin = (e) => {
+        e.preventDefault();
+        setCaptchaForGoogle(true);
+        setShowCaptcha(true);
+    };
 
 	const handleCaptchaChange = async (value) => {
-		setCapVal(value);
-		if (value) {
-			if (captchaForGoogle) {
-				await googleLogin();
-				setCaptchaForGoogle(false);
-			} else {
-				await login(email, password);
-			}
-			setShowCaptcha(false);
-		}
-	};
+        setCapVal(value);
+        if (value) {
+            if (captchaForGoogle) {
+                
+                window.location.href = "http://localhost:5000/auth/google";
+                setCaptchaForGoogle(false);
+            } else {
+                await login(email, password);
+                navigate("/dashboard");
+            }
+            setShowCaptcha(false); 
+        }
+    };
 
 	return (
 		<motion.div
@@ -144,15 +140,28 @@ const LoginPage = () => {
 									>
 										{isLoading ? <Loader className='w-6 h-6 animate-spin mx-auto' /> : "Login"}
 									</motion.button>
+
+									<div className="flex items-center my-4">
+               							 <hr className="flex-grow border-t border-gray-300" />
+               							 <span className="mx-2 text-gray-500">OR</span>
+                						 <hr className="flex-grow border-t border-gray-300" />
+             	 					</div>
 	
 									<motion.button
 										whileHover={{ scale: 1.02 }}
 										whileTap={{ scale: 0.98 }}
 										className='w-full mt-4 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200'
-										onClick={handleGoogleLoginClick}
+										onClick={handleGoogleLogin}
 										disabled={isLoading}
 									>
-										{isLoading ? <Loader className='w-6 h-6 animate-spin mx-auto' /> : "Login with Google"}
+										<div className="flex items-center justify-center space-x-3">
+                        					<img
+                            					src="https://img.icons8.com/color/16/000000/google-logo.png"
+                            					alt="Google logo"
+                            					className="w-6 h-6"
+                        					/>
+                        						<span>Login with Google</span>
+                    					</div>
 									</motion.button>
 								</form>
 							</div>

@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
+import passport from "passport";
+import "./passport.js"; // Import the Google OAuth configuration
+import { googleAuth, googleAuthCallback } from "./controllers/auth.controller.js";
 
 import { connectDB } from "./db/connectDB.js";
 
@@ -16,9 +19,8 @@ const __dirname = path.resolve();
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
-app.use(express.json()); // allows us to parse incoming requests:req.body
-app.use(cookieParser()); // allows us to parse incoming cookies
-
+app.use(express.json()); 
+app.use(cookieParser()); 
 app.use("/api/auth", authRoutes);
 
 if (process.env.NODE_ENV === "production") {
@@ -29,7 +31,15 @@ if (process.env.NODE_ENV === "production") {
 	});
 }
 
+// Route to start Google OAuth
+app.get("/auth/google", googleAuth);
+
+// Google OAuth callback route
+app.get("/auth/google/callback", googleAuthCallback);
+
+
 app.listen(PORT, () => {
 	connectDB();
 	console.log("Server is running on port: ", PORT);
 });
+

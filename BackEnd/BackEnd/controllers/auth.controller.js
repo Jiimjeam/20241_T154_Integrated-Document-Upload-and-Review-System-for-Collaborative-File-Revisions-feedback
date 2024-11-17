@@ -1,6 +1,6 @@
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
-
+import passport from "passport";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import jwt from "jsonwebtoken";
 import {
@@ -198,3 +198,38 @@ export const checkAuth = async (req, res) => {
 		res.status(400).json({ success: false, message: error.message });
 	}
 };
+
+// Redirect to Google for login
+export const googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
+
+// Define predefined user dashboard routes
+const userDashboards = {
+	"arvinglennaguid@gmail.com": "http://localhost:5173/dashboard",
+};
+
+// Callback route where Google will redirect after successful login
+export const googleAuthCallback = (req, res) => {
+	passport.authenticate("google", { failureRedirect: "/login" }, (err, user) => {
+		if (err || !user) {
+			return res.status(400).json({ success: false, message: "Google login failed" });
+		}
+
+		
+		const redirectUrl = userDashboards[user.email];
+
+		if (redirectUrl) {
+			generateTokenAndSetCookie(res, user._id);
+
+			// Redirect to the user-specific dashboard
+			return res.redirect(redirectUrl);
+		} else {
+			// Notify the user that they are not registered in the system
+			return res.status(403).json({
+				success: false,
+				message: "You are not authorized to use this system.",
+			});
+		}
+	})(req, res);
+};
+
+  

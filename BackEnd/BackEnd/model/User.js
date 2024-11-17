@@ -1,32 +1,38 @@
 import mongoose from "mongoose";
 
-const userShema = new mongoose.Schema({
-    email:{
-        type:String,
+const userSchema = new mongoose.Schema({
+    email: {
+        type: String,
         required: true,
         unique: true
     },
     password: {
         type: String,
-        required: true
+        required: function () {
+            return !this.googleId;
+        }
+    },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true // Allows multiple users without googleId, but requires uniqueness when present
     },
     name: {
-        type:String,
+        type: String,
         required: true
     },
-    lastLogin:{
+    lastLogin: {
         type: Date,
         default: Date.now
     },
     isVerified: {
         type: Boolean,
-        default:false
+        default: false
     },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,
-    verificationTokenExpiresAt: Date,
+    verificationTokenExpiresAt: Date
+}, { timestamps: true });
 
-},{timestamps: true});
-
-export const User = mongoose.model('User',userShema);
+export const User = mongoose.model('User', userSchema);
