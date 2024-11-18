@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import FloatingShape from "./components/FloatingShape";
+
 
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
@@ -8,11 +8,12 @@ import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LoadingSpinner from "./components/LoadingSpinner";
-import FileUpload from "./components/FileUpload";
-
+import FileUpload from "./components/INTR/FileUpload";
+import INTRdashboard from "./components/INTR/INTRdashboard";
+import Sidebar from './components/INTR/dashboard2'
 import LandingPage from './components/LandingPage/body';
 
-import Sidebar from "./components/INTR/dashboard2";
+
 
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
@@ -38,13 +39,14 @@ const RedirectAuthenticatedUser = ({ children }) => {
 	const { isAuthenticated, user } = useAuthStore();
 
 	if (isAuthenticated && user.isVerified) {
-		return <Navigate to='/dashboard' replace />;
+		return <Navigate to='/INTRdashboard' replace />;
 	}
 
 	return children;
 };
 
 function App() {
+	
 	const { isCheckingAuth, checkAuth } = useAuthStore();
 
 	useEffect(() => {
@@ -54,16 +56,31 @@ function App() {
 	if (isCheckingAuth) return <LoadingSpinner />;
 
 	return (
+		
 		<div className="min-h-screen bg-[#2C2A2A] flex items-center justify-center relative overflow-hidden">
 
 			<Routes>
 				<Route path='/' element={<LandingPage />} />
-				<Route path='/upload' element={<FileUpload />} />
+				<Route path='/upload' element={
+					<ProtectedRoute>
+						<FileUpload />
+					</ProtectedRoute>
+					
+					} 
+				/>
 				<Route
 					path='/dashboard'
 					element={
 						<ProtectedRoute>
 							<DashboardPage />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path='/INTRdashboard'
+					element={
+						<ProtectedRoute>
+							<INTRdashboard />
 						</ProtectedRoute>
 					}
 				/>
@@ -106,6 +123,7 @@ function App() {
 			</Routes>
 			<Toaster />
 		</div>
+		
 	);
 }
 

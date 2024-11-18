@@ -51,7 +51,7 @@ const LoginPage = () => {
 			transition={{ duration: 0.5 }}
 			className='w-full h-screen bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl overflow-hidden'
 		>
-			<section className="h-screen bg-white dark:bg-gray-900">
+			<section className="h-screen bg-dark dark:bg-gray-900">
 				<div className="grid h-full grid-cols-12">
 					<section className="relative flex h-full items-end bg-gray-900 col-span-5 xl:col-span-6">
 						<img

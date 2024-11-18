@@ -1,45 +1,45 @@
-import React, { useState } from 'react';
 import './INTRdashboard.css';
-import History from '../../../assets/history-line.svg'
-import Notifications from '../../../assets/notif.svg'
-import home from '../../../assets/home-line.svg'
+import History from '../../assets/history-line.svg';
+import Notifications from '../../assets/notif.svg';
+import home from '../../assets/home-line.svg';
+import { useAuthStore } from '../../store/authStore';
+import FileUpload from './FileUpload'; // Updated path to FileUpload
+import Profileupload from './profile';
 
-import FileUpload from './uploadFile'
-import Profileupload from './profile'
+const INTRdashboard = () => {
+    const { user, logout } = useAuthStore();
 
+    const handleLogout = () => {
+        logout();
+    };
 
-const InstructorDashboard = () => {
-
-  return (
-    <div className="container">
-      <div className="sidebar">
-        <div className="profile">
-          <Profileupload />
-          <p className="profileName">Bryan Kanga</p>
-          <p className="profileDept">IT Instructor</p>
+    return (
+        <div className="dashboard-container">
+            <aside className="sidebar">
+                <div className="profile-section">
+                    <Profileupload />
+                    <h3 className='profile-title'>Profile Information</h3>
+                    <p className='profile-detail'>Name: {user.name}</p>
+                    <p className='profile-detail'>Email: {user.email}</p>
+                </div>
+                <nav className="menu">
+                    <div className="menuItem">
+                        <img src={home} alt="home" className="menu-icon" />Home
+                    </div>
+                    <div className="menuItem">
+                        <img src={Notifications} alt="Notifications" className="menu-icon" />Notifications
+                    </div>
+                    <div className="menuItem">
+                        <img src={History} alt="History" className="menu-icon" /> History
+                    </div>
+                </nav>
+                <button className="logoutButton" onClick={handleLogout}>Logout</button>
+            </aside>
+            <main className="main-content">
+                <FileUpload /> {/* File upload component */}
+            </main>
         </div>
-        <div className="menuItem">
-          <img src={home} alt="home" className="history" />Home
-        </div>
-          
-        <div className="menuItem">
-          <img src={Notifications} alt="Notifications" className="history" />Notifications
-        </div>
+    );
+};
 
-        <div className="menuItem">
-          <img src={History} alt="History" className="history" /> History
-        </div>
-
-        <button className="logoutButton">Logout</button>
-      </div>
-
-     
-      <div className="mainContent">
-        <FileUpload />                          {/* componenet ni sya */}
-      </div>
-    </div>
-  );
-}
-
-
-export default InstructorDashboard;
+export default INTRdashboard;

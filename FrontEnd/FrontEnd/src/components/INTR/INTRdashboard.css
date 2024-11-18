@@ -1,101 +1,75 @@
-body {
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
+.dashboard-container {
   display: flex;
-  font-family: Arial, sans-serif;
-  color: white;
-  background-color: #333;
   min-height: 100vh;
-  flex-direction: column; /* Stack on smaller screens */
+  background-color: #f4f4f9;
 }
 
 .sidebar {
-  width: 200px;
-  background-color: #2d2d2d;
+  width: 250px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
-.profile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.profileName, .profileDept {
-  font-size: 1rem;
+.profile-section {
   text-align: center;
-  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.profile-title {
+  font-size: 1.25rem;
+  margin-top: 10px;
+  color: #1abc9c;
+}
+
+.profile-detail {
+  color: #bdc3c7;
+}
+
+.menu {
+  width: 100%;
 }
 
 .menuItem {
-  padding: 10px;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  color: #ffffff;
-  margin-bottom: 10px;
-  background-color: transparent;
-  border-radius: 10px;
-  transition: background-color 0.1s ease 0.1s;
   display: flex;
   align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.history {
-  width: 24px;
-  height: auto;
+.menuItem:hover {
+  background-color: #34495e;
+}
+
+.menu-icon {
+  width: 20px;
   margin-right: 10px;
 }
 
 .logoutButton {
   margin-top: auto;
-  color: #ffffff;
-  background-color: transparent;
-  border: 1px solid #888;
+  padding: 10px 20px;
+  background-color: #e74c3c;
+  color: #ecf0f1;
+  border: none;
   border-radius: 5px;
-  padding: 10px;
   cursor: pointer;
-  width: 100%;
+  transition: background-color 0.3s;
 }
 
-.mainContent {
-  flex: 1;
-  padding: 20px;
+.logoutButton:hover {
+  background-color: #c0392b;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #ecf0f1;
   display: flex;
   flex-direction: column;
-  color: #ffffff;
-  width: 100%;
-}
-
-/* Media Queries for Responsiveness */
-@media (min-width: 600px) {
-  .container {
-    flex-direction: row;
-  }
-  
-  .sidebar {
-    width: 200px;
-  }
-}
-
-@media (max-width: 599px) {
-  .sidebar {
-    width: 100%;
-    padding: 10px;
-  }
-
-  .menuItem, .logoutButton {
-    font-size: 0.9rem;
-  }
-  
-  .mainContent {
-    padding: 10px;
-  }
+  align-items: center;
 }
