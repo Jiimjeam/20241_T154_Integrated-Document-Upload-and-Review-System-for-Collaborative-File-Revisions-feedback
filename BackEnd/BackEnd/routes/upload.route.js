@@ -4,7 +4,7 @@ import { upload } from '../middleware/fileUpload.js';
 
 const router = express.Router();
 
-router.post('/', upload.single('file'), uploadFile);
+router.post('/upload', upload.single('file'), uploadFile);
 router.get('/', getUploadedFiles); // Fetch all uploaded files
 router.delete('/:id', deleteFile); // Delete a file by ID
 

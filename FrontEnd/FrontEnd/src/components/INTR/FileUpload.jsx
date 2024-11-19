@@ -24,7 +24,7 @@ const FileUpload = () => {
   const fetchUploadedFiles = async () => {
     setLoadingFiles(true);
     try {
-      const response = await axios.get(`${API_URL}/upload`);
+      const response = await axios.get(`${API_URL}/`);
       setUploadedFiles(response.data.files);
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -99,7 +99,7 @@ const FileUpload = () => {
     if (!window.confirm('Are you sure you want to delete this file?')) return;
 
     try {
-      await axios.delete(`${API_URL}/upload/${fileId}`);
+      await axios.delete(`${API_URL}/${fileId}`);
       fetchUploadedFiles(); // Refresh file list
     } catch (error) {
       console.error('Error deleting file:', error);
