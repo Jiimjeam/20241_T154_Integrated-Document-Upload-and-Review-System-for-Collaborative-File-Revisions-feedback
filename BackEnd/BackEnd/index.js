@@ -7,6 +7,7 @@ import passport from "passport";
 import "./passport.js"; // Import the Google OAuth configuration
 import { googleAuth, googleAuthCallback } from "./controllers/auth.controller.js";
 import uploadRoutes from "./routes/upload.route.js";
+import fileRoutes from "./routes/file.route.js"; // Import the new file routes
 import { connectDB } from "./db/connectDB.js";
 import authRoutes from "./routes/auth.route.js";
 
@@ -23,7 +24,8 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use('/api/upload', uploadRoutes); // File upload route
+app.use("/api/upload", uploadRoutes); // File upload route
+app.use("/api/files", fileRoutes); // New file management route
 
 // Serve static files if in production mode
 if (process.env.NODE_ENV === "production") {
@@ -45,4 +47,3 @@ app.listen(PORT, () => {
 	connectDB();
 	console.log("Server is running on port:", PORT);
 });
-	

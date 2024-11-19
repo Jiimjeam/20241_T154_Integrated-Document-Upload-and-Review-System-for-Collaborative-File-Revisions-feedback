@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
@@ -9,41 +12,26 @@ const FileUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [users, setUsers] = useState([]); // Users fetched from the database
-  const [selectedUser, setSelectedUser] = useState(''); // Selected user for file sending
-  const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingFiles, setLoadingFiles] = useState(false);
+  const [history, setHistory] = useState([]); // For tracking history
 
-  const API_URL = 'http://localhost:5000/api/upload'; // Backend URL
+  const API_URL = 'http://localhost:5000/api'; // Backend URL
 
   useEffect(() => {
     fetchUploadedFiles();
-    fetchUsers();
+    toast.info('Welcome to the File Management Dashboard!');
   }, []);
 
   const fetchUploadedFiles = async () => {
     setLoadingFiles(true);
     try {
-      const response = await axios.get(`${API_URL}/`);
-      setUploadedFiles(response.data.files);
+      const response = await axios.get(`${API_URL}/files`);
+      setUploadedFiles(response.data); // Assuming response contains the list of uploaded files
     } catch (error) {
       console.error('Error fetching files:', error);
       setMessage('Error fetching uploaded files.');
     } finally {
       setLoadingFiles(false);
-    }
-  };
-
-  const fetchUsers = async () => {
-    setLoadingUsers(true);
-    try {
-      const response = await axios.get(`${API_URL}/users`);
-      setUsers(response.data.users); // Assuming the API returns an array of users
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setMessage('Error fetching users.');
-    } finally {
-      setLoadingUsers(false);
     }
   };
 
@@ -75,106 +63,98 @@ const FileUpload = () => {
     formData.append('coAuthor', coAuthor);
 
     try {
-      const response = await axios.post(`${API_URL}/upload`, formData, {
+      const response = await axios.post(`${API_URL}/upload/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      const uploadedFile = response.data; // Assuming backend sends the uploaded file data, including URL
       setMessage('File uploaded successfully!');
-      fetchUploadedFiles(); // Refresh file list
+      toast.success('File uploaded successfully!');
+
+      // Add file URL to uploaded files list
+      fetchUploadedFiles(); // Refresh file list to include the new file
+
+      // Clear form fields
       setFile(null);
       setSubjectCode('');
       setAuthor('');
       setCoAuthor('');
     } catch (error) {
       setMessage('Error uploading file');
+      toast.error('Error uploading file!');
       console.error(error);
     } finally {
       setUploading(false);
     }
   };
 
-  const handleDelete = async (fileId) => {
-    if (!window.confirm('Are you sure you want to delete this file?')) return;
+  const handleDelete = (fileId) => {
+    if (!window.confirm('Are you sure you want to delete this file from the dashboard only?')) return;
 
-    try {
-      await axios.delete(`${API_URL}/${fileId}`);
-      fetchUploadedFiles(); // Refresh file list
-    } catch (error) {
-      console.error('Error deleting file:', error);
-      setMessage('Error deleting file.');
-    }
-  };
+    // Remove file from the UI without affecting the database
+    setUploadedFiles(uploadedFiles.filter(file => file._id !== fileId));
 
-  const handleSendFile = async (fileId) => {
-    if (!selectedUser) {
-      setMessage('Please select a user to send the file to!');
-      return;
-    }
+    // Add action to history
+    setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
 
-    try {
-      const response = await axios.post(`${API_URL}/send-file`, {
-        fileId,
-        userId: selectedUser, // selectedUser will be the recipient's user ID
-      });
-
-      setMessage('File sent successfully!');
-      console.log(response.data);
-    } catch (error) {
-      setMessage('Error sending file');
-      console.error(error);
-    }
+    toast.info('File removed from dashboard!');
   };
 
   return (
-    <div className="file-upload">
+    <div className="container mt-4">
       <h1>File Management</h1>
-      <div>
+      <div className="mb-3">
         <label>Subject Code:</label>
         <input
           type="text"
+          className="form-control"
           value={subjectCode}
           onChange={(e) => setSubjectCode(e.target.value)}
           required
         />
       </div>
-      <div>
+      <div className="mb-3">
         <label>Author:</label>
         <input
           type="text"
+          className="form-control"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           required
         />
       </div>
-      <div>
+      <div className="mb-3">
         <label>Co-Author:</label>
         <input
           type="text"
+          className="form-control"
           value={coAuthor}
           onChange={(e) => setCoAuthor(e.target.value)}
         />
       </div>
-      <div>
+      <div className="mb-3">
         <label>File:</label>
-        <input type="file" onChange={handleFileChange} />
+        <input type="file" className="form-control" onChange={handleFileChange} />
       </div>
-      <button onClick={handleUpload} disabled={uploading}>
+      <button onClick={handleUpload} disabled={uploading} className="btn btn-primary">
         {uploading ? 'Uploading...' : 'Upload File'}
       </button>
       {message && <p>{message}</p>}
 
-      <h2>Uploaded Files</h2>
+      <h2 className="mt-4">Uploaded Files</h2>
       {loadingFiles ? (
         <p>Loading files...</p>
       ) : uploadedFiles.length > 0 ? (
-        <table className="uploaded-files-table">
+        <table className="table table-striped">
           <thead>
             <tr>
               <th>Subject Code</th>
               <th>Author</th>
               <th>Co-Author</th>
+              <th>Status</th>
+              <th>Revision Comment</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -184,31 +164,18 @@ const FileUpload = () => {
                 <td>{file.subjectCode}</td>
                 <td>{file.author}</td>
                 <td>{file.coAuthor || 'N/A'}</td>
+                <td>{file.status || 'Pending'}</td>
+                <td>{file.status === 'revision' ? file.revisionComment : 'N/A'}</td>
                 <td>
-                  <select
-                    value={selectedUser}
-                    onChange={(e) => setSelectedUser(e.target.value)}
+                  <a href={file.cloudinaryUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
+                    View File
+                  </a>
+                  <button
+                    onClick={() => handleDelete(file._id)}
+                    className="btn btn-danger btn-sm"
                   >
-                    <option value="">Select User</option>
-                    {loadingUsers ? (
-                      <option value="">Loading users...</option>
-                    ) : (
-                      users.length > 0 ? (
-                        users.map((user) => (
-                          <option key={user._id} value={user._id}>
-                            {user.name}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="">No users available</option>
-                      )
-                    )}
-                  </select>
-
-                  <button onClick={() => handleSendFile(file._id)}>
-                    Send
+                    Delete
                   </button>
-                  <button onClick={() => handleDelete(file._id)}>Delete</button>
                 </td>
               </tr>
             ))}
@@ -216,6 +183,19 @@ const FileUpload = () => {
         </table>
       ) : (
         <p>No files uploaded yet.</p>
+      )}
+
+      <h2 className="mt-4">Action History</h2>
+      {history.length > 0 ? (
+        <ul className="list-group">
+          {history.map((item, index) => (
+            <li key={index} className="list-group-item">
+              {item.timestamp} - {item.action} (File ID: {item.fileId})
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No actions recorded yet.</p>
       )}
     </div>
   );

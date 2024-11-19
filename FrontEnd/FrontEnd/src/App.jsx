@@ -12,6 +12,7 @@ import FileUpload from "./components/INTR/FileUpload";
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import Sidebar from './components/INTR/dashboard2'
 import LandingPage from './components/LandingPage/body';
+import SeniorFacultyDashboard from "./pages/SeniorFacultyDashboard";
 
 
 
@@ -61,6 +62,7 @@ function App() {
 
 			<Routes>
 				<Route path='/' element={<LandingPage />} />
+				<Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />
 				<Route path='/upload' element={
 					<ProtectedRoute>
 						<FileUpload />

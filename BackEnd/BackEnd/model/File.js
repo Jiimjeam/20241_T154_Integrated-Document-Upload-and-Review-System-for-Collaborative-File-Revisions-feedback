@@ -8,7 +8,9 @@ const fileSchema = new mongoose.Schema({
   subjectCode: { type: String, required: true },
   author: { type: String, required: true },
   coAuthor: { type: String, default: '' },
-  recipientUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // New field for the recipient user
+  recipientUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // Recipient user ID
+  status: { type: String, enum: ['pending', 'approved', 'revision'], default: 'pending' }, // File status
+  revisionComment: { type: String, default: '' }, // Comment for revision (if applicable)
 }, { timestamps: true });
 
 export default mongoose.model('File', fileSchema);
