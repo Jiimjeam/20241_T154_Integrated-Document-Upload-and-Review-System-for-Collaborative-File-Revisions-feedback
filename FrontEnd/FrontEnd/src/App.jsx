@@ -12,6 +12,8 @@ import FileUpload from "./components/INTR/FileUpload";
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import Sidebar from './components/INTR/dashboard2'
 import LandingPage from './components/LandingPage/body';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 
 

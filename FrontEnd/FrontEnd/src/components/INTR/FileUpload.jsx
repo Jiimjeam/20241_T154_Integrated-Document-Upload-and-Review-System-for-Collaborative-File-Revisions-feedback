@@ -9,12 +9,12 @@ const FileUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [users, setUsers] = useState([]); // Users fetched from the database
-  const [selectedUser, setSelectedUser] = useState(''); // Selected user for file sending
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState('');
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingFiles, setLoadingFiles] = useState(false);
 
-  const API_URL = 'http://localhost:5000/api/upload'; // Backend URL
+  const API_URL = 'http://localhost:5000/api/upload';
 
   useEffect(() => {
     fetchUploadedFiles();
@@ -38,7 +38,7 @@ const FileUpload = () => {
     setLoadingUsers(true);
     try {
       const response = await axios.get(`${API_URL}/users`);
-      setUsers(response.data.users); // Assuming the API returns an array of users
+      setUsers(response.data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
       setMessage('Error fetching users.');
@@ -50,7 +50,6 @@ const FileUpload = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      // Optional: Validate file type (e.g., only allow PDF or DOCX)
       const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
       if (!allowedTypes.includes(selectedFile.type)) {
         setMessage('Invalid file type. Only PDF and DOCX files are allowed.');
@@ -75,14 +74,14 @@ const FileUpload = () => {
     formData.append('coAuthor', coAuthor);
 
     try {
-      const response = await axios.post(`${API_URL}/upload`, formData, {
+      await axios.post(`${API_URL}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
       setMessage('File uploaded successfully!');
-      fetchUploadedFiles(); // Refresh file list
+      fetchUploadedFiles();
       setFile(null);
       setSubjectCode('');
       setAuthor('');
@@ -100,7 +99,7 @@ const FileUpload = () => {
 
     try {
       await axios.delete(`${API_URL}/${fileId}`);
-      fetchUploadedFiles(); // Refresh file list
+      fetchUploadedFiles();
     } catch (error) {
       console.error('Error deleting file:', error);
       setMessage('Error deleting file.');
@@ -114,13 +113,12 @@ const FileUpload = () => {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/send-file`, {
+      await axios.post(`${API_URL}/send-file`, {
         fileId,
-        userId: selectedUser, // selectedUser will be the recipient's user ID
+        userId: selectedUser,
       });
 
       setMessage('File sent successfully!');
-      console.log(response.data);
     } catch (error) {
       setMessage('Error sending file');
       console.error(error);
@@ -128,48 +126,56 @@ const FileUpload = () => {
   };
 
   return (
-    <div className="file-upload">
-      <h1>File Management</h1>
-      <div>
-        <label>Subject Code:</label>
+    <div className="container mt-4">
+      <h1 className="mb-4">File Management</h1>
+
+      <div className="mb-3">
+        <label className="form-label">Subject Code:</label>
         <input
           type="text"
+          className="form-control"
           value={subjectCode}
           onChange={(e) => setSubjectCode(e.target.value)}
           required
         />
       </div>
-      <div>
-        <label>Author:</label>
+      <div className="mb-3">
+        <label className="form-label">Author:</label>
         <input
           type="text"
+          className="form-control"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           required
         />
       </div>
-      <div>
-        <label>Co-Author:</label>
+      <div className="mb-3">
+        <label className="form-label">Co-Author:</label>
         <input
           type="text"
+          className="form-control"
           value={coAuthor}
           onChange={(e) => setCoAuthor(e.target.value)}
         />
       </div>
-      <div>
-        <label>File:</label>
-        <input type="file" onChange={handleFileChange} />
+      <div className="mb-3">
+        <label className="form-label">File:</label>
+        <input type="file" className="form-control" onChange={handleFileChange} />
       </div>
-      <button onClick={handleUpload} disabled={uploading}>
+      <button
+        className="btn btn-primary"
+        onClick={handleUpload}
+        disabled={uploading}
+      >
         {uploading ? 'Uploading...' : 'Upload File'}
       </button>
-      {message && <p>{message}</p>}
+      {message && <div className="alert alert-info mt-3">{message}</div>}
 
-      <h2>Uploaded Files</h2>
+      <h2 className="mt-5">Uploaded Files</h2>
       {loadingFiles ? (
         <p>Loading files...</p>
       ) : uploadedFiles.length > 0 ? (
-        <table className="uploaded-files-table">
+        <table className="table table-striped mt-3">
           <thead>
             <tr>
               <th>Subject Code</th>
@@ -186,6 +192,7 @@ const FileUpload = () => {
                 <td>{file.coAuthor || 'N/A'}</td>
                 <td>
                   <select
+                    className="form-select mb-2"
                     value={selectedUser}
                     onChange={(e) => setSelectedUser(e.target.value)}
                   >
@@ -204,11 +211,18 @@ const FileUpload = () => {
                       )
                     )}
                   </select>
-
-                  <button onClick={() => handleSendFile(file._id)}>
+                  <button
+                    className="btn btn-success btn-sm me-2"
+                    onClick={() => handleSendFile(file._id)}
+                  >
                     Send
                   </button>
-                  <button onClick={() => handleDelete(file._id)}>Delete</button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(file._id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

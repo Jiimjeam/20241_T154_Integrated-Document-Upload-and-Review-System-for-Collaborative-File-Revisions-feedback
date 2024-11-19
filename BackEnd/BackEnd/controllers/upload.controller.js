@@ -14,8 +14,7 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'Subject Code and Author are required!' });
     }
 
-    let resourceType;
-    const mimeType = req.file.mimetype;
+    let resourceType;t mimeType = req.file.mimetype;
 
     const imageTypes = ['image/jpeg', 'image/png', 'image/gif'];
     const videoTypes = ['video/mp4', 'video/mkv', 'video/avi'];
