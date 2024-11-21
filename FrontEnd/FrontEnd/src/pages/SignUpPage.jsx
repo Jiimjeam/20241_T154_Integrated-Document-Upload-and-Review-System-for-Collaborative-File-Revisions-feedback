@@ -11,6 +11,9 @@ import File from "../assets/folder-fill.svg";
 import sideIMG from "../assets/sideIMG-2.svg";
 import buksuLOGO from "../assets/buksu-white.png";
 
+import { toast, ToastContainer } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css";
+
 const SignUpPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -23,10 +26,48 @@ const SignUpPage = () => {
 
   const { signup, error, isLoading } = useAuthStore();
 
+  const validatePassword = (password) => {
+    const criteria = [
+      password.length >= 6, 
+      /[A-Z]/.test(password), 
+      /[a-z]/.test(password), 
+      /\d/.test(password), 
+      /[^A-Za-z0-9]/.test(password),
+    ];
+    return criteria.every((met) => met); 
+  };
+
   const handleSignUp = (e) => {
     e.preventDefault();
-    setCaptchaForGoogle(false); 
-    setShowCaptcha(true); 
+
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      toast.error("Please fill in all fields before proceeding.", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      toast.error("Password does not meet the required criteria.", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+      return;
+    }
+
+    setCaptchaForGoogle(false);
+    setShowCaptcha(true);
   };
 
   const handleGoogleSignUp = (e) => {
@@ -39,11 +80,9 @@ const SignUpPage = () => {
     setCapVal(value);
     if (value) {
       if (captchaForGoogle) {
-        
         window.location.href = "http://localhost:5000/auth/google";
         setCaptchaForGoogle(false);
       } else {
-        
         try {
           await signup(email, password, name);
           navigate("/verify-email");
@@ -62,7 +101,7 @@ const SignUpPage = () => {
       transition={{ duration: 0.5 }}
       className="w-full h-screen bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl overflow-hidden"
     >
-      <section className="h-screen bg-white dark:bg-gray-900">
+      <section className="h-screen bg-dark dark:bg-gray-900">
         <div className="grid h-full grid-cols-12">
           <section className="relative flex h-full items-end bg-gray-900 col-span-5 xl:col-span-6">
             <img
@@ -93,13 +132,13 @@ const SignUpPage = () => {
               </p>
             </div>
           </section>
-
+  
           <main className="flex items-center justify-center px-8 py-8 sm:px-12 col-span-7 xl:col-span-6">
             <div className="max-w-lg lg:max-w-2xl">
               <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
                 Create Account
               </h2>
-
+  
               <form onSubmit={handleSignUp} className="space-y-4">
                 <Input
                   icon={User}
@@ -137,10 +176,10 @@ const SignUpPage = () => {
                     )}
                   </div>
                 </div>
-
+  
                 {error && <p className="text-red-500 font-semibold mt-2">{error}</p>}
                 <PasswordStrengthMeter password={password} />
-
+  
                 {showCaptcha && (
                   <div className="mt-4">
                     <ReCAPTCHA
@@ -149,53 +188,54 @@ const SignUpPage = () => {
                     />
                   </div>
                 )}
-
-                <motion.button
-                  className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
-                  font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
-                  focus:ring-offset-gray-900 transition duration-200"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader className="animate-spin mx-auto" size={24} />
-                  ) : (
-                    "Sign Up"
-                  )}
-                </motion.button>
-              </form>
-
-              <div className="flex items-center my-4">
-                <hr className="flex-grow border-t border-gray-300" />
-                <span className="mx-2 text-gray-500">OR</span>
-                <hr className="flex-grow border-t border-gray-300" />
-              </div>
-
-              <motion.button
-                className='w-full mt-4 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200'
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleGoogleSignUp}
-              >
-                <div className="flex items-center justify-center space-x-3">
-                  <img
-                    src="https://img.icons8.com/color/16/000000/google-logo.png"
-                    alt="Google logo"
-                    className="w-6 h-6"
-                  />
-                  <span>Sign Up with Google</span>
+  
+                {/* Buttons Container */}
+                <div className="flex items-center justify-between space-x-4 mt-6">
+                  {/* Sign Up Button */}
+                  <motion.button
+                    className="w-1/3 py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
+                             font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+                             focus:ring-offset-gray-900 transition duration-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <Loader className="animate-spin mx-auto" size={24} />
+                    ) : (
+                      "SignUp"
+                    )}
+                  </motion.button>
+  
+                  {/* OR Divider */}
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-gray-500">OR</span>
+                  </div>
+  
+                  {/* Google Button */}
+                  <motion.button
+                    className="w-1/3 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleGoogleSignUp}
+                  >
+                    <div className="flex items-center justify-center space-x-3">
+                      <img
+                        src="https://img.icons8.com/color/16/000000/google-logo.png"
+                        alt="Google logo"
+                        className="w-6 h-6"
+                      />
+                      <span>Google</span>
+                    </div>
+                  </motion.button>
                 </div>
-              </motion.button>
-
+              </form>
+  
               <div className="flex justify-center mt-4">
                 <p className="text-sm text-gray-400">
                   Already have an account?{" "}
-                  <Link
-                    to={"/login"}
-                    className="text-green-400 hover:underline"
-                  >
+                  <Link to={"/login"} className="text-green-400 hover:underline">
                     Login
                   </Link>
                 </p>
@@ -204,8 +244,10 @@ const SignUpPage = () => {
           </main>
         </div>
       </section>
+      <ToastContainer />
     </motion.div>
   );
+  
 };
 
 export default SignUpPage;
