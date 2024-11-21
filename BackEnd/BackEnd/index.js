@@ -23,6 +23,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routes
+
+
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes); // File upload route
 app.use("/api/files", fileRoutes); // New file management route
@@ -35,6 +37,10 @@ if (process.env.NODE_ENV === "production") {
 		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 	});
 }
+
+
+
+
 
 // Google OAuth routes
 app.get("/auth/google", googleAuth);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import { toast } from 'react-toastify';
@@ -14,6 +14,9 @@ const FileUpload = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [loadingFiles, setLoadingFiles] = useState(false);
   const [history, setHistory] = useState([]); // For tracking history
+  const [selectedFile, setSelectedFile] = useState(null); // State for the selected file to preview
+  const [fileType, setFileType] = useState(null); // State for the file type (pdf, docx, etc.)
+  const previewRef = useRef(null); // Reference to the file preview section
 
   const API_URL = 'http://localhost:5000/api'; // Backend URL
 
@@ -38,7 +41,6 @@ const FileUpload = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      // Optional: Validate file type (e.g., only allow PDF or DOCX)
       const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
       if (!allowedTypes.includes(selectedFile.type)) {
         setMessage('Invalid file type. Only PDF and DOCX files are allowed.');
@@ -69,14 +71,11 @@ const FileUpload = () => {
         },
       });
 
-      const uploadedFile = response.data; // Assuming backend sends the uploaded file data, including URL
+      const uploadedFile = response.data;
       setMessage('File uploaded successfully!');
       toast.success('File uploaded successfully!');
+      fetchUploadedFiles();
 
-      // Add file URL to uploaded files list
-      fetchUploadedFiles(); // Refresh file list to include the new file
-
-      // Clear form fields
       setFile(null);
       setSubjectCode('');
       setAuthor('');
@@ -90,17 +89,71 @@ const FileUpload = () => {
     }
   };
 
-  const handleDelete = (fileId) => {
-    if (!window.confirm('Are you sure you want to delete this file from the dashboard only?')) return;
-
-    // Remove file from the UI without affecting the database
-    setUploadedFiles(uploadedFiles.filter(file => file._id !== fileId));
-
-    // Add action to history
-    setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
-
-    toast.info('File removed from dashboard!');
+  const handleViewFile = (filepath) => {
+    setSelectedFile(filepath);
+    const fileExtension = filepath.split('.').pop().toLowerCase();
+    setFileType(fileExtension);
+    setTimeout(() => previewRef.current?.scrollIntoView({ behavior: 'smooth' }), 300); // Scroll to preview section
   };
+
+  const closePreview = () => {
+    setSelectedFile(null);
+    setFileType(null);
+  };
+
+ // Handle file download
+const downloadFile = async (filepath) => {
+  try {
+    if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
+      window.open(filepath, '_blank');
+      toast.success('File download initiated.');
+      return;
+    }
+
+    const response = await axios.get(
+      `${API_URL}/files/download/${encodeURIComponent(filepath)}`,
+      { responseType: 'blob' }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+
+    const disposition = response.headers['content-disposition'];
+    const filename = disposition
+      ? disposition.split('filename=')[1].replace(/"/g, '')
+      : filepath.split('/').pop();
+
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    toast.success(`File "${filename}" downloaded successfully.`);
+  } catch (error) {
+    console.error('Error downloading file:', error.message);
+    toast.error('Error downloading file.');
+  }
+};
+
+// Handle file delete
+const handleDelete = (fileId) => {
+  const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
+
+  if (!window.confirm(`Are you sure you want to delete the file "${fileToDelete?.subjectCode}" from the dashboard only?`)) {
+    toast.info('Delete action cancelled.');
+    return;
+  }
+
+  // Remove file from the UI without affecting the database
+  setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
+
+  // Add action to history
+  setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
+
+  toast.success(`File "${fileToDelete?.subjectCode}" deleted from the dashboard.`);
+};
+
 
   return (
     <div className="container mt-4">
@@ -167,9 +220,19 @@ const FileUpload = () => {
                 <td>{file.status || 'Pending'}</td>
                 <td>{file.status === 'revision' ? file.revisionComment : 'N/A'}</td>
                 <td>
-                  <a href={file.cloudinaryUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
-                    View File
-                  </a>
+                  <button
+                    onClick={() => handleViewFile(file.filepath)}
+                    className="btn btn-info btn-sm mx-1"
+                  >
+                    View
+                  </button>
+
+                  <button
+                    onClick={() => downloadFile(file.filepath)}
+                    className="btn btn-success btn-sm mx-2"
+                  >
+                    Download
+                  </button>
                   <button
                     onClick={() => handleDelete(file._id)}
                     className="btn btn-danger btn-sm"
@@ -196,6 +259,39 @@ const FileUpload = () => {
         </ul>
       ) : (
         <p>No actions recorded yet.</p>
+      )}
+
+      {/* File Preview Section */}
+      {selectedFile && (
+        <div className="mt-4" ref={previewRef}>
+          <div className="card">
+            <div className="card-body">
+              <button
+                onClick={closePreview}
+                className="btn btn-danger btn-sm close-btn"
+                style={{ position: 'absolute', top: '10px', right: '10px' }}
+              >
+                X
+              </button>
+              <h3>File Preview</h3>
+              {fileType === 'pdf' ? (
+                <iframe
+                  src={selectedFile}
+                  title="PDF Preview"
+                  style={{ width: '100%', height: '400px', border: 'none' }}
+                ></iframe>
+              ) : fileType === 'docx' || fileType === 'doc' ? (
+                <iframe
+                  src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
+                  title="Word Document Preview"
+                  style={{ width: '100%', height: '400px', border: 'none' }}
+                ></iframe>
+              ) : (
+                <p>File preview not available for this type.</p>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

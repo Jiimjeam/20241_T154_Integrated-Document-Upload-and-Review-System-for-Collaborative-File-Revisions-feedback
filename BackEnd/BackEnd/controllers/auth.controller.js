@@ -204,7 +204,8 @@ export const googleAuth = passport.authenticate("google", { scope: ["profile", "
 
 // Define predefined user dashboard routes
 const userDashboards = {
-	"arvinglennaguid@gmail.com": "http://localhost:5173/dashboard",
+	"2201102843@student.buksu.edu.ph": "http://localhost:5173/dashboard",
+	"2201100367@student.buksu.edu.ph": "http://localhost:5173/dashboard",
 };
 
 // Callback route where Google will redirect after successful login
