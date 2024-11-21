@@ -9,6 +9,10 @@ import ReCAPTCHA from "react-google-recaptcha";
 import sideIMG from '../assets/sideIMG-3.svg'
 import buksuLOGO from '../assets/buksu-white.png'
 
+
+import { toast, ToastContainer } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css";
+
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -19,7 +23,21 @@ const LoginPage = () => {
 	const [captchaForGoogle, setCaptchaForGoogle] = useState(false);
 
 	const handleLogin = async (e) => {
-        e.preventDefault();
+		e.preventDefault();
+
+		if (!email.trim() || !password.trim()) {
+			toast.error("Please fill in all fields before proceeding.", {
+				position: "top-right",
+				autoClose: 3000,
+				hideProgressBar: true,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				theme: "colored",
+			});
+			return;
+		}
+       
         setShowCaptcha(true); 
     };
 
@@ -143,14 +161,14 @@ const LoginPage = () => {
 
 									<div className="flex items-center my-4">
                							 <hr className="flex-grow border-t border-gray-300" />
-               							 <span className="mx-2 text-gray-500">OR</span>
+               							 <span className="mx-0 text-gray-500">OR</span>
                 						 <hr className="flex-grow border-t border-gray-300" />
              	 					</div>
 	
 									<motion.button
 										whileHover={{ scale: 1.02 }}
 										whileTap={{ scale: 0.98 }}
-										className='w-full mt-4 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200'
+										className='w-full mt-0 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200'
 										onClick={handleGoogleLogin}
 										disabled={isLoading}
 									>
@@ -166,7 +184,7 @@ const LoginPage = () => {
 								</form>
 							</div>
 	
-							<div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>
+							<div className='px-8 py-4  bg-opacity-50 flex justify-center'>
 								<p className='text-sm text-gray-400'>
 									Don't have an account?{" "}
 									<Link to='/signup' className='text-green-400 hover:underline'>
@@ -178,6 +196,7 @@ const LoginPage = () => {
 					</main>
 				</div>
 			</section>
+			<ToastContainer />
 		</motion.div>
 	);
 	
