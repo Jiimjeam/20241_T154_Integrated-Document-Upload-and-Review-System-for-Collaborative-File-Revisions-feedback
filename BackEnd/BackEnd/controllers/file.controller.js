@@ -70,5 +70,33 @@ export const downloadFileByPath = (req, res) => {
       }
     });
   };
+
+  // Fetch file statistics
+export const getFileStats = async (req, res) => {
+  try {
+    const approved = await File.countDocuments({ status: "approved" });
+    const pending = await File.countDocuments({ status: "pending" });
+    const revision = await File.countDocuments({ status: "revision" });
+
+    res.status(200).json({ approved, pending, revision });
+  } catch (error) {
+    console.error("Error fetching file stats:", error.message);
+    res.status(500).json({ error: "Error fetching file stats." });
+  }
+};
+
+// Fetch files by status
+export const getFilesByStatus = async (req, res) => {
+  const { status } = req.query; // Accept status as query parameter
+  try {
+    const files = await File.find(status ? { status } : {});
+    res.status(200).json(files);
+  } catch (error) {
+    console.error("Error fetching files by status:", error.message);
+    res.status(500).json({ error: "Error fetching files by status." });
+  }
+};
+
+  
   
   

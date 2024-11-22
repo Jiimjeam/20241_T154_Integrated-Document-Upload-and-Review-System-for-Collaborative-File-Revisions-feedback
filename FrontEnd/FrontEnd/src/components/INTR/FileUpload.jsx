@@ -3,6 +3,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import { Modal } from 'react-bootstrap'; // Import Modal from react-bootstrap
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
@@ -13,12 +14,14 @@ const FileUpload = () => {
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [loadingFiles, setLoadingFiles] = useState(false);
-  const [history, setHistory] = useState([]); // For tracking history
-  const [selectedFile, setSelectedFile] = useState(null); // State for the selected file to preview
-  const [fileType, setFileType] = useState(null); // State for the file type (pdf, docx, etc.)
-  const previewRef = useRef(null); // Reference to the file preview section
+  const [history, setHistory] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileType, setFileType] = useState(null);
+  const [showModal, setShowModal] = useState(false); // State to control file upload modal visibility
+  const [previewModalShow, setPreviewModalShow] = useState(false); // State to control preview modal visibility
+  const previewRef = useRef(null);
 
-  const API_URL = 'http://localhost:5000/api'; // Backend URL
+  const API_URL = 'http://localhost:5000/api';
 
   useEffect(() => {
     fetchUploadedFiles();
@@ -29,7 +32,7 @@ const FileUpload = () => {
     setLoadingFiles(true);
     try {
       const response = await axios.get(`${API_URL}/files`);
-      setUploadedFiles(response.data); // Assuming response contains the list of uploaded files
+      setUploadedFiles(response.data);
     } catch (error) {
       console.error('Error fetching files:', error);
       setMessage('Error fetching uploaded files.');
@@ -80,6 +83,7 @@ const FileUpload = () => {
       setSubjectCode('');
       setAuthor('');
       setCoAuthor('');
+      setShowModal(false); // Close modal after upload
     } catch (error) {
       setMessage('Error uploading file');
       toast.error('Error uploading file!');
@@ -93,114 +97,112 @@ const FileUpload = () => {
     setSelectedFile(filepath);
     const fileExtension = filepath.split('.').pop().toLowerCase();
     setFileType(fileExtension);
-    setTimeout(() => previewRef.current?.scrollIntoView({ behavior: 'smooth' }), 300); // Scroll to preview section
+    setPreviewModalShow(true); // Show the preview modal
   };
 
   const closePreview = () => {
+    setPreviewModalShow(false); // Close the preview modal
     setSelectedFile(null);
     setFileType(null);
   };
 
- // Handle file download
-const downloadFile = async (filepath) => {
-  try {
-    if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
-      window.open(filepath, '_blank');
-      toast.success('File download initiated.');
+  const downloadFile = async (filepath) => {
+    try {
+      if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
+        window.open(filepath, '_blank');
+        toast.success('File download initiated.');
+        return;
+      }
+
+      const response = await axios.get(`${API_URL}/files/download/${encodeURIComponent(filepath)}`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const filename = filepath.split('/').pop();
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      toast.success(`File "${filename}" downloaded successfully.`);
+    } catch (error) {
+      console.error('Error downloading file:', error.message);
+      toast.error('Error downloading file.');
+    }
+  };
+
+  const handleDelete = (fileId) => {
+    const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
+    if (!window.confirm(`Are you sure you want to delete the file "${fileToDelete?.subjectCode}" from the dashboard only?`)) {
+      toast.info('Delete action cancelled.');
       return;
     }
 
-    const response = await axios.get(
-      `${API_URL}/files/download/${encodeURIComponent(filepath)}`,
-      { responseType: 'blob' }
-    );
-
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-
-    const disposition = response.headers['content-disposition'];
-    const filename = disposition
-      ? disposition.split('filename=')[1].replace(/"/g, '')
-      : filepath.split('/').pop();
-
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    toast.success(`File "${filename}" downloaded successfully.`);
-  } catch (error) {
-    console.error('Error downloading file:', error.message);
-    toast.error('Error downloading file.');
-  }
-};
-
-// Handle file delete
-const handleDelete = (fileId) => {
-  const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
-
-  if (!window.confirm(`Are you sure you want to delete the file "${fileToDelete?.subjectCode}" from the dashboard only?`)) {
-    toast.info('Delete action cancelled.');
-    return;
-  }
-
-  // Remove file from the UI without affecting the database
-  setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
-
-  // Add action to history
-  setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
-
-  toast.success(`File "${fileToDelete?.subjectCode}" deleted from the dashboard.`);
-};
-
+    setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
+    setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
+    toast.success(`File "${fileToDelete?.subjectCode}" deleted from the dashboard.`);
+  };
 
   return (
     <div className="container mt-4">
-      <h1>File Management</h1>
-      <div className="mb-3">
-        <label>Subject Code:</label>
-        <input
-          type="text"
-          className="form-control"
-          value={subjectCode}
-          onChange={(e) => setSubjectCode(e.target.value)}
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label>Author:</label>
-        <input
-          type="text"
-          className="form-control"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          required
-        />
-      </div>
-      <div className="mb-3">
-        <label>Co-Author:</label>
-        <input
-          type="text"
-          className="form-control"
-          value={coAuthor}
-          onChange={(e) => setCoAuthor(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <label>File:</label>
-        <input type="file" className="form-control" onChange={handleFileChange} />
-      </div>
-      <button onClick={handleUpload} disabled={uploading} className="btn btn-primary">
-        {uploading ? 'Uploading...' : 'Upload File'}
-      </button>
-      {message && <p>{message}</p>}
+      <h1> Add File </h1>
+      
+      {/* Button to trigger modal */}
+      <button onClick={() => setShowModal(true)} className="btn btn-primary mb-3">Upload File</button>
+
+      {/* Modal for file upload */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload File</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="file-upload">
+            <div className="mb-3">
+              <label>Subject Code:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={subjectCode}
+                onChange={(e) => setSubjectCode(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label>Author:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label>Co-Author:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={coAuthor}
+                onChange={(e) => setCoAuthor(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label>File:</label>
+              <input type="file" className="form-control" onChange={handleFileChange} />
+            </div>
+            <button onClick={handleUpload} disabled={uploading} className="btn btn-primary">
+              {uploading ? 'Uploading...' : 'Upload File'}
+            </button>
+            {message && <p>{message}</p>}
+          </div>
+        </Modal.Body>
+      </Modal>
 
       <h2 className="mt-4">Uploaded Files</h2>
       {loadingFiles ? (
         <p>Loading files...</p>
       ) : uploadedFiles.length > 0 ? (
-        <table className="table table-striped">
+        <table className="table table-striped table-responsive uploaded-files-table">
           <thead>
             <tr>
               <th>Subject Code</th>
@@ -220,25 +222,9 @@ const handleDelete = (fileId) => {
                 <td>{file.status || 'Pending'}</td>
                 <td>{file.status === 'revision' ? file.revisionComment : 'N/A'}</td>
                 <td>
-                  <button
-                    onClick={() => handleViewFile(file.filepath)}
-                    className="btn btn-info btn-sm mx-1"
-                  >
-                    View
-                  </button>
-
-                  <button
-                    onClick={() => downloadFile(file.filepath)}
-                    className="btn btn-success btn-sm mx-2"
-                  >
-                    Download
-                  </button>
-                  <button
-                    onClick={() => handleDelete(file._id)}
-                    className="btn btn-danger btn-sm"
-                  >
-                    Delete
-                  </button>
+                  <button onClick={() => handleViewFile(file.filepath)} className="btn btn-info btn-sm mx-1">View</button>
+                  <button onClick={() => downloadFile(file.filepath)} className="btn btn-success btn-sm mx-2">Download</button>
+                  <button onClick={() => handleDelete(file._id)} className="btn btn-danger btn-sm">Delete</button>
                 </td>
               </tr>
             ))}
@@ -249,50 +235,38 @@ const handleDelete = (fileId) => {
       )}
 
       <h2 className="mt-4">Action History</h2>
-      {history.length > 0 ? (
-        <ul className="list-group">
-          {history.map((item, index) => (
-            <li key={index} className="list-group-item">
-              {item.timestamp} - {item.action} (File ID: {item.fileId})
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No actions recorded yet.</p>
-      )}
+      <ul className="list-group">
+        {history.map((entry, index) => (
+          <li key={index} className="list-group-item">
+            {entry.timestamp} - {entry.action}
+          </li>
+        ))}
+      </ul>
 
-      {/* File Preview Section */}
-      {selectedFile && (
-        <div className="mt-4" ref={previewRef}>
-          <div className="card">
-            <div className="card-body">
-              <button
-                onClick={closePreview}
-                className="btn btn-danger btn-sm close-btn"
-                style={{ position: 'absolute', top: '10px', right: '10px' }}
-              >
-                X
-              </button>
-              <h3>File Preview</h3>
-              {fileType === 'pdf' ? (
-                <iframe
-                  src={selectedFile}
-                  title="PDF Preview"
-                  style={{ width: '100%', height: '400px', border: 'none' }}
-                ></iframe>
-              ) : fileType === 'docx' || fileType === 'doc' ? (
-                <iframe
-                  src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
-                  title="Word Document Preview"
-                  style={{ width: '100%', height: '400px', border: 'none' }}
-                ></iframe>
-              ) : (
-                <p>File preview not available for this type.</p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* File Preview Modal */}
+      <Modal show={previewModalShow} onHide={closePreview} size="lg" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>File Preview</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {/* PDF Preview */}
+          {fileType === 'pdf' ? (
+            <iframe
+              src={`${API_URL}/files/preview/${encodeURIComponent(selectedFile)}`}
+              title="PDF Preview"
+              style={{ width: '100%', height: '400px', border: 'none' }}
+            ></iframe>
+          ) : fileType === 'docx' || fileType === 'doc' ? (
+            <iframe
+              src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
+              title="Word Document Preview"
+              style={{ width: '100%', height: '400px', border: 'none' }}
+            ></iframe>
+          ) : (
+            <p>File preview not available for this type.</p>
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

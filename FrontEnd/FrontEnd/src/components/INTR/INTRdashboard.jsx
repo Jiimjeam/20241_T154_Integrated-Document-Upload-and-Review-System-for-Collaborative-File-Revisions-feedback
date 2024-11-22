@@ -1,10 +1,12 @@
 import './INTRdashboard.css';
+import { Link, Outlet } from 'react-router-dom';
 import History from '../../assets/history-line.svg';
 import Notifications from '../../assets/notif.svg';
 import home from '../../assets/home-line.svg';
+import syllabusIcon from '../../assets/syllabus.svg';
 import { useAuthStore } from '../../store/authStore';
-import FileUpload from './FileUpload'; // Updated path to FileUpload
 import Profileupload from './profile';
+import Home from './Home';
 
 const INTRdashboard = () => {
   const { user, logout } = useAuthStore();
@@ -14,29 +16,44 @@ const INTRdashboard = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <aside className="sidebar">
-        <div className="profile-section">
+    <div className="dashboard-container d-flex">
+      {/* Sidebar */}
+      <aside className="sidebar bg-dark text-white p-4 d-flex flex-column align-items-center position-fixed vh-100">
+        <div className="profile-section text-center mb-4">
           <Profileupload />
-          <h3 className='profile-title'>Profile Information</h3>
-          <p className='profile-detail'>Name: {user.name}</p>
-          <p className='profile-detail'>Email: {user.email}</p>
+          <h4 className="profile-title text-info">Profile Information</h4>
+          <p className="profile-detail">{user.name}</p>
+          <p className="profile-detail">{user.email}</p>
         </div>
-        <nav className="menu">
-          <div className="menuItem">
-            <img src={home} alt="home" className="menu-icon" />Home
-          </div>
-          <div className="menuItem">
-            <img src={Notifications} alt="Notifications" className="menu-icon" />Notifications
-          </div>
-          <div className="menuItem">
-            <img src={History} alt="History" className="menu-icon" /> History
-          </div>
+        <nav className="menu w-100 mb-4">
+          <Link to="/INTRdashboard/Home" className="menuItem d-flex align-items-center p-3 text-white">
+            <img src={home} alt="Home" className="menu-icon mr-3" width="24" />
+            <span>Home</span>
+          </Link>
+          <Link to="/INTRdashboard/" className="menuItem d-flex align-items-center p-3 text-white">
+            <img src={Notifications} alt="Notifications" className="menu-icon mr-3" width="24" />
+            <span>Notifications</span>
+          </Link>
+          <Link to="/INTRdashboard/" className="menuItem d-flex align-items-center p-3 text-white">
+            <img src={History} alt="History" className="menu-icon mr-3" width="24" />
+            <span>History</span>
+          </Link>
+          <Link to="/INTRdashboard/my-syllabus" className="menuItem d-flex align-items-center p-3 text-white">
+            <img src={syllabusIcon} alt="My Syllabus" className="menu-icon mr-3" width="24" />
+            <span>My Syllabus</span>
+          </Link>
         </nav>
-        <button className="logoutButton" onClick={handleLogout}>Logout</button>
+        <button className="btn btn-danger mt-auto w-100" onClick={handleLogout}>
+          Logout
+        </button>
       </aside>
-      <main className="main-content">
-        <FileUpload /> {/* File upload component */}
+
+      {/* Main Content Area */}
+      <main className="main-content ml-250 p-4 w-100">
+        <div className="container">
+          {/* Render child routes */}
+          <Outlet />
+        </div>
       </main>
     </div>
   );

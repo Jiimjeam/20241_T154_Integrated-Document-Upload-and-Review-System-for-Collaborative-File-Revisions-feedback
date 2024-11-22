@@ -29,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes); // File upload route
 app.use("/api/files", fileRoutes); // New file management route
 
+
 // Serve static files if in production mode
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.join(__dirname, "/frontend/dist")));
