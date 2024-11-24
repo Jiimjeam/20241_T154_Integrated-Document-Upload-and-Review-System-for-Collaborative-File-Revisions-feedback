@@ -41,8 +41,7 @@ const userSchema = new mongoose.Schema({
     department: {
         type: String,
         enum: [
-            'Bachelor of Science in Information Technology',
-            'Bachelor of Science in EMC',
+            'Bachelor of Science in Information Technology & Bachelor of Science in EMC',
             'Bachelor of Science in Food Technology',
             null
         ],

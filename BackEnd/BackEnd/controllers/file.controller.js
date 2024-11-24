@@ -97,6 +97,48 @@ export const getFilesByStatus = async (req, res) => {
   }
 };
 
+export const getApprovedFiles = async (req, res) => {
+  const { status } = req.query; // e.g., status=approved
+  try {
+    const files = await File.find(status ? { status } : {});
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching files.' });
+  }
+};
+
+export const getIT_EMCFiles = async (req, res) => {
+  const { department } = req.query;  // Get `department` from query params
+  const status = 'approved'; // Only fetch approved files
+
+  try {
+    // If `department` is provided, filter by department; otherwise, fetch all approved files
+    const query = department ? { department, status } : { status };
+    const files = await File.find(query);
+
+    if (!files || files.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No approved files found for the specified department.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Approved files fetched successfully.',
+      files,  // Send approved files as part of the response
+    });
+  } catch (error) {
+    console.error('Error fetching files:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching files.',
+      error: error.message,
+    });
+  }
+};
+
+
   
   
   

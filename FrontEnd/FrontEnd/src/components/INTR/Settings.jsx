@@ -81,11 +81,8 @@ const Settings = () => {
                             <option value="" disabled>
                                 Select Department
                             </option>
-                            <option value="Bachelor of Science in Information Technology">
-                                Bachelor of Science in Information Technology
-                            </option>
-                            <option value="Bachelor of Science in EMC">
-                                Bachelor of Science in EMC
+                            <option value="Bachelor of Science in Information Technology & Bachelor of Science in EMC">
+                                Bachelor of Science in Information Technology & Bachelor of Science in EMC
                             </option>
                             <option value="Bachelor of Science in Food Technology">
                                 Bachelor of Science in Food Technology

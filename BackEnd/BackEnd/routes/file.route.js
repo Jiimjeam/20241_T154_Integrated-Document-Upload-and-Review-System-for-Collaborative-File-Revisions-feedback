@@ -5,7 +5,9 @@ import {
   reviseFile, 
   downloadFileByPath,
   getFileStats,
-  getFilesByStatus
+  getFilesByStatus,
+  getApprovedFiles,
+  getIT_EMCFiles,
 } from "../controllers/file.controller.js";
 
 const router = express.Router();
@@ -18,6 +20,10 @@ router.get("/status", getFilesByStatus);
 
 // Fetch file statistics (e.g., approved, pending, revision counts)
 router.get("/stats", getFileStats);
+
+router.get('/approved', getApprovedFiles);
+
+router.get('/it-emc-files', getIT_EMCFiles),
 
 // Approve a file
 router.patch("/:id/approve", approveFile);

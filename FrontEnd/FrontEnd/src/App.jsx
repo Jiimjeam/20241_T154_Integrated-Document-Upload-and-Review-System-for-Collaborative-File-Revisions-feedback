@@ -16,6 +16,10 @@ import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
+import ProgramChairDashboard from './components/PROGRAMCHAIR/ProgramChairDashboard';
+import Colleges from './components/CITL/Colleges';
+import COT from './components/CITL/COT';
+import IT_EMCFiles from './components/CITL/IT_EMCFiles';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -57,6 +61,10 @@ function App() {
       <Routes>
         <Route path='/' element={<LandingPage />} />
         <Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />
+        <Route path="/program-chair-dashboard" element={<ProgramChairDashboard />} />
+        <Route path="/colleges" element={<Colleges />} />
+        <Route path="/colleges/cot" element={<COT />} />
+        <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
             <SignUpPage />
