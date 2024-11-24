@@ -12,6 +12,8 @@ const fileSchema = new mongoose.Schema({
   uploaderUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Uploader user ID
   status: { type: String, enum: ['pending', 'approved', 'revision'], default: 'pending' }, // File status
   revisionComment: { type: String, default: '' }, // Comment for revision (if applicable)
+  college: { type: String, required: true }, // College of the uploader
+  department: { type: String, required: true }, // Department of the uploader
 }, { timestamps: true });
 
 export default mongoose.model('File', fileSchema);

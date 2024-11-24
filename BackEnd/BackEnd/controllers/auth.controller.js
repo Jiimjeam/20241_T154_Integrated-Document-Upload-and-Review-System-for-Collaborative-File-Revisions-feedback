@@ -213,7 +213,7 @@ export const googleAuth = passport.authenticate("google", { scope: ["profile", "
 // Define predefined user dashboard routes
 const userDashboards = {
 	"2201102843@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
-	"2201100367@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
+	"2201105872@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
 	"renesale0@gmail.com": "http://localhost:5173/dashboard",
 };
 
@@ -254,7 +254,7 @@ export const updateUserSettings = async (req, res) => {
     }
 
     try {
-        const userId = req.user.id; // Extract user ID from the token
+        const userId = req.userId; // Extract user ID from the token
         const updatedData = { college, department: college === 'COT' ? department : null };
 
         const user = await User.findByIdAndUpdate(

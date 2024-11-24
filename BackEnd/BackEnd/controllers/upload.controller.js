@@ -4,24 +4,29 @@ import cloudinary from '../db/cloudinary.config.js';
 
 export const uploadFile = async (req, res) => {
   try {
-    // Validate uploaded file
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    // Extract and validate body fields
     const { subjectCode, author, coAuthor } = req.body;
+
     if (!subjectCode || !author) {
       return res.status(400).json({ message: 'Subject Code and Author are required!' });
     }
 
-    // Extract authenticated user's ID from middleware
-    const uploaderUserId = req.userId;
+    const uploaderUserId = req.userId; // Extracted from `verifyToken` middleware
     if (!uploaderUserId) {
       return res.status(401).json({ message: 'Unauthorized: No valid user found' });
     }
 
-    // Determine resource type based on MIME type
+    // Fetch user details
+    const user = await User.findById(uploaderUserId).select('college department');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { college, department } = user;
+
     const mimeType = req.file.mimetype;
     const resourceTypes = {
       image: ['image/jpeg', 'image/png', 'image/gif'],
@@ -48,14 +53,13 @@ export const uploadFile = async (req, res) => {
     }
 
     // Upload file to Cloudinary
-    const cloudinaryUploadOptions = {
+    const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'T_154_Files',
       resource_type: resourceType,
-    };
-    const result = await cloudinary.uploader.upload(req.file.path, cloudinaryUploadOptions);
+    });
 
-    // Save file metadata to MongoDB
-    const fileData = {
+    // Create and save file document
+    const file = new File({
       filename: result.original_filename,
       filepath: result.secure_url,
       size: req.file.size,
@@ -64,24 +68,25 @@ export const uploadFile = async (req, res) => {
       author,
       coAuthor,
       uploaderUserId,
-    };
+      college, // From user's profile
+      department, // From user's profile
+    });
 
-    const file = new File(fileData);
     await file.save();
 
-    // Respond with success
-    return res.status(201).json({
+    res.status(201).json({
       message: 'File uploaded successfully',
       file,
     });
   } catch (error) {
     console.error('Error during file upload:', error.message);
-    return res.status(500).json({
+    res.status(500).json({
       message: 'Error uploading file',
       error: error.message,
     });
   }
 };
+
 
 // Fetch all uploaded files
 export const getUploadedFiles = async (req, res) => {
