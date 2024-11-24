@@ -1,58 +1,83 @@
 .settings-container {
-    max-width: 400px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    height: 500px; /* Fixed height */
+    width: 1200px;
+    overflow: hidden; /* Prevents overflow content from affecting the height */
+    text-overflow: ellipsis; /* Optional: Handles long text gracefully */
+    white-space: nowrap; /* Prevents text wrapping */
 }
 
-.settings-container h2 {
-    text-align: center;
+
+
+.settings-title {
+    font-size: 1.75rem;
+    color: #34495e;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .settings-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 15px;
+
 }
 
-.form-group label {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group select,
-.form-group input {
+.form-control {
+    width: 100%;
     padding: 10px;
+    border-radius: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.3s;
 }
 
-button {
+.form-control:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.btn {
     padding: 10px;
-    background-color: #4caf50;
-    color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1rem;
 }
 
-button:hover {
-    background-color: #45a049;
+.btn-primary {
+    background-color: #3498db;
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
 }
 
 .settings-message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1rem;
     text-align: center;
-    margin-top: 15px;
-    color: green;
-    font-weight: bold;
+}
+
+.settings-message.success {
+    background-color: #9be6ba;
+    color: #040805;
+}
+
+.settings-message.error {
+    background-color: #e74c3c;
+    color: #f00606;
 }

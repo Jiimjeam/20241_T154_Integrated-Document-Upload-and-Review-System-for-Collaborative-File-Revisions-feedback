@@ -34,7 +34,7 @@ const INTRdashboard = () => {
           </Link>
           <Link to="/INTRdashboard/Settings" className="menuItem d-flex align-items-center p-3 text-white">
             <img src={Settings} alt="Settings" className="menu-icon mr-3" width="24" />
-            <span>Notifications</span>
+            <span>Settings</span>
           </Link>
           <Link to="/INTRdashboard/" className="menuItem d-flex align-items-center p-3 text-white">
             <img src={History} alt="History" className="menu-icon mr-3" width="24" />
@@ -42,7 +42,7 @@ const INTRdashboard = () => {
           </Link>
           <Link to="/INTRdashboard/my-syllabus" className="menuItem d-flex align-items-center p-3 text-white">
             <img src={syllabusIcon} alt="My Syllabus" className="menu-icon mr-3" width="24" />
-            <span>My Syllabus</span>
+            <span>My Syllabi</span>
           </Link>
         </nav>
         <button className="btn btn-danger mt-auto w-100" onClick={handleLogout}>

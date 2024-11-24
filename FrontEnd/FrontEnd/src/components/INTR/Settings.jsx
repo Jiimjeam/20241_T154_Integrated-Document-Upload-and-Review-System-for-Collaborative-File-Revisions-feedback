@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
+import './Settings.css';
 
 const Settings = () => {
     const [college, setCollege] = useState("");
     const [department, setDepartment] = useState("");
     const [message, setMessage] = useState("");
+    const [isError, setIsError] = useState(false); // To differentiate between success and error messages
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage(""); // Clear previous messages
+        setIsError(false);
 
         try {
             const response = await axios.put(
@@ -22,21 +25,36 @@ const Settings = () => {
                 }
             );
 
-            setMessage(response.data.message);
+            setMessage("College and department successfully updated!");
         } catch (error) {
             console.error("Error updating settings:", error);
-            setMessage(error.response?.data?.message || "An error occurred");
+
+            const errorMessage =
+                error.response?.data?.message || "An error occurred";
+
+            if (
+                error.response?.status === 400 &&
+                errorMessage.includes("already updated")
+            ) {
+                // Custom error message for already updated case
+                setMessage("College and department are already updated.");
+            } else {
+                setMessage(errorMessage);
+            }
+
+            setIsError(true);
         }
     };
 
     return (
         <div className="settings-container">
-            <h2>Update Your Settings</h2>
+            <h2 className="settings-title">Update Your Settings</h2>
             <form onSubmit={handleSubmit} className="settings-form">
                 <div className="form-group">
                     <label htmlFor="college">College:</label>
                     <select
                         id="college"
+                        className="form-control"
                         value={college}
                         onChange={(e) => setCollege(e.target.value)}
                         required
@@ -55,6 +73,7 @@ const Settings = () => {
                         <label htmlFor="department">Department:</label>
                         <select
                             id="department"
+                            className="form-control"
                             value={department}
                             onChange={(e) => setDepartment(e.target.value)}
                             required
@@ -75,10 +94,20 @@ const Settings = () => {
                     </div>
                 )}
 
-                <button type="submit">Update Settings</button>
+                <button type="submit" className="btn btn-primary">
+                    Update Settings
+                </button>
             </form>
 
-            {message && <p className="settings-message">{message}</p>}
+            {message && (
+                <p
+                    className={`settings-message ${
+                        isError ? "error" : "success"
+                    }`}
+                >
+                    {message}
+                </p>
+            )}
         </div>
     );
 };
