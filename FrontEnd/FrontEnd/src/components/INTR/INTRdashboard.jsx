@@ -36,7 +36,7 @@ const INTRdashboard = () => {
             <img src={Settings} alt="Settings" className="menu-icon mr-3" width="24" />
             <span>Settings</span>
           </Link>
-          <Link to="/INTRdashboard/" className="menuItem d-flex align-items-center p-3 text-white">
+          <Link to="/INTRdashboard/history" className="menuItem d-flex align-items-center p-3 text-white">
             <img src={History} alt="History" className="menu-icon mr-3" width="24" />
             <span>History</span>
           </Link>

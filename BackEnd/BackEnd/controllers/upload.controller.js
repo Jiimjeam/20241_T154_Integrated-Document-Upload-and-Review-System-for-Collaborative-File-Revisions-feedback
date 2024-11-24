@@ -4,55 +4,58 @@ import cloudinary from '../db/cloudinary.config.js';
 
 export const uploadFile = async (req, res) => {
   try {
+    // Validate uploaded file
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
+    // Extract and validate body fields
     const { subjectCode, author, coAuthor } = req.body;
-
     if (!subjectCode || !author) {
       return res.status(400).json({ message: 'Subject Code and Author are required!' });
     }
 
     // Extract authenticated user's ID from middleware
-    const uploaderUserId = req.user.id;  // Change this to match req.user from the middleware
-
+    const uploaderUserId = req.userId;
     if (!uploaderUserId) {
       return res.status(401).json({ message: 'Unauthorized: No valid user found' });
     }
 
-    let resourceType;
+    // Determine resource type based on MIME type
     const mimeType = req.file.mimetype;
+    const resourceTypes = {
+      image: ['image/jpeg', 'image/png', 'image/gif'],
+      video: ['video/mp4', 'video/mkv', 'video/avi'],
+      raw: [
+        'application/pdf',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      ],
+    };
 
-    // Determine file type
-    const imageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    const videoTypes = ['video/mp4', 'video/mkv', 'video/avi'];
-    const rawTypes = [
-      'application/pdf',
-      'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ];
+    let resourceType = null;
+    for (const [key, types] of Object.entries(resourceTypes)) {
+      if (types.includes(mimeType)) {
+        resourceType = key;
+        break;
+      }
+    }
 
-    if (imageTypes.includes(mimeType)) {
-      resourceType = 'image';
-    } else if (videoTypes.includes(mimeType)) {
-      resourceType = 'video';
-    } else if (rawTypes.includes(mimeType)) {
-      resourceType = 'raw';
-    } else {
+    if (!resourceType) {
       return res.status(400).json({ message: 'Unsupported file type' });
     }
 
     // Upload file to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const cloudinaryUploadOptions = {
       folder: 'T_154_Files',
       resource_type: resourceType,
-    });
+    };
+    const result = await cloudinary.uploader.upload(req.file.path, cloudinaryUploadOptions);
 
-    // Create file document in MongoDB
-    const file = new File({
+    // Save file metadata to MongoDB
+    const fileData = {
       filename: result.original_filename,
       filepath: result.secure_url,
       size: req.file.size,
@@ -60,25 +63,25 @@ export const uploadFile = async (req, res) => {
       subjectCode,
       author,
       coAuthor,
-      uploaderUserId, // Store the authenticated user's ID
-    });
+      uploaderUserId,
+    };
 
+    const file = new File(fileData);
     await file.save();
 
-    res.status(201).json({
+    // Respond with success
+    return res.status(201).json({
       message: 'File uploaded successfully',
       file,
     });
   } catch (error) {
     console.error('Error during file upload:', error.message);
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Error uploading file',
       error: error.message,
     });
   }
 };
-
-
 
 // Fetch all uploaded files
 export const getUploadedFiles = async (req, res) => {

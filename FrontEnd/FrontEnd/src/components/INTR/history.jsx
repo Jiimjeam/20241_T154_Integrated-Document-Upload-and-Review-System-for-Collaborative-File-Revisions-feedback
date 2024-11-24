@@ -1,43 +1,41 @@
-import React, { useState } from 'react';
-import './history.css';
-import History from '../../../assets/history-line.svg'
-import Notifications from '../../../assets/notif.svg'
-import home from '../../../assets/home-line.svg'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-import FileUpload from './uploadFile'
-import Profileupload from './profile'
+const History = () => {
+  const [history, setHistory] = useState([]);
 
+  useEffect(() => {
+    fetchHistory();
+  }, []);
 
-const InstructorDashboard = () => {
+  const fetchHistory = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/files/history');
+      setHistory(response.data);
+    } catch (error) {
+      console.error('Error fetching history:', error);
+    }
+  };
 
   return (
-    <div className="container">
-      <div className="sidebar">
-        <div className="profile">
-          <Profileupload />
-          <p className="profileName">Bryan Kanga</p>
-          <p className="profileDept">IT Instructor</p>
-        </div>
-        <div className="menuItem">
-          <img src={home} alt="home" className="history" />Home
-        </div>
-          
-        <div className="menuItem">
-          <img src={Notifications} alt="Notifications" className="history" />Notifications
-        </div>
-
-        <div className="menuItem">
-          <img src={History} alt="History" className="history" /> History
-        </div>
-
-        <button className="logoutButton">Logout</button>
-      </div>    
-      <div className='bodyContents'>
-         <h1>History</h1>
-      </div>
+    <div className="container mt-4">
+      <h2>Action History</h2>
+      {history.length > 0 ? (
+        <ul className="list-group">
+          {history.map((entry, index) => (
+            <li key={index} className="list-group-item">
+              <strong>Action:</strong> {entry.action} <br />
+              <strong>File:</strong> {entry.fileId?.subjectCode || 'Unknown'} <br />
+              <strong>Author:</strong> {entry.fileId?.author || 'Unknown'} <br />
+              <strong>Timestamp:</strong> {new Date(entry.timestamp).toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No history available.</p>
+      )}
     </div>
   );
-}
+};
 
-
-export default InstructorDashboard;
+export default History;

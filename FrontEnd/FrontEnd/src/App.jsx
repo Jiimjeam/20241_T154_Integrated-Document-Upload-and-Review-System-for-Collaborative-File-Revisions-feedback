@@ -2,15 +2,15 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
-import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LoadingSpinner from "./components/LoadingSpinner";
-import FileUpload from "./components/INTR/FileUpload";
 import Settings from './components/INTR/Settings';
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import MySyllabus from "./components/INTR/MySyllabus";
 import Home from './components/INTR/Home';
+import History from './components/INTR/history';
+
 import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
 import { Toaster } from "react-hot-toast";
@@ -89,6 +89,8 @@ function App() {
 			<Route path='Home' element={<Home />} />	
           <Route path='my-syllabus' element={<MySyllabus />} />
           <Route path='Settings' element={<Settings />} />
+          <Route path='history' element={<History />} />
+         
           {/* Add more nested routes here if needed */}
         </Route>
 
