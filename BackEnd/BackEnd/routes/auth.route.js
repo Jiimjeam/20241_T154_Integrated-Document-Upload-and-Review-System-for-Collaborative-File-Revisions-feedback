@@ -7,7 +7,9 @@ import {
 	forgotPassword,
 	resetPassword,
 	checkAuth,
-	updateUserSettings
+	updateUserSettings,
+	getUsers,
+	deleteUser,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -25,6 +27,9 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 
 router.put('/update-settings', verifyToken, updateUserSettings);
+
+router.get("/getusers", getUsers)
+router.delete('/deleteuser/:id', deleteUser)
 
 
 export default router;

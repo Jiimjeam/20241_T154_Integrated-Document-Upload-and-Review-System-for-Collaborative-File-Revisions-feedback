@@ -11,6 +11,25 @@ import {
 } from "../mailtrap/emails.js";
 import { User } from "../model/User.js";
 
+
+//admin functions 
+export const getUsers = async (req, res) => { 
+	User.find()
+	.then(Users => res.json(Users))
+	.catch(err => res.json(err))
+}
+
+export const deleteUser = async (req, res) => { 
+	try {
+		const userId = req.params.id;
+		await User.findByIdAndDelete(userId);
+		res.status(200).json({ message: 'User deleted successfully' });
+	  } catch (err) {
+		res.status(500).json({ error: 'Failed to delete user' });
+	  }
+}
+
+
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
 
@@ -213,7 +232,7 @@ export const googleAuth = passport.authenticate("google", { scope: ["profile", "
 // Define predefined user dashboard routes
 const userDashboards = {
 	"2201102843@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
-	"2201105872@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
+	"2201105872@student.buksu.edu.ph": "http://localhost:5173/admin/home",
 	"renesale0@gmail.com": "http://localhost:5173/dashboard",
 };
 
