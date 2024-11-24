@@ -23,19 +23,16 @@ export const verifyToken = (req, res, next) => {
             });
         }
 
-        // Attach user information to the request (maintaining req.userId for compatibility)
-        req.userId = decoded.userId; // For backward compatibility
+        // Attach user information to the request for further use
         req.user = {
-            id: decoded.userId,
-            email: decoded.email || null // Optional: Adjust based on your JWT payload structure
+            id: decoded.userId, // Adjust this based on your JWT payload structure
+            email: decoded.email // Optional: include additional fields as needed
         };
 
         // Proceed to the next middleware or route handler
         next();
     } catch (error) {
         console.error("Error in verifyToken middleware: ", error.message);
-
-        // Handle token-specific errors
         if (error.name === "JsonWebTokenError") {
             return res.status(403).json({
                 success: false,
@@ -55,3 +52,5 @@ export const verifyToken = (req, res, next) => {
         });
     }
 };
+
+export default verifyToken;

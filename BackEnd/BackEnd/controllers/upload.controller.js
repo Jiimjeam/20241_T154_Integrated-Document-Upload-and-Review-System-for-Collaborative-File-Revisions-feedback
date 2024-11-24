@@ -14,17 +14,25 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'Subject Code and Author are required!' });
     }
 
+    // Extract authenticated user's ID from middleware
+    const uploaderUserId = req.user.id;  // Change this to match req.user from the middleware
+
+    if (!uploaderUserId) {
+      return res.status(401).json({ message: 'Unauthorized: No valid user found' });
+    }
+
     let resourceType;
     const mimeType = req.file.mimetype;
 
+    // Determine file type
     const imageTypes = ['image/jpeg', 'image/png', 'image/gif'];
     const videoTypes = ['video/mp4', 'video/mkv', 'video/avi'];
     const rawTypes = [
       'application/pdf',
       'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
 
     if (imageTypes.includes(mimeType)) {
@@ -37,11 +45,13 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'Unsupported file type' });
     }
 
+    // Upload file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'T_154_Files',
       resource_type: resourceType,
     });
 
+    // Create file document in MongoDB
     const file = new File({
       filename: result.original_filename,
       filepath: result.secure_url,
@@ -50,15 +60,25 @@ export const uploadFile = async (req, res) => {
       subjectCode,
       author,
       coAuthor,
+      uploaderUserId, // Store the authenticated user's ID
     });
 
     await file.save();
 
-    res.status(201).json({ message: 'File uploaded successfully', file });
+    res.status(201).json({
+      message: 'File uploaded successfully',
+      file,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error uploading file', error: error.message });
+    console.error('Error during file upload:', error.message);
+    res.status(500).json({
+      message: 'Error uploading file',
+      error: error.message,
+    });
   }
 };
+
+
 
 // Fetch all uploaded files
 export const getUploadedFiles = async (req, res) => {
