@@ -91,34 +91,42 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-	const { email, password } = req.body;
-	try {
-		const user = await User.findOne({ email });
-		if (!user) {
-			return res.status(400).json({ success: false, message: "Invalid credentials" });
-		}
-		const isPasswordValid = await bcryptjs.compare(password, user.password);
-		if (!isPasswordValid) {
-			return res.status(400).json({ success: false, message: "Invalid credentials" });
-		}
+    const { email, password } = req.body;
 
-		generateTokenAndSetCookie(res, user._id);
+    try {
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
+        }
 
-		user.lastLogin = new Date();
-		await user.save();
+        // Validate password
+        const isPasswordValid = await bcryptjs.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
+        }
 
-		res.status(200).json({
-			success: true,
-			message: "Logged in successfully",
-			user: {
-				...user._doc,
-				password: undefined,
-			},
-		});
-	} catch (error) {
-		console.log("Error in login ", error);
-		res.status(400).json({ success: false, message: error.message });
-	}
+        // Generate token and set cookie
+        const token = generateTokenAndSetCookie(res, user._id);
+
+        // Update last login date
+        user.lastLogin = new Date();
+        await user.save();
+
+        // Return response with user info and token
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully",
+            token, // Include the token in the response body
+            user: {
+                ...user._doc,
+                password: undefined, // Exclude password from response
+            },
+        });
+    } catch (error) {
+        console.error("Error in login: ", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
 };
 
 export const logout = async (req, res) => {
@@ -234,4 +242,37 @@ export const googleAuthCallback = (req, res) => {
 	})(req, res);
 };
 
-  
+export const updateUserSettings = async (req, res) => {
+    const { college, department } = req.body;
+
+    // Validate department based on the college
+    if (college !== 'COT' && department) {
+        return res.status(400).json({
+            success: false,
+            message: "Department is only valid for the COT college"
+        });
+    }
+
+    try {
+        const userId = req.user.id; // Extract user ID from the token
+        const updatedData = { college, department: college === 'COT' ? department : null };
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: updatedData },
+            { new: true, runValidators: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Settings updated successfully",
+            user
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: "Server error", error: err.message });
+    }
+};

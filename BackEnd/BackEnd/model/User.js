@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     googleId: {
         type: String,
         unique: true,
-        sparse: true // Allows multiple users without googleId, but requires uniqueness when present
+        sparse: true
     },
     name: {
         type: String,
@@ -32,7 +32,22 @@ const userSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,
-    verificationTokenExpiresAt: Date
+    verificationTokenExpiresAt: Date,
+    college: {
+        type: String,
+        enum: ['COT', 'CON', 'CAS'],
+        default: 'COT'
+    },
+    department: {
+        type: String,
+        enum: [
+            'Bachelor of Science in Information Technology',
+            'Bachelor of Science in EMC',
+            'Bachelor of Science in Food Technology',
+            null
+        ],
+        default: null
+    }
 }, { timestamps: true });
 
 export const User = mongoose.model('User', userSchema);
