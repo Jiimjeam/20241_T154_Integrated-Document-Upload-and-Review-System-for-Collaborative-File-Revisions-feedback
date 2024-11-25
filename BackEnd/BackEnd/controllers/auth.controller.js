@@ -232,6 +232,7 @@ export const googleAuth = passport.authenticate("google", { scope: ["profile", "
 // Define predefined user dashboard routes
 const userDashboards = {
 	"2201102843@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
+	"2201100367@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
 	"2201105872@student.buksu.edu.ph": "http://localhost:5173/admin/home",
 	"2201102850@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
 	"arvinglennaguid@gmail.com": "http://localhost:5173/INTRdashboard/Home",
