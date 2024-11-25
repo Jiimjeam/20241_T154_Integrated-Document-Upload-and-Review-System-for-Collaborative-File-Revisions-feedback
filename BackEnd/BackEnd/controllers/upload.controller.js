@@ -94,7 +94,7 @@ export const getUploadedFiles = async (req, res) => {
     const files = await File.find();
     res.status(200).json({ files });
   } catch (error) {
-    console.error("Error fetching uploaded files:", error.message);
+    console.error("Error fetching uploaded :", error.message);
     res.status(500).json({ message: 'Error fetching files', error: error.message });
   }
 };
