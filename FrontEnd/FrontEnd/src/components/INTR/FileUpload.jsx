@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
 import { Modal } from 'react-bootstrap'; // Import Modal from react-bootstrap
+import Swal from 'sweetalert2';
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
@@ -20,6 +21,7 @@ const FileUpload = () => {
   const [showModal, setShowModal] = useState(false); // State to control file upload modal visibility
   const [previewModalShow, setPreviewModalShow] = useState(false); // State to control preview modal visibility
   const previewRef = useRef(null);
+  
 
   const API_URL = 'http://localhost:5000/api';
 
@@ -131,17 +133,70 @@ const FileUpload = () => {
     }
   };
 
+
+
+
+
+
+
+  // const handleDelete = (fileId) => {
+  //   const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
+  //   if (!window.confirm(`Are you sure you want to delete the file "${fileToDelete?.subjectCode}" from the dashboard only?`)) {
+  //     toast.info('Delete action cancelled.');
+  //     return;
+  //   }
+
+    // setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
+    // setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
+    // toast.success(`File "${fileToDelete?.subjectCode}" deleted from the dashboard.`);
+  // };
+
   const handleDelete = (fileId) => {
     const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
-    if (!window.confirm(`Are you sure you want to delete the file "${fileToDelete?.subjectCode}" from the dashboard only?`)) {
-      toast.info('Delete action cancelled.');
-      return;
-    }
+  
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "btn btn-success mx-2",
+        cancelButton: "btn btn-danger mx-2"
+      },
+      buttonsStyling: false
+    });
+    swalWithBootstrapButtons.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        swalWithBootstrapButtons.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success"
+        });
 
-    setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
-    setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
-    toast.success(`File "${fileToDelete?.subjectCode}" deleted from the dashboard.`);
+        setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
+        setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
+      } else if (
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        swalWithBootstrapButtons.fire({
+          title: "Cancelled",
+          text: "Your imaginary file is safe :)",
+          icon: "error"
+        });
+      }
+    });
+  
   };
+
+
+
+
+
+
 
   return (
     <div className="container mt-4">

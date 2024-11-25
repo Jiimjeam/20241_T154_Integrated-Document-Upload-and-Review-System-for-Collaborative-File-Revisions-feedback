@@ -10,7 +10,9 @@ import FileUpload from "./components/INTR/FileUpload";
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import MySyllabus from "./components/INTR/MySyllabus";
 import Home from './components/INTR/Home';
+import Settings from './components/INTR/Settings';
 import LandingPage from './components/LandingPage/body';
+import History from './components/INTR/history';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
@@ -55,7 +57,16 @@ function App() {
     <div className="min-h-screen bg-[#2C2A2A] flex items-center justify-center relative overflow-hidden">
       <Routes>
         <Route path='/' element={<LandingPage />} />
-        <Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />
+        <Route path="/senior-faculty-dashboard" lement={
+          <ProtectedRoute>
+            <SeniorFacultyDashboard/>
+          </ProtectedRoute>
+        }>
+
+			<Route path='Home' element={<Home />} />	
+          <Route path='my-syllabus' element={<MySyllabus />} />
+          {/* Add more nested routes here if needed */}
+        </Route>
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
             <SignUpPage />
@@ -86,6 +97,8 @@ function App() {
         }>
 
 			<Route path='Home' element={<Home />} />	
+      <Route path='Settings' element={<Settings />} />
+          <Route path='history' element={<History />} />
           <Route path='my-syllabus' element={<MySyllabus />} />
           {/* Add more nested routes here if needed */}
         </Route>

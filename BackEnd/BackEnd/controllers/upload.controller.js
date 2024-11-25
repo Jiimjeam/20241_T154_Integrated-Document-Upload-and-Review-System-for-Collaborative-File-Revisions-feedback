@@ -2,6 +2,8 @@ import File from '../model/File.js';
 import { User } from "../model/User.js";
 import cloudinary from '../db/cloudinary.config.js';
 
+
+
 export const uploadFile = async (req, res) => {
   try {
     if (!req.file) {
@@ -14,34 +16,51 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'Subject Code and Author are required!' });
     }
 
-    let resourceType;
+    const uploaderUserId = req.userId; // Extracted from `verifyToken` middleware
+    if (!uploaderUserId) {
+      return res.status(401).json({ message: 'Unauthorized: No valid user found' });
+    }
+
+    // Fetch user details
+    const user = await User.findById(uploaderUserId).select('college department');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { college, department } = user;
+
     const mimeType = req.file.mimetype;
+    const resourceTypes = {
+      image: ['image/jpeg', 'image/png', 'image/gif'],
+      video: ['video/mp4', 'video/mkv', 'video/avi'],
+      raw: [
+        'application/pdf',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      ],
+    };
 
-    const imageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    const videoTypes = ['video/mp4', 'video/mkv', 'video/avi'];
-    const rawTypes = [
-      'application/pdf',
-      'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-    ];
+    let resourceType = null;
+    for (const [key, types] of Object.entries(resourceTypes)) {
+      if (types.includes(mimeType)) {
+        resourceType = key;
+        break;
+      }
+    }
 
-    if (imageTypes.includes(mimeType)) {
-      resourceType = 'image';
-    } else if (videoTypes.includes(mimeType)) {
-      resourceType = 'video';
-    } else if (rawTypes.includes(mimeType)) {
-      resourceType = 'raw';
-    } else {
+    if (!resourceType) {
       return res.status(400).json({ message: 'Unsupported file type' });
     }
 
+    // Upload file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'T_154_Files',
       resource_type: resourceType,
     });
 
+    // Create and save file document
     const file = new File({
       filename: result.original_filename,
       filepath: result.secure_url,
@@ -50,15 +69,26 @@ export const uploadFile = async (req, res) => {
       subjectCode,
       author,
       coAuthor,
+      uploaderUserId,
+      college, // From user's profile
+      department, // From user's profile
     });
 
     await file.save();
 
-    res.status(201).json({ message: 'File uploaded successfully', file });
+    res.status(201).json({
+      message: 'File uploaded successfully',
+      file,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error uploading file', error: error.message });
+    console.error('Error during file upload:', error.message);
+    res.status(500).json({
+      message: 'Error uploading file',
+      error: error.message,
+    });
   }
 };
+
 
 // Fetch all uploaded files
 export const getUploadedFiles = async (req, res) => {
@@ -131,3 +161,6 @@ export const getUsers = async (req, res) => {
     res.status(500).json({ message: 'Error fetching users', error: error.message });
   }
 };
+
+
+

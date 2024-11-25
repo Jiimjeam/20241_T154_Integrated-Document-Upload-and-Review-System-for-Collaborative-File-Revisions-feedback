@@ -1,10 +1,12 @@
 import express from 'express';
 import { uploadFile, getUploadedFiles, deleteFile, sendFile,getUsers } from '../controllers/upload.controller.js';
 import { upload } from '../middleware/fileUpload.js';
+import verifyToken from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
-router.post('/upload', upload.single('file'), uploadFile);
+router.post('/upload', verifyToken, upload.single('file'), uploadFile);
+
 router.get('/', getUploadedFiles); // Fetch all uploaded files
 
 

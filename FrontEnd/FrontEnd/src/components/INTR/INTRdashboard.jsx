@@ -1,18 +1,46 @@
 import './INTRdashboard.css';
 import { Link, Outlet } from 'react-router-dom';
 import History from '../../assets/history-line.svg';
-import Notifications from '../../assets/notif.svg';
+import Settings from '../../assets/google.svg';
 import home from '../../assets/home-line.svg';
 import syllabusIcon from '../../assets/syllabus.svg';
 import { useAuthStore } from '../../store/authStore';
 import Profileupload from './profile';
-import Home from './Home';
+import Swal from "sweetalert2";
+
+import { FaHome, FaCog, FaHistory, FaFileAlt } from 'react-icons/fa';
+
+
+
+
 
 const INTRdashboard = () => {
   const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
-    logout();
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        Swal.fire({
+          title: "Logged out!",
+          text: "You have been successfully logged out.",
+          icon: "success",
+          timer: 2000, 
+          showConfirmButton: false
+        });
+        logout();
+      }
+    });
+    
   };
 
   return (
@@ -27,20 +55,20 @@ const INTRdashboard = () => {
         </div>
         <nav className="menu w-100 mb-4">
           <Link to="/INTRdashboard/Home" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={home} alt="Home" className="menu-icon mr-3" width="24" />
+          <FaHome className="menu-icon mr-3" size={24} />
             <span>Home</span>
           </Link>
-          <Link to="/INTRdashboard/" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={Notifications} alt="Notifications" className="menu-icon mr-3" width="24" />
-            <span>Notifications</span>
+          <Link to="/INTRdashboard/Settings" className="menuItem d-flex align-items-center p-3 text-white">
+          <FaCog className="menu-icon mr-3" size={24} />
+            <span>Settings</span>
           </Link>
-          <Link to="/INTRdashboard/" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={History} alt="History" className="menu-icon mr-3" width="24" />
+          <Link to="/INTRdashboard/history" className="menuItem d-flex align-items-center p-3 text-white">
+          <FaHistory className="menu-icon mr-3" size={24} />
             <span>History</span>
           </Link>
           <Link to="/INTRdashboard/my-syllabus" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={syllabusIcon} alt="My Syllabus" className="menu-icon mr-3" width="24" />
-            <span>My Syllabus</span>
+          <FaFileAlt className="menu-icon mr-3" size={24} />
+            <span>My Syllabi</span>
           </Link>
         </nav>
         <button className="btn btn-danger mt-auto w-100" onClick={handleLogout}>
