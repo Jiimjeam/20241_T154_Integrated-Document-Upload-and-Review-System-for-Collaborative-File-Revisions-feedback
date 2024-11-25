@@ -6,6 +6,10 @@ import home from '../../assets/home-line.svg';
 import syllabusIcon from '../../assets/syllabus.svg';
 import { useAuthStore } from '../../store/authStore';
 import Profileupload from './profile';
+import Swal from "sweetalert2";
+
+import { FaHome, FaCog, FaHistory, FaFileAlt } from 'react-icons/fa';
+
 
 
 
@@ -13,8 +17,30 @@ import Profileupload from './profile';
 const INTRdashboard = () => {
   const { user, logout } = useAuthStore();
 
-  const handleLogout = () => {``  
-    logout();
+  const handleLogout = () => {
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        Swal.fire({
+          title: "Logged out!",
+          text: "You have been successfully logged out.",
+          icon: "success",
+          timer: 2000, 
+          showConfirmButton: false
+        });
+        logout();
+      }
+    });
+    
   };
 
   return (
@@ -29,19 +55,19 @@ const INTRdashboard = () => {
         </div>
         <nav className="menu w-100 mb-4">
           <Link to="/INTRdashboard/Home" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={home} alt="Home" className="menu-icon mr-3" width="24" />
+          <FaHome className="menu-icon mr-3" size={24} />
             <span>Home</span>
           </Link>
           <Link to="/INTRdashboard/Settings" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={Settings} alt="Settings" className="menu-icon mr-3" width="24" />
+          <FaCog className="menu-icon mr-3" size={24} />
             <span>Settings</span>
           </Link>
           <Link to="/INTRdashboard/history" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={History} alt="History" className="menu-icon mr-3" width="24" />
+          <FaHistory className="menu-icon mr-3" size={24} />
             <span>History</span>
           </Link>
           <Link to="/INTRdashboard/my-syllabus" className="menuItem d-flex align-items-center p-3 text-white">
-            <img src={syllabusIcon} alt="My Syllabus" className="menu-icon mr-3" width="24" />
+          <FaFileAlt className="menu-icon mr-3" size={24} />
             <span>My Syllabi</span>
           </Link>
         </nav>

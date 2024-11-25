@@ -11,6 +11,9 @@ import MySyllabus from "./components/INTR/MySyllabus";
 import Home from './components/INTR/Home';
 import History from './components/INTR/history';
 
+import AdminUsers from './pages/adminUsers'
+import AdminHome from './pages/adminHome'
+
 import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
 import { Toaster } from "react-hot-toast";
@@ -99,10 +102,13 @@ function App() {
           <Route path='Settings' element={<Settings />} />
           <Route path='history' element={<History />} />
          
-          {/* Add more nested routes here if needed */}
+        
         </Route>
 
-        {/* Catch all routes */}
+        <Route path='/admin/home' element={<AdminHome />} />	
+        <Route path='/admin/user' element={<AdminUsers />} />	
+
+       
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
       <Toaster />
