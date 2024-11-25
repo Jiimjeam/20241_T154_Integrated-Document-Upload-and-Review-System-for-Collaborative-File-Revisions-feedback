@@ -233,6 +233,8 @@ export const googleAuth = passport.authenticate("google", { scope: ["profile", "
 const userDashboards = {
 	"2201102843@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
 	"2201105872@student.buksu.edu.ph": "http://localhost:5173/admin/home",
+	"2201102850@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
+	"arvinglennaguid@gmail.com": "http://localhost:5173/INTRdashboard/Home",
 	"renesale0@gmail.com": "http://localhost:5173/dashboard",
 };
 
@@ -264,17 +266,14 @@ export const googleAuthCallback = (req, res) => {
 export const updateUserSettings = async (req, res) => {
     const { college, department } = req.body;
 
-    // Validate department based on the college
-    if (college !== 'COT' && department) {
-        return res.status(400).json({
-            success: false,
-            message: "Department is only valid for the COT college"
-        });
-    }
-
     try {
         const userId = req.userId; // Extract user ID from the token
-        const updatedData = { college, department: college === 'COT' ? department : null };
+
+        // Construct updated data
+        const updatedData = {
+            college,
+            department: department || null,  // Accept department for any college, or set to null if not provided
+        };
 
         const user = await User.findByIdAndUpdate(
             userId,

@@ -8,6 +8,7 @@ import {
   getFilesByStatus,
   getApprovedFiles,
   getIT_EMCFiles,
+  getMathematicsFiles,
 } from "../controllers/file.controller.js";
 
 const router = express.Router();
@@ -24,6 +25,9 @@ router.get("/stats", getFileStats);
 router.get('/approved', getApprovedFiles);
 
 router.get('/it-emc-files', getIT_EMCFiles),
+
+router.get('/mathematics', getMathematicsFiles),
+
 
 // Approve a file
 router.patch("/:id/approve", approveFile);

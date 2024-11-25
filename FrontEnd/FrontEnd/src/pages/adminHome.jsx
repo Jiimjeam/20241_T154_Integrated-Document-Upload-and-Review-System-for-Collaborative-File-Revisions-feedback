@@ -105,6 +105,7 @@ const AdminHome = () => {
         <nav className="menu w-full mb-4">
           <Profileupload />
           <p className="text-center">{user.name}</p>
+          <p className="text-center text-sm">Admin</p>
           
           <Link to="/admin/home" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
             <FaHome className="menu-icon mr-3" size={24} />
