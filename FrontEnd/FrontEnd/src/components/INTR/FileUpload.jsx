@@ -53,7 +53,7 @@ const FileUpload = () => {
       }
     } catch (error) {
       console.error('Error fetching files:', error);
-      setMessage('Error fetching uploaded files.');
+      setMessage('No Files has been uploaded by the User');
       toast.error('Failed to fetch files.');
     } finally {
       setLoadingFiles(false);
@@ -105,7 +105,7 @@ const FileUpload = () => {
       setCoAuthor('');
       setShowModal(false); // Close modal after upload
     } catch (error) {
-      setMessage('Error uploading file');
+      setMessage('Please Update you College and  Department in Settings');
       toast.error('Error uploading file!');
       console.error(error);
     } finally {

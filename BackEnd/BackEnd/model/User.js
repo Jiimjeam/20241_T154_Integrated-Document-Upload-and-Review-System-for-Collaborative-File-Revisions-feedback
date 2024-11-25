@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
     college: {
         type: String,
         enum: ['COB', 'COT', 'CON', 'COE', 'CAS', 'CPAG', 'COM'],
-        required: true
+        required: false
     },
     department: {
         type: String,
