@@ -10,13 +10,37 @@ const __dirname = path.dirname(__filename);
 // Fetch all files
 export const getFiles = async (req, res) => {
   try {
-    const files = await File.find({}); // Optionally filter files based on criteria
+    const files = await File.find({});
     res.status(200).json(files);
   } catch (error) {
     console.error("Error fetching files:", error.message);
     res.status(500).json({ error: "Error fetching files." });
   }
 };
+
+// Fetch files by uploaderUserId
+export const getFilesByUploader = async (req, res) => {
+  try {
+    const uploaderUserId = req.userId; // Extract from `verifyToken`
+    if (!uploaderUserId) {
+      return res.status(401).json({ message: 'Unauthorized: No valid user found' });
+    }
+
+    const files = await File.find({ uploaderUserId }); // Filter by uploaderUserId
+
+    if (!files.length) {
+      return res.status(404).json({ message: 'No files found for this user.' });
+    }
+
+    res.status(200).json(files);
+  } catch (error) {
+    console.error('Error fetching files by uploaderUserId:', error.message);
+    res.status(500).json({ error: 'Error fetching files by uploaderUserId.' });
+  }
+};
+
+
+
 
 // Approve a file
 export const approveFile = async (req, res) => {
