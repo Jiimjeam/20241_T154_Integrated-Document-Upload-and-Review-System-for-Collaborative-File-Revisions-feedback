@@ -4,36 +4,53 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
-// Utility functions for API calls
-const fetchFiles = async () => {
+const fetchFilesByCollegeAndDepartment = async (token) => {
   try {
-    const response = await axios.get('http://localhost:5000/api/files');
-    return response.data;
+    const response = await axios.get('http://localhost:5000/api/files/by-department', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; // Return the fetched files
   } catch (error) {
-    throw new Error('Error fetching files.');
+    console.error("Error fetching files by college and department:", error);
+    throw new Error(error.response?.data?.message || "Error fetching files.");
   }
 };
 
-const approveFile = async (fileId) => {
+
+
+const approveFile = async (fileId, token) => {
   try {
     const response = await axios.patch(
-      `http://localhost:5000/api/files/${fileId}/approve`
+      `http://localhost:5000/api/files/${fileId}/approve`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
-    throw new Error('Error approving file.');
+    throw new Error(error.response?.data?.message || 'Error approving file.');
   }
 };
 
-const reviseFile = async (fileId, comment) => {
+const reviseFile = async (fileId, comment, token) => {
   try {
     const response = await axios.patch(
       `http://localhost:5000/api/files/${fileId}/revise`,
-      { comment }
+      { comment },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
-    throw new Error('Error revising file.');
+    throw new Error(error.response?.data?.message || 'Error revising file.');
   }
 };
 
@@ -49,12 +66,19 @@ const SeniorFacultyDashboard = () => {
 
   useEffect(() => {
     const loadFiles = async () => {
+      const token = localStorage.getItem('token'); // Retrieve token from localStorage or any other storage
+      if (!token) {
+        toast.error('Authentication token is missing. Please log in.');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const fetchedFiles = await fetchFiles();
+        const fetchedFiles = await fetchFilesByCollegeAndDepartment(token);
         setFiles(fetchedFiles);
         setLoading(false);
       } catch (error) {
-        toast.error('Error fetching files.');
+        toast.error(error.message);
         setLoading(false);
       }
     };
@@ -63,8 +87,14 @@ const SeniorFacultyDashboard = () => {
   }, []);
 
   const handleApprove = async (fileId) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Authentication token is missing. Please log in.');
+      return;
+    }
+
     try {
-      const response = await approveFile(fileId);
+      const response = await approveFile(fileId, token);
       toast.success(`File "${response.file.filename}" approved successfully.`);
       setFiles((prev) =>
         prev.map((file) =>
@@ -72,7 +102,7 @@ const SeniorFacultyDashboard = () => {
         )
       );
     } catch (error) {
-      toast.error('Error approving file.');
+      toast.error(error.message);
     }
   };
 
@@ -84,8 +114,14 @@ const SeniorFacultyDashboard = () => {
   const handleReviseSubmit = async () => {
     if (!revisionComment) return;
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Authentication token is missing. Please log in.');
+      return;
+    }
+
     try {
-      const response = await reviseFile(selectedFileId, revisionComment);
+      const response = await reviseFile(selectedFileId, revisionComment, token);
       toast.info(`File "${response.file.filename}" marked for revision.`);
       setFiles((prev) =>
         prev.map((file) =>
@@ -95,7 +131,7 @@ const SeniorFacultyDashboard = () => {
       setShowRevisionModal(false); // Close modal after submitting
       setRevisionComment(''); // Clear the comment input
     } catch (error) {
-      toast.error('Error revising file.');
+      toast.error(error.message);
     }
   };
 
@@ -108,15 +144,20 @@ const SeniorFacultyDashboard = () => {
 
   const downloadFile = async (filepath) => {
     try {
-      if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
-        window.open(filepath, '_blank');
-        toast.success('File download initiated.');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication token is missing. Please log in.');
         return;
       }
 
       const response = await axios.get(
         `http://localhost:5000/api/files/download/${encodeURIComponent(filepath)}`,
-        { responseType: 'blob' }
+        {
+          responseType: 'blob',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       const url = window.URL.createObjectURL(new Blob([response.data]));

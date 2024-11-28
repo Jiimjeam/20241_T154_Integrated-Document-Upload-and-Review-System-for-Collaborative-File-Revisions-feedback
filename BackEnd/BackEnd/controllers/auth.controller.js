@@ -220,7 +220,7 @@ export const googleAuth = passport.authenticate("google", { scope: ["profile", "
 
 const defaultDashboards = {
     Instructor: "http://localhost:5173/INTRdashboard",
-    Senior_Faculty: "http://localhost:5173/dashboard/Home",
+    Senior_Faculty: "http://localhost:5173/Senior",
     Program_Chair: "http://localhost:5173/admin/home",
 	CITL: "http://localhost:5173/admin/home",
 	Admin: "http://localhost:5173/admin/home",
@@ -416,3 +416,8 @@ export const updateUserSettings = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error", error: err.message });
     }
 };
+
+
+
+  
+  

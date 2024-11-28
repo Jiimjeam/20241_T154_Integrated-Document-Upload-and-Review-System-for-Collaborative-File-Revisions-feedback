@@ -16,6 +16,7 @@ import AdminHome from './pages/adminHome'
 
 import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
+import SettingsSENF from './components/SENF/SettingsSENF';
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
@@ -27,6 +28,7 @@ import Mathematics from './components/CITL/Mathematics';
 import CAS from './components/CITL/CAS';
 import AdminApproval from './pages/adminApproval';
 import ExistingUsers from './pages/existingUsers';
+import Senior from './components/SENF/Senior';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -109,9 +111,22 @@ function App() {
           <Route path='my-syllabus' element={<MySyllabus />} />
           <Route path='Settings' element={<Settings />} />
           <Route path='history' element={<History />} />
-         
-        
-        </Route>
+      </Route>
+
+
+      {/* Nested Routes for SENF */}
+      <Route path='/Senior' element={
+          <ProtectedRoute>
+            <Senior />
+          </ProtectedRoute>
+        }>
+
+			<Route path='Home' element={<Home />} />	
+          <Route path='my-syllabus' element={<SeniorFacultyDashboard />} />
+          <Route path='SettingsSENF' element={<SettingsSENF />} />
+          <Route path='history' element={<History />} />
+      </Route>
+
 
         <Route path='/admin/home' element={<AdminHome />} />	
         <Route path='/admin/user' element={<AdminUsers />} />	
