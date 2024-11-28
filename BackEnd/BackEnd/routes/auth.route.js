@@ -10,6 +10,9 @@ import {
 	updateUserSettings,
 	getUsers,
 	deleteUser,
+	approveAccounts,
+	getPendingAccounts,
+	getApprovedAccounts,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -28,8 +31,17 @@ router.post("/reset-password/:token", resetPassword);
 
 router.put('/update-settings', verifyToken, updateUserSettings);
 
-router.get("/getusers", getUsers)
-router.delete('/deleteuser/:id', deleteUser)
+router.get("/getusers", getUsers);
+
+router.get("/users", getApprovedAccounts),
+
+router.delete('/deleteuser/:id', deleteUser);
+
+// Fetch pending accounts
+router.get('/admin/get/pending-accounts', getPendingAccounts);
+
+// Approve a user's account
+router.put('/admin/approve-user/:userId', approveAccounts);
 
 
 export default router;

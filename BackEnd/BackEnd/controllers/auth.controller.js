@@ -229,39 +229,123 @@ export const checkAuth = async (req, res) => {
 // Redirect to Google for login
 export const googleAuth = passport.authenticate("google", { scope: ["profile", "email"] });
 
-// Define predefined user dashboard routes
-const userDashboards = {
-	"2201102843@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
-	"2201105872@student.buksu.edu.ph": "http://localhost:5173/admin/home",
-	"2201102850@student.buksu.edu.ph": "http://localhost:5173/INTRdashboard/Home",
-	"arvinglennaguid@gmail.com": "http://localhost:5173/INTRdashboard/Home",
-	"renesale0@gmail.com": "http://localhost:5173/dashboard",
+const defaultDashboards = {
+    Instructor: "http://localhost:5173/INTRdashboard",
+    Senior_Faculty: "http://localhost:5173/dashboard/Home",
+    Program_Chair: "http://localhost:5173/admin/home",
+	CITL: "http://localhost:5173/admin/home",
+	Admin: "http://localhost:5173/admin/home",
 };
 
 // Callback route where Google will redirect after successful login
 export const googleAuthCallback = (req, res) => {
-	passport.authenticate("google", { failureRedirect: "/login" }, (err, user) => {
-		if (err || !user) {
-			return res.status(400).json({ success: false, message: "Google login failed" });
+	passport.authenticate("google", { failureRedirect: "/login" }, async (err, user, info) => {
+	  if (err || !user) {
+		// Log any errors for debugging purposes
+		console.error("Google Authentication failed:", err || info.message);
+		return res.status(400).json({
+		  success: false,
+		  message: info?.message || "Google login failed",
+		});
+	  }
+  
+	  // Check if the user's account is approved or rejected
+	  try {
+		if (user.status === 'Pending') {
+		  return res.status(403).json({
+			success: false,
+			message: "Your account is awaiting admin approval. Please wait for confirmation.",
+		  });
+		} else if (user.status === 'Rejected') {
+		  return res.status(403).json({
+			success: false,
+			message: "Your account has been rejected. Contact the administrator for assistance.",
+		  });
 		}
-
-		
-		const redirectUrl = userDashboards[user.email];
-
-		if (redirectUrl) {
-			generateTokenAndSetCookie(res, user._id);
-
-			// Redirect to the user-specific dashboard
-			return res.redirect(redirectUrl);
-		} else {
-			// Notify the user that they are not registered in the system
-			return res.status(403).json({
-				success: false,
-				message: "You are not authorized to use this system.",
-			});
+  
+		// If approved, redirect based on user role
+		const redirectUrl = defaultDashboards[user.role];
+		if (!redirectUrl) {
+		  return res.status(403).json({
+			success: false,
+			message: "No dashboard assigned for your role.",
+		  });
 		}
+  
+		// Generate token and set it in a cookie
+		generateTokenAndSetCookie(res, user._id);
+  
+		// Redirect the user to their respective dashboard
+		return res.redirect(redirectUrl);
+	  } catch (error) {
+		console.error("Error during user approval check:", error);
+		return res.status(500).json({
+		  success: false,
+		  message: "An internal server error occurred.",
+		});
+	  }
 	})(req, res);
+  };
+
+
+
+// Fetch users with 'Pending' status
+export const getPendingAccounts = async (req, res) => {
+  try {
+    const pendingUsers = await User.find({ status: 'Pending' }).select("-password -googleId");
+
+    if (!pendingUsers || pendingUsers.length === 0) {
+      return res.status(404).json({ message: "No pending accounts found" });
+    }
+
+    res.json(pendingUsers);
+  } catch (err) {
+    console.error("Error fetching pending accounts:", err);
+    res.status(500).json({ message: "Error fetching pending accounts", error: err.message });
+  }
 };
+
+// Approve accounts
+export const approveAccounts = async (req, res) => {
+  const { userId } = req.params;
+  const { status, role } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { status, role },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Account approved", user: updatedUser });
+  } catch (err) {
+    console.error("Error approving account:", err);
+    res.status(500).json({ message: "Error approving account", error: err.message });
+  }
+};
+
+// Fetch users with 'Approved' status
+export const getApprovedAccounts = async (req, res) => {
+	try {
+	  const approvedUsers = await User.find({ status: 'Approved' }).select("-password -googleId");
+  
+	  if (!approvedUsers || approvedUsers.length === 0) {
+		return res.status(404).json({ message: "No approved accounts found" });
+	  }
+  
+	  res.json(approvedUsers);
+	} catch (err) {
+	  console.error("Error fetching approved accounts:", err);
+	  res.status(500).json({ message: "Error fetching approved accounts", error: err.message });
+	}
+  };
+  
+
+  
 
 export const updateUserSettings = async (req, res) => {
     const { college, department } = req.body;

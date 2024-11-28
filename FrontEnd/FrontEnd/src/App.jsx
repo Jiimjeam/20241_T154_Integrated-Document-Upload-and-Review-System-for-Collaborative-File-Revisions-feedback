@@ -25,6 +25,8 @@ import COT from './components/CITL/COT';
 import IT_EMCFiles from './components/CITL/IT_EMCFiles';
 import Mathematics from './components/CITL/Mathematics';
 import CAS from './components/CITL/CAS';
+import AdminApproval from './pages/adminApproval';
+import ExistingUsers from './pages/existingUsers';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -72,6 +74,8 @@ function App() {
         <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
         <Route path="/colleges/cas" element={<CAS />} />
         <Route path="/cas/mathematics" element={<Mathematics />} />
+        <Route path="/admin/approve" element={<AdminApproval />} />
+        <Route path="/admin/existing-users" element={<ExistingUsers />} />
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
             <SignUpPage />
