@@ -1,41 +1,48 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 export const verifyToken = (req, res, next) => {
+  try {
+    // Retrieve the token from cookies
     const token = req.cookies?.token;
-  
+    console.log('Received Token:', token);
+
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - no token provided",
+        message: 'Unauthorized - no token provided',
       });
     }
-  
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      // console.log('Decoded Token:', decoded); // Debugging log
-  
-      req.userId = decoded.userId; // Ensure this field exists in your token
-      next();
-    } catch (error) {
-      if (error.name === 'JsonWebTokenError') {
-        return res.status(401).json({
-          success: false,
-          message: 'Unauthorized - invalid token',
-        });
-      } else if (error.name === 'TokenExpiredError') {
-        return res.status(401).json({
-          success: false,
-          message: 'Unauthorized - token expired',
-        });
-      } else {
-        console.error('Error in verifyToken: ', error.message);
-        return res.status(500).json({
-          success: false,
-          message: 'Server error',
-        });
-      }
+
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Decoded Token:', decoded); // Debugging log
+
+    // Set the user ID in the request object
+    req.userId = decoded.userId;
+
+    next(); // Proceed to the next middleware/controller
+  } catch (error) {
+    console.error('Error in verifyToken:', error);
+
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized - invalid token',
+      });
     }
-  };
-  
+
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized - token expired',
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Server error during token verification',
+    });
+  }
+};
 
 export default verifyToken;

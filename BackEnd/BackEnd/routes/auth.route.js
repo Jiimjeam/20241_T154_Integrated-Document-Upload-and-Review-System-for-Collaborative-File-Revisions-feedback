@@ -13,6 +13,7 @@ import {
 	approveAccounts,
 	getPendingAccounts,
 	getApprovedAccounts,
+	
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -42,6 +43,9 @@ router.get('/admin/get/pending-accounts', getPendingAccounts);
 
 // Approve a user's account
 router.put('/admin/approve-user/:userId', approveAccounts);
+
+
+
 
 
 export default router;

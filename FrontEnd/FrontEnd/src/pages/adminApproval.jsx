@@ -92,6 +92,7 @@ const AdminApproval = () => {
                       <option value="Instructor">Instructor</option>
                       <option value="Admin">Admin</option>
                       <option value="Program_Chair">Program Chair</option>
+                      <option value="Senior_Faculty">Senior</option>
                     </select>
                   </td>
                   <td>

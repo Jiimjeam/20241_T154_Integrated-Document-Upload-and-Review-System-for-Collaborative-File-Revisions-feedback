@@ -87,7 +87,6 @@ export const uploadFile = async (req, res) => {
   }
 };
 
-
 // Fetch all uploaded files
 export const getUploadedFiles = async (req, res) => {
   try {
@@ -118,8 +117,6 @@ export const getUploadedFilesByUploader = async (req, res) => {
     res.status(500).json({ message: 'Error fetching uploaded files.', error: error.message });
   }
 };
-
-
 
 // Delete a file by ID
 export const deleteFile = async (req, res) => {
@@ -182,3 +179,80 @@ export const getUsers = async (req, res) => {
     res.status(500).json({ message: 'Error fetching users', error: error.message });
   }
 };
+
+
+
+
+
+
+
+export const getFilesByDepartment = async (req, res) => {
+  try {
+    // Retrieve userId from the token middleware
+    const userId = req.userId;
+
+    if (!userId) {
+      console.error("Missing userId in request");
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized - missing user ID",
+      });
+    }
+
+    console.log("Fetching user details for userId:", userId);
+
+    // Fetch user details from the database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      console.error(`User not found for userId: ${userId}`);
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const { college, department } = user;
+
+    if (!college || !department) {
+      console.error(`User's college or department missing: userId: ${userId}`);
+      return res.status(400).json({
+        success: false,
+        message: "User's college or department information is incomplete",
+      });
+    }
+
+    console.log(`Fetching files for College: ${college}, Department: ${department}`);
+
+    // Fetch all files matching the user's college and department
+    const files = await File.find({ college, department });
+
+    if (files.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No files found for the specified college and department",
+        data: [],
+      });
+    }
+
+    console.log(`Found ${files.length} files for College: ${college}, Department: ${department}`);
+
+    res.status(200).json({
+      success: true,
+      message: "Files fetched successfully",
+      data: files,
+      college,
+      department,
+    });
+  } catch (error) {
+    console.error("Error fetching files by college and department:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+
+
