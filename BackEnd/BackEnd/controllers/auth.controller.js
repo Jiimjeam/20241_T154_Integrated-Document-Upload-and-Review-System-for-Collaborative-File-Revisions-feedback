@@ -19,17 +19,6 @@ export const getUsers = async (req, res) => {
 	.catch(err => res.json(err))
 }
 
-export const deleteUser = async (req, res) => { 
-	try {
-		const userId = req.params.id;
-		await User.findByIdAndDelete(userId);
-		res.status(200).json({ message: 'User deleted successfully' });
-	  } catch (err) {
-		res.status(500).json({ error: 'Failed to delete user' });
-	  }
-}
-
-
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
 
@@ -343,10 +332,59 @@ export const getApprovedAccounts = async (req, res) => {
 	  res.status(500).json({ message: "Error fetching approved accounts", error: err.message });
 	}
   };
-  
 
+  export const updateRole = async (req, res) => {
+	const { userId } = req.params;
+	const { role } = req.body;  // Extract new role from the request body
   
+	// Validate the role
+	if (!role || !['Instructor', 'Senior Faculty', 'Program Chair', 'CITL', 'Admin'].includes(role)) {
+	  return res.status(400).json({ message: "Invalid role" });
+	}
+  
+	try {
+	  // Find the user by ID and update the role
+	  const updatedUser = await User.findByIdAndUpdate(
+		userId,
+		{ role },
+		{ new: true } // Return the updated document
+	  );
+  
+	  // If user not found, return error
+	  if (!updatedUser) {
+		return res.status(404).json({ message: "User not found" });
+	  }
+  
+	  // Return the updated user with the new role
+	  res.status(200).json(updatedUser); 
+	} catch (err) {
+	  console.error(err);
+	  res.status(500).json({ message: "Failed to update the user role", error: err });
+	}
+  };
 
+  export const deleteUser = async (req, res) => {
+	const { userId } = req.params;  // Extract the userId from the request parameters
+  
+	try {
+	  // Attempt to find and delete the user by their ID
+	  const deletedUser = await User.findByIdAndDelete(userId);
+  
+	  // Check if the user was found and deleted
+	  if (!deletedUser) {
+		return res.status(404).json({ message: "User not found" });
+	  }
+  
+	  // Return a success message
+	  res.status(200).json({ message: "User deleted successfully" });
+	} catch (err) {
+	  console.error(err);
+	  res.status(500).json({ message: "Failed to delete user", error: err });
+	}
+  };
+  
+  
+  
 export const updateUserSettings = async (req, res) => {
     const { college, department } = req.body;
 

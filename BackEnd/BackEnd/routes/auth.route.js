@@ -13,6 +13,7 @@ import {
 	approveAccounts,
 	getPendingAccounts,
 	getApprovedAccounts,
+	updateRole,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -35,7 +36,7 @@ router.get("/getusers", getUsers);
 
 router.get("/users", getApprovedAccounts),
 
-router.delete('/deleteuser/:id', deleteUser);
+router.delete('/users/:userId', deleteUser);
 
 // Fetch pending accounts
 router.get('/admin/get/pending-accounts', getPendingAccounts);
@@ -43,5 +44,6 @@ router.get('/admin/get/pending-accounts', getPendingAccounts);
 // Approve a user's account
 router.put('/admin/approve-user/:userId', approveAccounts);
 
+router.patch('/users/:userId/role', updateRole);
 
 export default router;
