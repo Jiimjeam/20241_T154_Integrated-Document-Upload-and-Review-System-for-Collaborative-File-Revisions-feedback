@@ -2,21 +2,29 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
-import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LoadingSpinner from "./components/LoadingSpinner";
-import FileUpload from "./components/INTR/FileUpload";
+import Settings from './components/INTR/Settings';
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import MySyllabus from "./components/INTR/MySyllabus";
 import Home from './components/INTR/Home';
-import Settings from './components/INTR/Settings';
-import LandingPage from './components/LandingPage/body';
 import History from './components/INTR/history';
+
+import AdminUsers from './pages/adminUsers'
+import AdminHome from './pages/adminHome'
+
+import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
+import ProgramChairDashboard from './components/PROGRAMCHAIR/ProgramChairDashboard';
+import Colleges from './components/CITL/Colleges';
+import COT from './components/CITL/COT';
+import IT_EMCFiles from './components/CITL/IT_EMCFiles';
+import Mathematics from './components/CITL/Mathematics';
+import CAS from './components/CITL/CAS';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -57,16 +65,13 @@ function App() {
     <div className="min-h-screen bg-[#2C2A2A] flex items-center justify-center relative overflow-hidden">
       <Routes>
         <Route path='/' element={<LandingPage />} />
-        <Route path="/senior-faculty-dashboard" lement={
-          <ProtectedRoute>
-            <SeniorFacultyDashboard/>
-          </ProtectedRoute>
-        }>
-
-			<Route path='Home' element={<Home />} />	
-          <Route path='my-syllabus' element={<MySyllabus />} />
-          {/* Add more nested routes here if needed */}
-        </Route>
+        <Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />
+        <Route path="/program-chair-dashboard" element={<ProgramChairDashboard />} />
+        <Route path="/colleges" element={<Colleges />} />
+        <Route path="/colleges/cot" element={<COT />} />
+        <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
+        <Route path="/colleges/cas" element={<CAS />} />
+        <Route path="/cas/mathematics" element={<Mathematics />} />
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
             <SignUpPage />
@@ -97,13 +102,17 @@ function App() {
         }>
 
 			<Route path='Home' element={<Home />} />	
-      <Route path='Settings' element={<Settings />} />
-          <Route path='history' element={<History />} />
           <Route path='my-syllabus' element={<MySyllabus />} />
-          {/* Add more nested routes here if needed */}
+          <Route path='Settings' element={<Settings />} />
+          <Route path='history' element={<History />} />
+         
+        
         </Route>
 
-        {/* Catch all routes */}
+        <Route path='/admin/home' element={<AdminHome />} />	
+        <Route path='/admin/user' element={<AdminUsers />} />	
+
+       
         <Route path='*' element={<Navigate to='/' replace />} />
       </Routes>
       <Toaster />

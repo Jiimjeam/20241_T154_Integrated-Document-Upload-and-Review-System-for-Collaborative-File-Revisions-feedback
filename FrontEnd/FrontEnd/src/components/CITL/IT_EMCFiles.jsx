@@ -156,7 +156,7 @@ const IT_EMCFiles = () => {
                   className="btn btn-info btn-sm ml-2"
                   disabled={index !== currentFileIndex || currentFileIndex === approvedFiles.length - 1}
                 >
-                  Forward
+                  Approve 
                 </button>
               </td>
             </tr>

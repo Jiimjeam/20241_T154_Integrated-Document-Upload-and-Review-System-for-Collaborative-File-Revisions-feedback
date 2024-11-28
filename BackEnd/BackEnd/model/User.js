@@ -35,18 +35,36 @@ const userSchema = new mongoose.Schema({
     verificationTokenExpiresAt: Date,
     college: {
         type: String,
-        enum: ['COT', 'CON', 'CAS'],
-        default: 'COT'
+        enum: ['COB', 'COT', 'CON', 'COE', 'CAS', 'CPAG', 'COM'],
+        required: false
     },
     department: {
         type: String,
-        enum: [
-            'Bachelor of Science in Information Technology & Bachelor of Science in EMC',
-            'Bachelor of Science in Food Technology',
-            null
-        ],
-        default: null
-    }
+        validate: {
+          validator: function(value) {
+            // Normalize the department and college to lowercase for case-insensitive comparison
+            const normalizedValue = value.toLowerCase();
+            const collegeDepartments = {
+              COB: ['Business Administration', 'Accounting', 'Marketing'],
+              COT: ['BSIT', 'BSAT', 'BSET'],
+              CON: ['Nursing', 'Midwifery'],
+              COE: ['Civil Engineering', 'Electrical Engineering'],
+              CAS: ['Biology', 'Mathematics', 'Physics'],
+              CPAG: ['Public Administration', 'Governance'],
+              COM: ['Medicine', 'Medical Technology']
+            };
+      
+            const departments = collegeDepartments[this.college]?.map(dep => dep.toLowerCase());
+      
+            // Ensure department matches one in the college's department list
+            return departments?.includes(normalizedValue);
+          },
+          message: props => `${props.value} is not a valid department for the selected college`
+        },
+        required: function() {
+          return !!this.college;
+        }
+      }
 }, { timestamps: true });
 
 export const User = mongoose.model('User', userSchema);

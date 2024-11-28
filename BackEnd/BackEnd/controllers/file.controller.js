@@ -10,13 +10,37 @@ const __dirname = path.dirname(__filename);
 // Fetch all files
 export const getFiles = async (req, res) => {
   try {
-    const files = await File.find({}); // Optionally filter files based on criteria
+    const files = await File.find({});
     res.status(200).json(files);
   } catch (error) {
     console.error("Error fetching files:", error.message);
     res.status(500).json({ error: "Error fetching files." });
   }
 };
+
+// Fetch files by uploaderUserId
+export const getFilesByUploader = async (req, res) => {
+  try {
+    const uploaderUserId = req.userId; // Extract from `verifyToken`
+    if (!uploaderUserId) {
+      return res.status(401).json({ message: 'Unauthorized: No valid user found' });
+    }
+
+    const files = await File.find({ uploaderUserId }); // Filter by uploaderUserId
+
+    if (!files.length) {
+      return res.status(404).json({ message: 'No files found for this user.' });
+    }
+
+    res.status(200).json(files);
+  } catch (error) {
+    console.error('Error fetching files by uploaderUserId:', error.message);
+    res.status(500).json({ error: 'Error fetching files by uploaderUserId.' });
+  }
+};
+
+
+
 
 // Approve a file
 export const approveFile = async (req, res) => {
@@ -113,6 +137,36 @@ export const getApprovedFiles = async (req, res) => {
 };
 
 export const getIT_EMCFiles = async (req, res) => {
+  const { department } = req.query;  // Get `department` from query params
+  const status = 'approved'; // Only fetch approved files
+
+  try {
+    // If `department` is provided, filter by department; otherwise, fetch all approved files
+    const query = department ? { department, status } : { status };
+    const files = await File.find(query);
+
+    if (!files || files.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No approved files found for the specified department.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Approved files fetched successfully.',
+      files,  // Send approved files as part of the response
+    });
+  } catch (error) {
+    console.error('Error fetching files:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching files.',
+      error: error.message,
+    });
+  }
+};
+export const getMathematicsFiles = async (req, res) => {
   const { department } = req.query;  // Get `department` from query params
   const status = 'approved'; // Only fetch approved files
 

@@ -20,24 +20,41 @@ const FileUpload = () => {
   const [fileType, setFileType] = useState(null);
   const [showModal, setShowModal] = useState(false); // State to control file upload modal visibility
   const [previewModalShow, setPreviewModalShow] = useState(false); // State to control preview modal visibility
+  const [revisionComment, setRevisionComment] = useState('');
   const previewRef = useRef(null);
-  
 
   const API_URL = 'http://localhost:5000/api';
 
   useEffect(() => {
+    // Fetch all files on component load
     fetchUploadedFiles();
     toast.info('Welcome to the File Management Dashboard!');
   }, []);
 
-  const fetchUploadedFiles = async () => {
+  const fetchUploadedFiles = async (uploaderUserId = null) => {
     setLoadingFiles(true);
     try {
-      const response = await axios.get(`${API_URL}/files`);
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage or wherever it's stored
+      const headers = {
+        Authorization: `Bearer ${token}`, // Include the token in the request header
+      };
+
+      const endpoint = uploaderUserId
+        ? `${API_URL}/files/uploader/${uploaderUserId}`
+        : `${API_URL}/files/uploader`; // Default to fetching by the authenticated user
+
+      const response = await axios.get(endpoint, { headers });
       setUploadedFiles(response.data);
+
+      if (uploaderUserId) {
+        toast.success('Files fetched successfully for the specified user!');
+      } else {
+        toast.success('All files fetched successfully!');
+      }
     } catch (error) {
       console.error('Error fetching files:', error);
       setMessage('Error fetching uploaded files.');
+      toast.error('Failed to fetch files.');
     } finally {
       setLoadingFiles(false);
     }
@@ -95,8 +112,9 @@ const FileUpload = () => {
     }
   };
 
-  const handleViewFile = (filepath) => {
+  const handleViewFile = (filepath, comment) => {
     setSelectedFile(filepath);
+    setRevisionComment(comment);
     const fileExtension = filepath.split('.').pop().toLowerCase();
     setFileType(fileExtension);
     setPreviewModalShow(true); // Show the preview modal
@@ -106,6 +124,7 @@ const FileUpload = () => {
     setPreviewModalShow(false); // Close the preview modal
     setSelectedFile(null);
     setFileType(null);
+    setRevisionComment('');
   };
 
   const downloadFile = async (filepath) => {
@@ -133,27 +152,9 @@ const FileUpload = () => {
     }
   };
 
-
-
-
-
-
-
-  // const handleDelete = (fileId) => {
-  //   const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
-  //   if (!window.confirm(`Are you sure you want to delete the file "${fileToDelete?.subjectCode}" from the dashboard only?`)) {
-  //     toast.info('Delete action cancelled.');
-  //     return;
-  //   }
-
-    // setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
-    // setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
-    // toast.success(`File "${fileToDelete?.subjectCode}" deleted from the dashboard.`);
-  // };
-
   const handleDelete = (fileId) => {
     const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
-  
+
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: "btn btn-success mx-2",
@@ -189,19 +190,26 @@ const FileUpload = () => {
         });
       }
     });
-  
   };
 
-
-
-
-
-
+  // Function to map status to color
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'approved':
+        return 'badge bg-success';
+      case 'revision':
+        return 'badge bg-warning';
+      case 'pending':
+        return 'badge bg-secondary';
+      default:
+        return 'badge bg-secondary';
+    }
+  };
 
   return (
     <div className="container mt-4">
       <h1> Add File </h1>
-      
+
       {/* Button to trigger modal */}
       <button onClick={() => setShowModal(true)} className="btn btn-primary mb-3">Upload File</button>
 
@@ -264,7 +272,6 @@ const FileUpload = () => {
               <th>Author</th>
               <th>Co-Author</th>
               <th>Status</th>
-              <th>Revision Comment</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -274,10 +281,14 @@ const FileUpload = () => {
                 <td>{file.subjectCode}</td>
                 <td>{file.author}</td>
                 <td>{file.coAuthor || 'N/A'}</td>
-                <td>{file.status || 'Pending'}</td>
-                <td>{file.status === 'revision' ? file.revisionComment : 'N/A'}</td>
                 <td>
-                  <button onClick={() => handleViewFile(file.filepath)} className="btn btn-info btn-sm mx-1">View</button>
+                  {/* Dynamically applying badge class based on file status */}
+                  <span className={getStatusBadgeClass(file.status)}>
+                    {file.status || 'Pending'}
+                  </span>
+                </td>
+                <td>
+                  <button onClick={() => handleViewFile(file.filepath, file.revisionComment)} className="btn btn-info btn-sm mx-1">View File & Comments</button>
                   <button onClick={() => downloadFile(file.filepath)} className="btn btn-success btn-sm mx-2">Download</button>
                   <button onClick={() => handleDelete(file._id)} className="btn btn-danger btn-sm">Delete</button>
                 </td>
@@ -289,37 +300,36 @@ const FileUpload = () => {
         <p>No files uploaded yet.</p>
       )}
 
-      <h2 className="mt-4">Action History</h2>
-      <ul className="list-group">
-        {history.map((entry, index) => (
-          <li key={index} className="list-group-item">
-            {entry.timestamp} - {entry.action}
-          </li>
-        ))}
-      </ul>
-
       {/* File Preview Modal */}
-      <Modal show={previewModalShow} onHide={closePreview} size="lg" centered>
+      <Modal show={previewModalShow} onHide={closePreview} size="xl" centered>
         <Modal.Header closeButton>
           <Modal.Title>File Preview</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* PDF Preview */}
-          {fileType === 'pdf' ? (
-            <iframe
-              src={`${API_URL}/files/preview/${encodeURIComponent(selectedFile)}`}
-              title="PDF Preview"
-              style={{ width: '100%', height: '400px', border: 'none' }}
-            ></iframe>
-          ) : fileType === 'docx' || fileType === 'doc' ? (
-            <iframe
-              src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
-              title="Word Document Preview"
-              style={{ width: '100%', height: '400px', border: 'none' }}
-            ></iframe>
-          ) : (
-            <p>File preview not available for this type.</p>
-          )}
+          <div className="row">
+            <div className="col-md-8">
+              {/* PDF Preview */}
+              {fileType === 'pdf' ? (
+                <iframe
+                  src={`${API_URL}/files/preview/${encodeURIComponent(selectedFile)}`}
+                  title="PDF Preview"
+                  style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
+                ></iframe>
+              ) : fileType === 'docx' || fileType === 'doc' ? (
+                <iframe
+                  src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
+                  title="Word Document Preview"
+                  style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
+                ></iframe>
+              ) : (
+                <p>File preview not available for this type.</p>
+              )}
+            </div>
+            <div className="col-md-4">
+              <h5>Revision Comment</h5>
+              <p>{revisionComment || 'No comments available.'}</p>
+            </div>
+          </div>
         </Modal.Body>
       </Modal>
     </div>

@@ -22,7 +22,7 @@ const Colleges = () => {
           <h3 className="text-lg font-semibold">COM</h3>
           <p className="text-sm text-gray-600">College of Medicine</p>
         </Link>
-        <Link to="/cas" className="p-4 border rounded-lg bg-green-100 shadow-md text-center hover:bg-green-200">
+        <Link to="/colleges/cas" className="p-4 border rounded-lg bg-green-100 shadow-md text-center hover:bg-green-200">
           <h3 className="text-lg font-semibold">CAS</h3>
           <p className="text-sm text-gray-600">College of Arts and Sciences</p>
         </Link>

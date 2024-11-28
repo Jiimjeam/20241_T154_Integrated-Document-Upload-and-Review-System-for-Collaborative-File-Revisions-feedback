@@ -42,10 +42,9 @@ const SeniorFacultyDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileType, setFileType] = useState(null);
-  const [showFilePreviewModal, setShowFilePreviewModal] = useState(false);
-  const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [revisionComment, setRevisionComment] = useState('');
+  const [showFilePreviewModal, setShowFilePreviewModal] = useState(false);
 
   useEffect(() => {
     const loadFiles = async () => {
@@ -76,11 +75,6 @@ const SeniorFacultyDashboard = () => {
     }
   };
 
-  const handleRevise = (fileId) => {
-    setSelectedFileId(fileId);
-    setShowRevisionModal(true); // Show the revision comment modal
-  };
-
   const handleReviseSubmit = async () => {
     if (!revisionComment) return;
 
@@ -92,18 +86,19 @@ const SeniorFacultyDashboard = () => {
           file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
         )
       );
-      setShowRevisionModal(false); // Close modal after submitting
+      setShowFilePreviewModal(false); // Close modal after submitting
       setRevisionComment(''); // Clear the comment input
     } catch (error) {
       toast.error('Error revising file.');
     }
   };
 
-  const handleViewFile = (filepath) => {
+  const handleViewFile = (fileId, filepath) => {
     setSelectedFile(filepath);
+    setSelectedFileId(fileId);
     const fileExtension = filepath.split('.').pop().toLowerCase();
     setFileType(fileExtension);
-    setShowFilePreviewModal(true); // Show the preview modal
+    setShowFilePreviewModal(true);
   };
 
   const downloadFile = async (filepath) => {
@@ -135,7 +130,6 @@ const SeniorFacultyDashboard = () => {
 
       toast.success(`File "${filename}" downloaded successfully.`);
     } catch (error) {
-      console.error('Error downloading file:', error.message);
       toast.error('Error downloading file.');
     }
   };
@@ -147,7 +141,7 @@ const SeniorFacultyDashboard = () => {
       <ToastContainer />
       <div className="row">
         <div className="col-md-12">
-          <table className="table table-striped table-bordered table-hover">
+          <table className="table table-striped table-bordered table-hover shadow-sm rounded">
             <thead className="table-dark">
               <tr>
                 <th>Filename</th>
@@ -163,35 +157,32 @@ const SeniorFacultyDashboard = () => {
                   <td>{file.filename}</td>
                   <td>{file.subjectCode}</td>
                   <td>{file.author}</td>
-                  <td>{file.status || 'Pending'}</td>
                   <td>
-                    {file.status !== 'approved' && !file.reviewed && (
-                      <button
-                        onClick={() => handleApprove(file._id)}
-                        className="btn btn-success btn-sm mx-1"
-                      >
-                        <i className="bi bi-check2-circle"></i> Approve
-                      </button>
-                    )}
-                    {file.status !== 'revision' && !file.reviewed && (
-                      <button
-                        onClick={() => handleRevise(file._id)}
-                        className="btn btn-warning btn-sm mx-1"
-                      >
-                        <i className="bi bi-pencil-square"></i> Revise
-                      </button>
-                    )}
+                    {/* Status Display */}
+                    <span
+                      className={`badge rounded-pill text-white ${
+                        file.status === 'approved'
+                          ? 'bg-success'
+                          : file.status === 'revision'
+                          ? 'bg-warning'
+                          : 'bg-secondary'
+                      }`}
+                    >
+                      {file.status ? file.status.charAt(0).toUpperCase() + file.status.slice(1) : 'Pending'}
+                    </span>
+                  </td>
+                  <td>
                     <button
-                      onClick={() => handleViewFile(file.filepath)}
+                      onClick={() => handleViewFile(file._id, file.filepath)}
                       className="btn btn-info btn-sm mx-1"
                     >
-                      <i className="bi bi-eye"></i> View
+                      View & Revise
                     </button>
                     <button
                       onClick={() => downloadFile(file.filepath)}
                       className="btn btn-primary btn-sm mx-1"
                     >
-                      <i className="bi bi-download"></i> Download
+                      Download
                     </button>
                   </td>
                 </tr>
@@ -201,110 +192,82 @@ const SeniorFacultyDashboard = () => {
         </div>
       </div>
 
-      {/* File Preview Modal */}
-      <div
-        className={`modal fade ${showFilePreviewModal ? 'show' : ''}`}
-        id="filePreviewModal"
-        tabIndex="-1"
-        aria-labelledby="filePreviewModalLabel"
-        aria-hidden="true"
-        style={{ display: showFilePreviewModal ? 'block' : 'none' }}
-      >
-        <div className="modal-dialog modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="filePreviewModalLabel">File Preview</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                onClick={() => setShowFilePreviewModal(false)}
-              ></button>
-            </div>
-            <div className="modal-body">
-              {selectedFile ? (
-                fileType === 'pdf' ? (
-                  <iframe
-                    src={selectedFile}
-                    title="PDF Preview"
-                    style={{ width: '100%', height: '450px', border: 'none' }}
-                  ></iframe>
-                ) : fileType === 'docx' || fileType === 'doc' ? (
-                  <iframe
-                    src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
-                    title="Word Document Preview"
-                    style={{ width: '100%', height: '450px', border: 'none' }}
-                  ></iframe>
-                ) : (
-                  <p className="text-muted">File preview not available for this type.</p>
-                )
-              ) : (
-                <p className="text-muted">Select a file to preview.</p>
-              )}
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowFilePreviewModal(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* File Preview and Revise Modal */}
+      {selectedFile && (
+        <div
+          className={`modal fade ${showFilePreviewModal ? 'show' : ''}`}
+          style={{ display: showFilePreviewModal ? 'block' : 'none' }}
+        >
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">File Preview and Actions</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowFilePreviewModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body d-flex">
+                {/* File Preview Section */}
+                <div className="file-preview flex-grow-1" style={{ marginRight: '1rem' }}>
+                  {fileType === 'pdf' ? (
+                    <iframe
+                      src={selectedFile}
+                      title="PDF Preview"
+                      style={{ width: '100%', height: '500px', border: 'none' }}
+                    ></iframe>
+                  ) : fileType === 'docx' || fileType === 'doc' ? (
+                    <iframe
+                      src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
+                      title="Word Document Preview"
+                      style={{ width: '100%', height: '500px', border: 'none' }}
+                    ></iframe>
+                  ) : (
+                    <p className="text-muted">File preview not available for this type.</p>
+                  )}
+                </div>
 
-      {/* Revision Comment Modal */}
-      <div
-        className={`modal fade ${showRevisionModal ? 'show' : ''}`}
-        id="revisionModal"
-        tabIndex="-1"
-        aria-labelledby="revisionModalLabel"
-        aria-hidden="true"
-        style={{ display: showRevisionModal ? 'block' : 'none' }}
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="revisionModalLabel">Enter Revision Comment</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                onClick={() => setShowRevisionModal(false)}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <textarea
-                className="form-control"
-                value={revisionComment}
-                onChange={(e) => setRevisionComment(e.target.value)}
-                placeholder="Enter your comment"
-                rows="5"
-              ></textarea>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowRevisionModal(false)}
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleReviseSubmit}
-              >
-                Submit
-              </button>
+                {/* Revision and Approve Section */}
+                <div className="actions-section" style={{ width: '30%' }}>
+                  <h6>Revision Comments</h6>
+                  <textarea
+                    className="form-control"
+                    value={revisionComment}
+                    onChange={(e) => setRevisionComment(e.target.value)}
+                    placeholder="Add your comments here"
+                    rows="10"
+                  ></textarea>
+                  <button
+                    className="btn btn-warning mt-3 w-100"
+                    onClick={handleReviseSubmit}
+                    disabled={!revisionComment}
+                  >
+                    Submit Revision
+                  </button>
+                  <button
+                    className="btn btn-success mt-3 w-100"
+                    onClick={() => {
+                      handleApprove(selectedFileId);
+                      setShowFilePreviewModal(false); // Close modal after approving
+                    }}
+                  >
+                    Approve File
+                  </button>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowFilePreviewModal(false)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
