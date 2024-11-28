@@ -26,22 +26,40 @@ const FileUpload = () => {
   const API_URL = 'http://localhost:5000/api';
 
   useEffect(() => {
+    // Fetch all files on component load
     fetchUploadedFiles();
     toast.info('Welcome to the File Management Dashboard!');
   }, []);
-
-  const fetchUploadedFiles = async () => {
+  
+  const fetchUploadedFiles = async (uploaderUserId = null) => {
     setLoadingFiles(true);
     try {
-      const response = await axios.get(`${API_URL}/files`);
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage or wherever it's stored
+      const headers = {
+        Authorization: `Bearer ${token}`, // Include the token in the request header
+      };
+  
+      const endpoint = uploaderUserId
+        ? `${API_URL}/files/uploader/${uploaderUserId}`
+        : `${API_URL}/files/uploader`; // Default to fetching by the authenticated user
+      
+      const response = await axios.get(endpoint, { headers });
       setUploadedFiles(response.data);
+  
+      if (uploaderUserId) {
+        toast.success('Files fetched successfully for the specified user!');
+      } else {
+        toast.success('All files fetched successfully!');
+      }
     } catch (error) {
       console.error('Error fetching files:', error);
-      setMessage('Error fetching uploaded files.');
+      setMessage('No Files has been uploaded by the User');
+      toast.error('Failed to fetch files.');
     } finally {
       setLoadingFiles(false);
     }
   };
+  
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -87,7 +105,7 @@ const FileUpload = () => {
       setCoAuthor('');
       setShowModal(false); // Close modal after upload
     } catch (error) {
-      setMessage('Error uploading file');
+      setMessage('Please Update you College and  Department in Settings');
       toast.error('Error uploading file!');
       console.error(error);
     } finally {
@@ -133,23 +151,6 @@ const FileUpload = () => {
     }
   };
 
-
-
-
-
-
-
-  // const handleDelete = (fileId) => {
-  //   const fileToDelete = uploadedFiles.find((file) => file._id === fileId);
-  //   if (!window.confirm(`Are you sure you want to delete the file "${fileToDelete?.subjectCode}" from the dashboard only?`)) {
-  //     toast.info('Delete action cancelled.');
-  //     return;
-  //   }
-
-    // setUploadedFiles(uploadedFiles.filter((file) => file._id !== fileId));
-    // setHistory([...history, { action: 'Deleted file from dashboard', fileId, timestamp: new Date().toLocaleString() }]);
-    // toast.success(`File "${fileToDelete?.subjectCode}" deleted from the dashboard.`);
-  // };
 
   const handleDelete = (fileId) => {
     const fileToDelete = uploadedFiles.find((file) => file._id === fileId);

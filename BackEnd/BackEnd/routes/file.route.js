@@ -3,25 +3,31 @@ import {
   getFiles, 
   approveFile, 
   reviseFile, 
-  downloadFileByPath,
-  getFileStats,
-  getFilesByStatus,
-  getApprovedFiles,
+  downloadFileByPath, 
+  getFileStats, 
+  getFilesByStatus, 
+  getApprovedFiles, 
   getIT_EMCFiles,
+  getFilesByUploader,
   getMathematicsFiles,
 } from "../controllers/file.controller.js";
+import verifyToken from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
-// Fetch all files or filter by status
+// Fetch all files
 router.get("/", getFiles);
 
-// Fetch files by status (query parameter: ?status=approved)
+// Fetch files by uploaderUserId (authenticated user)
+router.get('/uploader', verifyToken, getFilesByUploader);
+
+// Fetch files by status
 router.get("/status", getFilesByStatus);
 
-// Fetch file statistics (e.g., approved, pending, revision counts)
+// Fetch file statistics
 router.get("/stats", getFileStats);
 
+// Fetch approved files
 router.get('/approved', getApprovedFiles);
 
 router.get('/it-emc-files', getIT_EMCFiles),
@@ -32,7 +38,7 @@ router.get('/mathematics', getMathematicsFiles),
 // Approve a file
 router.patch("/:id/approve", approveFile);
 
-// Revise a file with a comment
+// Revise a file
 router.patch("/:id/revise", reviseFile);
 
 // Download a file by filepath

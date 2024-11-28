@@ -81,7 +81,7 @@ export const uploadFile = async (req, res) => {
   } catch (error) {
     console.error('Error during file upload:', error.message);
     res.status(500).json({
-      message: 'Error uploading file',
+      message: 'Error uploading file ',
       error: error.message,
     });
   }
@@ -91,12 +91,35 @@ export const uploadFile = async (req, res) => {
 // Fetch all uploaded files
 export const getUploadedFiles = async (req, res) => {
   try {
-    const files = await File.find(); // Fetch all files from the database
+    const files = await File.find();
     res.status(200).json({ files });
   } catch (error) {
+    console.error("Error fetching uploaded :", error.message);
     res.status(500).json({ message: 'Error fetching files', error: error.message });
   }
 };
+
+export const getUploadedFilesByUploader = async (req, res) => {
+  try {
+    const uploaderUserId = req.userId; // Extract from `verifyToken`
+    if (!uploaderUserId) {
+      return res.status(401).json({ message: 'Unauthorized: No valid user found' });
+    }
+
+    const files = await File.find({ uploaderUserId }); // Filter by uploaderUserId
+
+    if (!files.length) {
+      return res.status(404).json({ message: 'No files found for this user.' });
+    }
+
+    res.status(200).json(files);
+  } catch (error) {
+    console.error('Error fetching uploaded files by uploaderUserId:', error.message);
+    res.status(500).json({ message: 'Error fetching uploaded files.', error: error.message });
+  }
+};
+
+
 
 // Delete a file by ID
 export const deleteFile = async (req, res) => {
