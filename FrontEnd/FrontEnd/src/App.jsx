@@ -16,15 +16,24 @@ import AdminHome from './pages/adminHome'
 
 import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
+import SettingsSENF from './components/SENF/SettingsSENF';
+import MySyllabi from './components/SENF/MySyllabi';
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
 import ProgramChairDashboard from './components/PROGRAMCHAIR/ProgramChairDashboard';
+import Program from './components/PROGRAMCHAIR/Program';
+import Syllabi from './components/PROGRAMCHAIR/Syllabi';
+
 import Colleges from './components/CITL/Colleges';
 import COT from './components/CITL/COT';
 import IT_EMCFiles from './components/CITL/IT_EMCFiles';
 import Mathematics from './components/CITL/Mathematics';
 import CAS from './components/CITL/CAS';
+import AdminApproval from './pages/adminApproval';
+import ExistingUsers from './pages/existingUsers';
+import Senior from './components/SENF/Senior';
+
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -65,13 +74,15 @@ function App() {
     <div className="min-h-screen bg-[#2C2A2A] flex items-center justify-center relative overflow-hidden">
       <Routes>
         <Route path='/' element={<LandingPage />} />
-        <Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />
-        <Route path="/program-chair-dashboard" element={<ProgramChairDashboard />} />
+        {/*<Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />*/}
+        {/*<Route path="/program-chair-dashboard" element={<ProgramChairDashboard />} /> */}
         <Route path="/colleges" element={<Colleges />} />
         <Route path="/colleges/cot" element={<COT />} />
         <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
         <Route path="/colleges/cas" element={<CAS />} />
         <Route path="/cas/mathematics" element={<Mathematics />} />
+        <Route path="/admin/approve" element={<AdminApproval />} />
+        <Route path="/admin/existing-users" element={<ExistingUsers />} />
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
             <SignUpPage />
@@ -105,9 +116,41 @@ function App() {
           <Route path='my-syllabus' element={<MySyllabus />} />
           <Route path='Settings' element={<Settings />} />
           <Route path='history' element={<History />} />
-         
-        
-        </Route>
+      </Route>
+
+
+      {/* Nested Routes for SENF */}
+      <Route path='/Senior' element={
+          <ProtectedRoute>
+            <Senior />
+          </ProtectedRoute>
+
+          
+        }>
+
+			    <Route path='Home' element={<Home />} />	
+          <Route path='my-syllabi' element={<MySyllabi />} />
+          <Route path='SettingsSENF' element={<SettingsSENF />} />
+          <Route path='history' element={<History />} />
+      </Route>
+
+
+
+
+       {/* Nested Routes for ProgramChair */}
+       <Route path='/Program' element={
+          <ProtectedRoute>
+            <Program />
+          </ProtectedRoute>
+            
+          
+        }>
+
+            
+          <Route path='Syllabi' element={<Syllabi />} />
+			  
+      </Route>
+
 
         <Route path='/admin/home' element={<AdminHome />} />	
         <Route path='/admin/user' element={<AdminUsers />} />	

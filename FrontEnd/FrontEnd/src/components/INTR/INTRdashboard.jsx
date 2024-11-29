@@ -49,7 +49,7 @@ const INTRdashboard = () => {
       <aside className="sidebar bg-dark text-white p-4 d-flex flex-column align-items-center position-fixed vh-100">
         <div className="profile-section text-center mb-4">
           <Profileupload />
-          <h4 className="profile-title text-info">Profile Information</h4>
+          <h4 className="profile-title text-info">Instructor</h4>
           <p className="profile-detail">{user.name}</p>
           <p className="profile-detail">{user.email}</p>
         </div>

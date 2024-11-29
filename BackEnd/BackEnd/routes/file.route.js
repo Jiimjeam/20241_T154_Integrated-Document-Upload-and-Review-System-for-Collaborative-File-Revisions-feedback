@@ -20,7 +20,7 @@ router.get("/", getFiles);
 
 // Fetch files by uploaderUserId (authenticated user)
 router.get('/uploader', verifyToken, getFilesByUploader);
-
+  
 // Fetch files by status
 router.get("/status", getFilesByStatus);
 
@@ -39,7 +39,7 @@ router.get('/mathematics', getMathematicsFiles),
 router.patch("/:id/approve", approveFile);
 
 // Revise a file
-router.patch("/:id/revise", reviseFile);
+router.put("/:id/revise", reviseFile);
 
 // Download a file by filepath
 router.get("/download/:filepath", downloadFileByPath);
