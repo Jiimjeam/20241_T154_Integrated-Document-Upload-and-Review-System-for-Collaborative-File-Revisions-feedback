@@ -33,6 +33,7 @@ import CAS from './components/CITL/CAS';
 import AdminApproval from './pages/adminApproval';
 import ExistingUsers from './pages/existingUsers';
 import Senior from './components/SENF/Senior';
+import PendingPage from './pages/pendingPage';
 import CITLdashboard from './components/CITL/CITLdashboard';
 
 
@@ -84,6 +85,7 @@ function App() {
         <Route path="/cas/mathematics" element={<Mathematics />} />
         <Route path="/admin/approve" element={<AdminApproval />} />
         <Route path="/admin/existing-users" element={<ExistingUsers />} />
+        <Route path="/pending" element={<PendingPage />} />
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
             <SignUpPage />
