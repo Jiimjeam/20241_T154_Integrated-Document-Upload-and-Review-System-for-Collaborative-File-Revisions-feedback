@@ -34,6 +34,10 @@ import AdminApproval from './pages/adminApproval';
 import ExistingUsers from './pages/existingUsers';
 import Senior from './components/SENF/Senior';
 import PendingPage from './pages/pendingPage';
+<<<<<<< HEAD
+=======
+import CITLdashboard from './components/CITL/CITLdashboard';
+>>>>>>> bce8454fa6c2ac13b7dbd066676b51d395f6ba3a
 
 
 // Protect routes that require authentication
@@ -77,7 +81,7 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         {/*<Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />*/}
         {/*<Route path="/program-chair-dashboard" element={<ProgramChairDashboard />} /> */}
-        <Route path="/colleges" element={<Colleges />} />
+        {/*<Route path="/colleges" element={<Colleges />} />*/}
         <Route path="/colleges/cot" element={<COT />} />
         <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
         <Route path="/colleges/cas" element={<CAS />} />
@@ -152,6 +156,31 @@ function App() {
           <Route path='Syllabi' element={<Syllabi />} />
 			  
       </Route>
+
+
+       {/* Nested Routes for CITL */}
+       <Route
+          path="/CITL" element={
+          <ProtectedRoute>
+            <CITLdashboard />
+            </ProtectedRoute>}
+        >
+          <Route path="Colleges" element={<Colleges />}>
+            <Route path="cot" element={<COT />}>
+                {/* Nested routes for departments */}
+                <Route path="it_emc" element={<IT_EMCFiles />} />
+                <Route path="automotive" element={<div>Automotive Department Content</div>} />
+                <Route path="electronics" element={<div>Electronics Department Content</div>} />
+                <Route path="food-tech" element={<div>Food Technology Department Content</div>} />
+            </Route>
+            <Route path="cas" element={<CAS />}>
+                <Route path="mathematics" element={<Mathematics />} />
+                <Route path="biology" element={<div>Biology Department Content</div>} />
+                <Route path="chemistry" element={<div>Chemistry Department Content</div>} />
+                <Route path="physics" element={<div>Physics Department Content</div>} />
+            </Route>
+          </Route>
+        </Route>
 
 
         <Route path='/admin/home' element={<AdminHome />} />	
