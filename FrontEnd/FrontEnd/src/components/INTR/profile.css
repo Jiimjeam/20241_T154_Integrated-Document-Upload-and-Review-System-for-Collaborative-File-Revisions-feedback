@@ -1,0 +1,30 @@
+/* Profile container */
+.profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Profile image styling */
+  .profileImage {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: gray;
+    margin-bottom: 5px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  
+  /* Text styling inside profile image circle */
+  .profileImage span {
+    color: white;
+    font-weight: bold;
+  }
+  

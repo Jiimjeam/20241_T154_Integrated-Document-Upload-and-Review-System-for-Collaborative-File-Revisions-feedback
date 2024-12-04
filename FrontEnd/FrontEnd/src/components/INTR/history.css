@@ -1,0 +1,156 @@
+body { 
+    /* overflow-y: hidden; */
+    overflow-x: hidden;
+  }
+  
+  
+  .container {
+      display: flex;
+      font-family: Arial, sans-serif;
+      color: white;
+      background-color: #333;
+      height: 100vh;
+    }
+    
+    .sidebar {
+      width: 200px;
+      background-color: #2d2d2d;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .profileImage {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: gray;
+      margin-bottom: 5px;
+    }
+    
+    .profileName {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffffff;
+  
+      position: relative;
+      left: 0px;
+    }
+    
+    .profileDept {
+      font-size: 12px;
+      color: #cfcfcf;
+  
+      position: relative;
+      left: 0px;
+      top: -15px;
+    }
+    
+    .menuItem {
+      padding: 10px;
+      width: 100%;
+      text-align:justify;
+      cursor: pointer;
+      color: #ffffff;
+      margin-bottom: 10px;
+  
+      background-color: transparent;
+      border-radius: 10px;
+      transition: background-color 0.1s ease 0.1s;
+    }
+  
+    .menuItem:hover {
+      background-color:#555;
+    }
+    
+    .history { 
+      width: 30px;
+      height: auto;
+      margin-right: 5px;
+    }
+    
+    .logoutButton {
+      margin-top: auto;
+      color: #ffffff;
+      background-color: transparent;
+      border: 1px solid #888;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+  
+    .logoutButton:hover {
+      color: #000000;
+      background-color: white;
+      border: 1px solid black;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .uploadedFileName {
+      margin-left: 15px;
+      color: #ffffff;
+    }
+    
+    .personProfile {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: gray;
+    }
+    
+    .personInfo {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .personName {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .personPosition {
+      font-size: 12px;
+      color: #cfcfcf;
+    }
+
+
+
+
+
+
+    .bodyContents { 
+      margin-left: 2rem;
+    }
+
+    
+    .bodyContents h1 { 
+      font-size: 3.5rem;
+      font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+      ;
+    }
+    
+    
+
+/* Chart Container Styling */
+.chart-container {
+  width: 100%;
+  height: 400px;
+}
+
+/* Ensure the new card spans the width of the screen */
+.card.mt-4 {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
