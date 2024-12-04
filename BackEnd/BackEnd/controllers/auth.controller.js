@@ -2,6 +2,7 @@ import bcryptjs from "bcryptjs";
 import crypto from "crypto";
 import passport from "passport";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { sendAccountPendingEmail,sendAccountApprovedEmail,sendAccountRejectedEmail } from "../middleware/emailService.js";
 import jwt from "jsonwebtoken";
 import {
 	sendPasswordResetEmail,
@@ -226,11 +227,9 @@ const defaultDashboards = {
 	Admin: "http://localhost:5173/admin/home",
 };
 
-// Callback route where Google will redirect after successful login
 export const googleAuthCallback = (req, res) => {
 	passport.authenticate("google", { failureRedirect: "/login" }, async (err, user, info) => {
 	  if (err || !user) {
-		// Log any errors for debugging purposes
 		console.error("Google Authentication failed:", err || info.message);
 		return res.status(400).json({
 		  success: false,
@@ -238,34 +237,42 @@ export const googleAuthCallback = (req, res) => {
 		});
 	  }
   
-	  // Check if the user's account is approved or rejected
 	  try {
+		console.log("User authenticated:", user); // Log user details for debugging
+  
+		// Handle account statuses
 		if (user.status === 'Pending') {
-		  return res.status(403).json({
-			success: false,
-			message: "Your account is awaiting admin approval. Please wait for confirmation.",
-		  });
+		  // Send pending email and notify the frontend to display the pending page
+		  await sendAccountPendingEmail(user.email);  // Email for pending account status
+		  return res.redirect('http://localhost:5173/pending');
 		} else if (user.status === 'Rejected') {
+		  // Send rejection email and notify the frontend
+		  await sendAccountRejectedEmail(user.email);  // Send rejection email
 		  return res.status(403).json({
 			success: false,
-			message: "Your account has been rejected. Contact the administrator for assistance.",
+			status: 'Rejected',  // Frontend will display the rejection message
+			message: "Your account has been rejected. Please contact the administrator for assistance.",
+		  });
+		} else if (user.status === 'Approved') {
+		  // Send approval email if the account is approved
+		  await sendAccountApprovedEmail(user.email);  // Send approval email
+  
+		  // Generate token and set cookie for approved accounts
+		  const redirectUrl = defaultDashboards[user.role];
+		  if (!redirectUrl) {
+			return res.status(403).json({
+			  success: false,
+			  message: "No dashboard assigned for your role.",
+			});
+		  }
+  
+		  return res.json({
+			success: true,
+			message: "Account approved.",
+			user: user,
+			redirectUrl: redirectUrl,  // Send the redirect URL to frontend
 		  });
 		}
-  
-		// If approved, redirect based on user role
-		const redirectUrl = defaultDashboards[user.role];
-		if (!redirectUrl) {
-		  return res.status(403).json({
-			success: false,
-			message: "No dashboard assigned for your role.",
-		  });
-		}
-  
-		// Generate token and set it in a cookie
-		generateTokenAndSetCookie(res, user._id);
-  
-		// Redirect the user to their respective dashboard
-		return res.redirect(redirectUrl);
 	  } catch (error) {
 		console.error("Error during user approval check:", error);
 		return res.status(500).json({
@@ -275,8 +282,10 @@ export const googleAuthCallback = (req, res) => {
 	  }
 	})(req, res);
   };
-
-
+  
+  
+  
+  
 
 // Fetch users with 'Pending' status
 export const getPendingAccounts = async (req, res) => {
@@ -294,28 +303,59 @@ export const getPendingAccounts = async (req, res) => {
   }
 };
 
-// Approve accounts
+// Approve or reject accounts
 export const approveAccounts = async (req, res) => {
-  const { userId } = req.params;
-  const { status, role } = req.body;
-
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { status, role },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json({ message: "Account approved", user: updatedUser });
-  } catch (err) {
-    console.error("Error approving account:", err);
-    res.status(500).json({ message: "Error approving account", error: err.message });
-  }
-};
+	const { userId } = req.params;
+	const { status, role } = req.body;
+  
+	try {
+	  // If the account is rejected, we should delete it from the database.
+	  if (status === 'Rejected') {
+		// Attempt to delete the user
+		const deletedUser = await User.findByIdAndDelete(userId); // Delete the user from the database
+  
+		// If the user wasn't found, return an error response
+		if (!deletedUser) {
+		  return res.status(404).json({ message: "User not found" });
+		}
+  
+		// Send rejection email
+		const emailResult = await sendAccountRejectedEmail(deletedUser.email);
+		if (!emailResult.success) {
+		  return res.status(500).json({ message: "Failed to send rejection email." });
+		}
+  
+		// Respond with a success message after rejection
+		return res.json({ message: "Account rejected and user deleted", user: deletedUser });
+	  }
+  
+	  // Otherwise, handle the approval logic
+	  const updatedUser = await User.findByIdAndUpdate(
+		userId,
+		{ status, role },
+		{ new: true }
+	  );
+  
+	  // If the user was not found or the update failed, return an error
+	  if (!updatedUser) {
+		return res.status(404).json({ message: "User not found" });
+	  }
+  
+	  // If the account is approved, send the approval email
+	  if (updatedUser.status === 'Approved') {
+		const emailResult = await sendAccountApprovedEmail(updatedUser.email);  // Send the approval email
+		if (!emailResult.success) {
+		  return res.status(500).json({ message: "Failed to send approval email." });
+		}
+	  }
+  
+	  // Respond with a success message for approval
+	  res.json({ message: "Account approved and email sent", user: updatedUser });
+	} catch (err) {
+	  console.error("Error handling account approval or rejection:", err);
+	  res.status(500).json({ message: "Error handling account request", error: err.message });
+	}
+  };
 
 // Fetch users with 'Approved' status
 export const getApprovedAccounts = async (req, res) => {
