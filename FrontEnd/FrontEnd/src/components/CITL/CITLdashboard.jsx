@@ -50,7 +50,7 @@ const CITLdashboard = () => {
           <p className="profile-detail">{user.email}</p>
         </div>
         <nav className="menu w-100 mb-4">
-          <Link to="/CITL" className="menuItem d-flex align-items-center p-3 text-white">
+          <Link to="/CITL/Home" className="menuItem d-flex align-items-center p-3 text-white">
           <FaHome className="menu-icon mr-3" size={24} />
             <span>Home</span>
           </Link>

@@ -10,6 +10,7 @@ import INTRdashboard from "./components/INTR/INTRdashboard";
 import MySyllabus from "./components/INTR/MySyllabus";
 import Home from './components/INTR/Home';
 import History from './components/INTR/history';
+import Feedback from './components/INTR/Feedback'
 
 import AdminUsers from './pages/adminUsers'
 import AdminHome from './pages/adminHome'
@@ -35,7 +36,7 @@ import ExistingUsers from './pages/existingUsers';
 import Senior from './components/SENF/Senior';
 import PendingPage from './pages/pendingPage';
 import CITLdashboard from './components/CITL/CITLdashboard';
-
+import CITLhome from './components/CITL/CITLhome';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -119,6 +120,7 @@ function App() {
           <Route path='my-syllabus' element={<MySyllabus />} />
           <Route path='Settings' element={<Settings />} />
           <Route path='history' element={<History />} />
+          <Route path='Feedback' element={<Feedback />} />
       </Route>
 
 
@@ -162,6 +164,8 @@ function App() {
             <CITLdashboard />
             </ProtectedRoute>}
         >
+          <Route path='Home' element={<CITLhome />} />
+
           <Route path="Colleges" element={<Colleges />}>
             <Route path="cot" element={<COT />}>
                 {/* Nested routes for departments */}

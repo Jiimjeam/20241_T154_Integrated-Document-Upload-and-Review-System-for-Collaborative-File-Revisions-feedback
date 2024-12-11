@@ -70,6 +70,10 @@ const INTRdashboard = () => {
           <FaFileAlt className="menu-icon mr-3" size={24} />
             <span>My Syllabi</span>
           </Link>
+          <Link to="/INTRdashboard/Feedback" className="menuItem d-flex align-items-center p-3 text-white">
+          <FaFileAlt className="menu-icon mr-3" size={24} />
+            <span>Feedback</span>
+          </Link>
         </nav>
         <button className="btn btn-danger mt-auto w-100" onClick={handleLogout}>
           Logout

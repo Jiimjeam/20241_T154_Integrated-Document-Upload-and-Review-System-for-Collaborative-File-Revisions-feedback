@@ -223,65 +223,70 @@ const defaultDashboards = {
     Instructor: "http://localhost:5173/INTRdashboard",
     Senior_Faculty: "http://localhost:5173/Senior",
     Program_Chair: "http://localhost:5173/admin/home",
-	CITL: "http://localhost:5173/admin/home",
-	Admin: "http://localhost:5173/admin/home",
+    CITL: "http://localhost:5173/admin/home",
+    Admin: "http://localhost:5173/admin/home",
 };
 
 export const googleAuthCallback = (req, res) => {
-	passport.authenticate("google", { failureRedirect: "/login" }, async (err, user, info) => {
-	  if (err || !user) {
-		console.error("Google Authentication failed:", err || info.message);
-		return res.status(400).json({
-		  success: false,
-		  message: info?.message || "Google login failed",
-		});
-	  }
-  
-	  try {
-		console.log("User authenticated:", user); // Log user details for debugging
-  
-		// Handle account statuses
-		if (user.status === 'Pending') {
-		  // Send pending email and notify the frontend to display the pending page
-		  await sendAccountPendingEmail(user.email);  // Email for pending account status
-		  return res.redirect('http://localhost:5173/pending');
-		} else if (user.status === 'Rejected') {
-		  // Send rejection email and notify the frontend
-		  await sendAccountRejectedEmail(user.email);  // Send rejection email
-		  return res.status(403).json({
-			success: false,
-			status: 'Rejected',  // Frontend will display the rejection message
-			message: "Your account has been rejected. Please contact the administrator for assistance.",
-		  });
-		} else if (user.status === 'Approved') {
-		  // Send approval email if the account is approved
-		  await sendAccountApprovedEmail(user.email);  // Send approval email
-  
-		  // Generate token and set cookie for approved accounts
-		  const redirectUrl = defaultDashboards[user.role];
-		  if (!redirectUrl) {
-			return res.status(403).json({
-			  success: false,
-			  message: "No dashboard assigned for your role.",
-			});
-		  }
-  
-		  return res.json({
-			success: true,
-			message: "Account approved.",
-			user: user,
-			redirectUrl: redirectUrl,  // Send the redirect URL to frontend
-		  });
-		}
-	  } catch (error) {
-		console.error("Error during user approval check:", error);
-		return res.status(500).json({
-		  success: false,
-		  message: "An internal server error occurred.",
-		});
-	  }
-	})(req, res);
-  };
+    passport.authenticate("google", { failureRedirect: "/login" }, async (err, user, info) => {
+        if (err || !user) {
+            console.error("Google Authentication failed:", err || info.message);
+            return res.status(400).json({
+                success: false,
+                message: info?.message || "Google login failed",
+            });
+        }
+
+        try {
+            console.log("User authenticated:", user); // Log user details for debugging
+
+            // Handle account statuses
+            if (user.status === 'Pending') {
+                // Send pending email and notify the frontend to display the pending page
+                await sendAccountPendingEmail(user.email);  // Email for pending account status
+                return res.redirect('http://localhost:5173/pending'); // Redirect to pending page
+            } else if (user.status === 'Rejected') {
+                // Send rejection email and notify the frontend
+                await sendAccountRejectedEmail(user.email);  // Send rejection email
+                return res.status(403).json({
+                    success: false,
+                    status: 'Rejected',  // Frontend will display the rejection message
+                    message: "Your account has been rejected. Please contact the administrator for assistance.",
+                });
+            } else if (user.status === 'Approved') {
+                // Send approval email if the account is approved
+                await sendAccountApprovedEmail(user.email);  // Send approval email
+
+                // Generate token and set cookie for approved accounts
+				generateTokenAndSetCookie(res, user._id);
+
+                const redirectUrl = defaultDashboards[user.role];
+
+                if (redirectUrl) {
+                    return res.redirect(redirectUrl); // Redirect to the appropriate dashboard
+                } else {
+                    return res.status(400).json({
+                        success: false,
+                        message: "No dashboard found for the user's role.",
+                    });
+                }
+            } else {
+                // Handle any unexpected status
+                return res.status(400).json({
+                    success: false,
+                    message: "Unknown account status.",
+                });
+            }
+        } catch (error) {
+            console.error("Error during user approval check:", error);
+            return res.status(500).json({
+                success: false,
+                message: "An internal server error occurred.",
+            });
+        }
+    })(req, res);
+};
+
   
   
   
