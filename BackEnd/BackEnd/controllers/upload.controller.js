@@ -96,7 +96,7 @@ export const getUploadedFiles = async (req, res) => {
     res.status(200).json({ files });
   } catch (error) {
     console.error("Error fetching uploaded :", error.message);
-    res.status(500).json({ message: 'Error fetching files', error: error.message });
+    res.status(500).json({ message: 'Error fetching files upload.controller', error: error.message });
   }
 };
 

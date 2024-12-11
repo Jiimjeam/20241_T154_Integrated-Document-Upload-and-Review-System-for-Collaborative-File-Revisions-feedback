@@ -193,7 +193,7 @@ const AdminApproval = () => {
                           >
                             <option value="">Assign Role</option>
                             <option value="Instructor">Instructor</option>
-                            <option value="Senior Faculty">Senior Faculty</option>
+                            <option value="Senior_Faculty">Senior Faculty</option>
                             <option value="Program_Chair">Program Chair</option>
                             <option value="CITL">CITL</option>
                             <option value="Admin">Admin</option>

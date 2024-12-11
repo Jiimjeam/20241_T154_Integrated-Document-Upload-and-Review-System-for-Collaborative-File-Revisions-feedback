@@ -14,7 +14,7 @@ const SettingsSENF = () => {
         // If you're fetching from the backend, replace this with your actual API call
         // For now, I will keep the static values but you can replace it with API call.
         setCollegeDepartments({
-            COT: ['Bachelor of Science in Information Technology & Bachelor of Science in EMC', 'BSAT', 'BSET'],
+            COT: ['BSIT', 'BSAT', 'BSET'],
             CON: ["Nursing", "Midwifery"],
             CAS: ["Biology", "Mathematics", "Physics"],
         });

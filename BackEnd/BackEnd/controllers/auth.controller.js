@@ -287,10 +287,13 @@ export const googleAuthCallback = (req, res) => {
     })(req, res);
 };
 
+<<<<<<< HEAD
   
   
   
   
+=======
+>>>>>>> 599e36fc75a729e0b3ed566f121e386e79d60f92
 
 // Fetch users with 'Pending' status
 export const getPendingAccounts = async (req, res) => {
@@ -383,7 +386,7 @@ export const getApprovedAccounts = async (req, res) => {
 	const { role } = req.body;  // Extract new role from the request body
   
 	// Validate the role
-	if (!role || !['Instructor', 'Senior Faculty', 'Program Chair', 'CITL', 'Admin'].includes(role)) {
+	if (!role || !['Instructor', 'Senior_Faculty', 'Program_Chair', 'CITL', 'Admin'].includes(role)) {
 	  return res.status(400).json({ message: "Invalid role" });
 	}
   

@@ -2,17 +2,22 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Utility functions for API calls
-const fetchFiles = async () => {
+const fetchFiles = async (page = 1, limit = 10) => {
   try {
-    const response = await axios.get('http://localhost:5000/api/files');
-    return response.data;
+    const response = await axios.get(
+      `http://localhost:5000/api/files/department?page=${page}&limit=${limit}`,
+      { withCredentials: true }
+    );
+    const { files, pagination } = response.data;
+    return { files, totalPages: Math.ceil(pagination.totalFiles / pagination.limit) };
   } catch (error) {
-    throw new Error('Error fetching files.');
+    console.error(error.message);
+    throw new Error('Error fetching files by department.');
   }
 };
+
 
 const approveFile = async (fileId) => {
   try {
@@ -40,26 +45,35 @@ const reviseFile = async (fileId, comment) => {
 const SeniorFacultyDashboard = () => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileType, setFileType] = useState(null);
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [revisionComment, setRevisionComment] = useState('');
   const [showFilePreviewModal, setShowFilePreviewModal] = useState(false);
+  
 
   useEffect(() => {
     const loadFiles = async () => {
       try {
-        const fetchedFiles = await fetchFiles();
-        setFiles(fetchedFiles);
+        const { files, totalPages } = await fetchFiles(currentPage);
+        setFiles(files);
+        setTotalPages(totalPages);
         setLoading(false);
       } catch (error) {
         toast.error('Error fetching files.');
         setLoading(false);
       }
     };
+    
 
     loadFiles();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleApprove = async (fileId) => {
     try {
@@ -86,8 +100,8 @@ const SeniorFacultyDashboard = () => {
           file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
         )
       );
-      setShowFilePreviewModal(false); // Close modal after submitting
-      setRevisionComment(''); // Clear the comment input
+      setShowFilePreviewModal(false);
+      setRevisionComment('');
     } catch (error) {
       toast.error('Error revising file.');
     }
@@ -103,37 +117,43 @@ const SeniorFacultyDashboard = () => {
 
   const downloadFile = async (filepath) => {
     try {
+      // Handle external URLs
       if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
         window.open(filepath, '_blank');
         toast.success('File download initiated.');
         return;
       }
-
+  
+      // Internal file download
       const response = await axios.get(
         `http://localhost:5000/api/files/download/${encodeURIComponent(filepath)}`,
-        { responseType: 'blob' }
+        { responseType: 'blob' } // Ensures the response is treated as a binary file
       );
-
+  
+      // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-
+  
+      // Get filename from response headers or fallback to filepath
       const disposition = response.headers['content-disposition'];
       const filename = disposition
         ? disposition.split('filename=')[1].replace(/"/g, '')
         : filepath.split('/').pop();
-
+  
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
-      link.remove();
-
+      document.body.removeChild(link); // Clean up after download
+  
       toast.success(`File "${filename}" downloaded successfully.`);
     } catch (error) {
+      console.error('Download error:', error);
       toast.error('Error downloading file.');
     }
   };
-
+  
+  
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -144,8 +164,8 @@ const SeniorFacultyDashboard = () => {
           <table className="table table-striped table-bordered table-hover shadow-sm rounded">
             <thead className="table-dark">
               <tr>
-                <th>Filename</th>
                 <th>Subject Code</th>
+                <th>Co Author</th>
                 <th>Author</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -154,11 +174,10 @@ const SeniorFacultyDashboard = () => {
             <tbody>
               {files.map((file) => (
                 <tr key={file._id} className={file.reviewed ? 'table-success' : ''}>
-                  <td>{file.filename}</td>
                   <td>{file.subjectCode}</td>
+                  <td>{file.coAuthor}</td>
                   <td>{file.author}</td>
                   <td>
-                    {/* Status Display */}
                     <span
                       className={`badge rounded-pill text-white ${
                         file.status === 'approved'
@@ -168,7 +187,9 @@ const SeniorFacultyDashboard = () => {
                           : 'bg-secondary'
                       }`}
                     >
-                      {file.status ? file.status.charAt(0).toUpperCase() + file.status.slice(1) : 'Pending'}
+                      {file.status
+                        ? file.status.charAt(0).toUpperCase() + file.status.slice(1)
+                        : 'Pending'}
                     </span>
                   </td>
                   <td>
@@ -190,6 +211,27 @@ const SeniorFacultyDashboard = () => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="pagination mt-3">
+        <nav>
+          <ul className="pagination">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <li
+                key={index + 1}
+                className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
       {/* File Preview and Revise Modal */}
