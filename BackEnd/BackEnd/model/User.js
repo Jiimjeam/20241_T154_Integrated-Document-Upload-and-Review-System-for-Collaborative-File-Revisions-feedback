@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const collegeDepartments = {
   COB: ['Business Administration', 'Accounting', 'Marketing'],
-  COT: ['Bachelor of Science in Information Technology & Bachelor of Science in EMC', 'BSAT', 'BSET'],
+  COT: [' BSIT', 'BSAT', 'BSET'],
   CON: ['Nursing', 'Midwifery'],
   COE: ['Civil Engineering', 'Electrical Engineering'],
   CAS: ['Biology', 'Mathematics', 'Physics'],
