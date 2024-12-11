@@ -60,6 +60,22 @@ const FileUpload = () => {
     }
   };
 
+  const fetchComments = async (fileId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+  
+      const response = await axios.get(`${API_URL}/files/comments/${fileId}`, { headers });
+      return response.data; // This will contain the comments
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      toast.error('Failed to fetch comments.');
+      return [];
+    }
+  };
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -112,9 +128,14 @@ const FileUpload = () => {
     }
   };
 
-  const handleViewFile = (filepath, comment) => {
+  const handleViewFile = async (fileId, filepath, comment) => {
     setSelectedFile(filepath);
     setRevisionComment(comment);
+  
+    // Fetch the comments for the file
+    const comments = await fetchComments(fileId);
+    setRevisionComment(comments.join("\n") || 'No comments available.'); // Join the comments with new lines
+  
     const fileExtension = filepath.split('.').pop().toLowerCase();
     setFileType(fileExtension);
     setPreviewModalShow(true); // Show the preview modal
@@ -276,24 +297,32 @@ const FileUpload = () => {
             </tr>
           </thead>
           <tbody>
-            {uploadedFiles.map((file) => (
-              <tr key={file._id}>
-                <td>{file.subjectCode}</td>
-                <td>{file.author}</td>
-                <td>{file.coAuthor || 'N/A'}</td>
-                <td>
-                  {/* Dynamically applying badge class based on file status */}
-                  <span className={getStatusBadgeClass(file.status)}>
-                    {file.status || 'Pending'}
-                  </span>
-                </td>
-                <td>
-                  <button onClick={() => handleViewFile(file.filepath, file.revisionComment)} className="btn btn-info btn-sm mx-1">View File & Comments</button>
-                  <button onClick={() => downloadFile(file.filepath)} className="btn btn-success btn-sm mx-2">Download</button>
-                  <button onClick={() => handleDelete(file._id)} className="btn btn-danger btn-sm">Delete</button>
-                </td>
-              </tr>
-            ))}
+          {uploadedFiles.map((file) => (
+  <tr key={file._id}>
+    <td>{file.subjectCode}</td>
+    <td>{file.author}</td>
+    <td>{file.coAuthor || 'N/A'}</td>
+    <td>
+      <span className={getStatusBadgeClass(file.status)}>
+        {file.status || 'Pending'}
+      </span>
+    </td>
+    <td>
+      <button
+        onClick={() => handleViewFile(file._id, file.filepath, file.revisionComment)}
+        className="btn btn-info btn-sm mx-1"
+      >
+        View File & Comments
+      </button>
+      <button onClick={() => downloadFile(file.filepath)} className="btn btn-success btn-sm mx-2">
+        Download
+      </button>
+      <button onClick={() => handleDelete(file._id)} className="btn btn-danger btn-sm">
+        Delete
+      </button>
+    </td>
+  </tr>
+))}
           </tbody>
         </table>
       ) : (
@@ -301,37 +330,47 @@ const FileUpload = () => {
       )}
 
       {/* File Preview Modal */}
-      <Modal show={previewModalShow} onHide={closePreview} size="xl" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>File Preview</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="row">
-            <div className="col-md-8">
-              {/* PDF Preview */}
-              {fileType === 'pdf' ? (
-                <iframe
-                  src={`${API_URL}/files/preview/${encodeURIComponent(selectedFile)}`}
-                  title="PDF Preview"
-                  style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
-                ></iframe>
-              ) : fileType === 'docx' || fileType === 'doc' ? (
-                <iframe
-                  src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
-                  title="Word Document Preview"
-                  style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
-                ></iframe>
-              ) : (
-                <p>File preview not available for this type.</p>
-              )}
-            </div>
-            <div className="col-md-4">
-              <h5>Revision Comment</h5>
-              <p>{revisionComment || 'No comments available.'}</p>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+<Modal show={previewModalShow} onHide={closePreview} size="xl" centered>
+  <Modal.Header closeButton>
+    <Modal.Title>File Preview</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div className="row">
+      <div className="col-md-8">
+        {/* PDF Preview */}
+        {fileType === 'pdf' ? (
+          <iframe
+            src={`${API_URL}/files/preview/${encodeURIComponent(selectedFile)}`}
+            title="PDF Preview"
+            style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
+          ></iframe>
+        ) : fileType === 'docx' || fileType === 'doc' ? (
+          <iframe
+            src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
+            title="Word Document Preview"
+            style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
+          ></iframe>
+        ) : (
+          <p>File preview not available for this type.</p>
+        )}
+      </div>
+      <div className="col-md-4">
+  <h5>Revision Comment</h5>
+  {revisionComment ? (
+    <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+      {revisionComment.split('\n').map((line, index) => (
+        <li key={index} style={{ fontSize: '16px', color: 'black' }}>
+          {line}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p style={{ fontSize: '16px', color: 'black' }}>No comments available.</p>
+  )}
+</div>
+    </div>
+  </Modal.Body>
+</Modal>
     </div>
   );
 };

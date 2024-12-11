@@ -64,10 +64,6 @@ export const getFilesByUserDepartment = async (req, res) => {
   }
 };
 
-
-
-
-
 // Fetch all files
 export const getFiles = async (req, res) => {
   try {
@@ -100,9 +96,6 @@ export const getFilesByUploader = async (req, res) => {
   }
 };
 
-
-
-
 // Approve a file
 export const approveFile = async (req, res) => {
   try {
@@ -122,17 +115,33 @@ export const approveFile = async (req, res) => {
 export const reviseFile = async (req, res) => {
   try {
     const { comment } = req.body;
+    const fileId = req.params.id;
+
+    if (!comment || !fileId) {
+      return res.status(400).json({ error: "File ID and comment are required." });
+    }
+
+    // Find the file and push the new comment
     const file = await File.findByIdAndUpdate(
-      req.params.id,
-      { status: "revision", revisionComment: comment },
+      fileId,
+      {
+        status: "revision",
+        $push: { revisionComments: { comment } }, // Append the new comment
+      },
       { new: true }
     );
-    res.status(200).json({ file });
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found." });
+    }
+
+    res.status(200).json({ message: "File revised successfully.", file });
   } catch (error) {
     console.error("Error revising file:", error.message);
     res.status(500).json({ error: "Error revising file." });
   }
 };
+
 
 export const downloadFileByPath = (req, res) => {
     const filepath = decodeURIComponent(req.params.filepath);
@@ -186,6 +195,25 @@ export const getFilesByStatus = async (req, res) => {
     res.status(500).json({ error: "Error fetching files by status." });
   }
 };
+
+// Fetch comments by file ID
+export const getComments = async (req, res) => {
+  const { fileId } = req.params;
+  try {
+    const file = await File.findById(fileId); // Fetch the file by ID
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    // Extract only the 'comment' text from each revisionComment object
+    const comments = file.revisionComments.map(comment => comment.comment);
+
+    res.status(200).json(comments); // Return only the comments array (text only)
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching comments.' });
+  }
+};
+
 
 export const getApprovedFiles = async (req, res) => {
   const { status } = req.query; // e.g., status=approved

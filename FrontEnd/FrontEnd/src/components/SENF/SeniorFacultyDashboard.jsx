@@ -18,7 +18,6 @@ const fetchFiles = async (page = 1, limit = 10) => {
   }
 };
 
-
 const approveFile = async (fileId) => {
   try {
     const response = await axios.patch(
@@ -32,13 +31,14 @@ const approveFile = async (fileId) => {
 
 const reviseFile = async (fileId, comment) => {
   try {
-    const response = await axios.patch(
+    const response = await axios.post(
       `http://localhost:5000/api/files/${fileId}/revise`,
       { comment }
     );
     return response.data;
   } catch (error) {
-    throw new Error('Error revising file.');
+    console.error("Error revising file:", error.message);
+    throw new Error("Error revising file.");
   }
 };
 
@@ -52,7 +52,6 @@ const SeniorFacultyDashboard = () => {
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [revisionComment, setRevisionComment] = useState('');
   const [showFilePreviewModal, setShowFilePreviewModal] = useState(false);
-  
 
   useEffect(() => {
     const loadFiles = async () => {
@@ -66,7 +65,6 @@ const SeniorFacultyDashboard = () => {
         setLoading(false);
       }
     };
-    
 
     loadFiles();
   }, [currentPage]);
@@ -117,43 +115,37 @@ const SeniorFacultyDashboard = () => {
 
   const downloadFile = async (filepath) => {
     try {
-      // Handle external URLs
       if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
         window.open(filepath, '_blank');
         toast.success('File download initiated.');
         return;
       }
-  
-      // Internal file download
+
       const response = await axios.get(
         `http://localhost:5000/api/files/download/${encodeURIComponent(filepath)}`,
-        { responseType: 'blob' } // Ensures the response is treated as a binary file
+        { responseType: 'blob' }
       );
-  
-      // Create download link
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-  
-      // Get filename from response headers or fallback to filepath
       const disposition = response.headers['content-disposition'];
       const filename = disposition
         ? disposition.split('filename=')[1].replace(/"/g, '')
         : filepath.split('/').pop();
-  
+
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link); // Clean up after download
-  
+      document.body.removeChild(link);
+
       toast.success(`File "${filename}" downloaded successfully.`);
     } catch (error) {
       console.error('Download error:', error);
       toast.error('Error downloading file.');
     }
   };
-  
-  
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -205,6 +197,24 @@ const SeniorFacultyDashboard = () => {
                     >
                       Download
                     </button>
+                  </td>
+                </tr>
+              ))}
+              {files.map((file) => (
+                <tr key={`${file._id}-comments`} className="bg-light">
+                  <td colSpan="5">
+                    <strong>Comments:</strong>
+                    {file.revisionComments && file.revisionComments.length > 0 ? (
+                      <ul>
+                        {file.revisionComments.map((comment, index) => (
+                          <li key={index}>
+                            {comment.comment} <em>({new Date(comment.addedAt).toLocaleString()})</em>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-muted">No comments available.</p>
+                    )}
                   </td>
                 </tr>
               ))}
