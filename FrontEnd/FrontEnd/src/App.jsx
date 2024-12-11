@@ -34,10 +34,8 @@ import AdminApproval from './pages/adminApproval';
 import ExistingUsers from './pages/existingUsers';
 import Senior from './components/SENF/Senior';
 import PendingPage from './pages/pendingPage';
-<<<<<<< HEAD
-=======
 import CITLdashboard from './components/CITL/CITLdashboard';
->>>>>>> bce8454fa6c2ac13b7dbd066676b51d395f6ba3a
+
 
 
 // Protect routes that require authentication
