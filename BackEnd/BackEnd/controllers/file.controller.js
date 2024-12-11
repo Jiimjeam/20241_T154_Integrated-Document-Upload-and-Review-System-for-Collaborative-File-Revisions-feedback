@@ -1,4 +1,5 @@
 import File from "../model/File.js";
+import { User } from "../model/User.js";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -7,14 +8,74 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+
+export const getFilesByUserDepartment = async (req, res) => {
+  try {
+    const userId = req.userId; // Extract the logged-in user's ID (from authentication middleware)
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "User ID is required." });
+    }
+
+    // Fetch user details
+    const user = await User.findById(userId).lean();
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    const { department } = user;
+    if (!department) {
+      console.warn(`User with ID ${userId} has no department specified.`);
+      return res.status(400).json({ success: false, message: "User's department not specified." });
+    }
+
+    // Pagination parameters
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 10);
+
+    // Query files
+    const files = await File.find({ department })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .select("filename filepath size mimetype status author coAuthor subjectCode") // Include subjectCode
+        .lean();
+
+
+    const totalFiles = await File.countDocuments({ department });
+
+    res.status(200).json({
+      success: true,
+      message: files.length ? "Files fetched successfully." : "No files found for the user's department.",
+      files,
+      pagination: { totalFiles, page, limit },
+    });
+  } catch (error) {
+    console.error({
+      message: "Error fetching files by user's department",
+      error: error.message,
+      stack: error.stack,
+    });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching files by user's department.",
+      error: error.message,
+    });
+  }
+};
+
+
+
+
+
 // Fetch all files
 export const getFiles = async (req, res) => {
   try {
     const files = await File.find({});
     res.status(200).json(files);
   } catch (error) {
-    console.error("Error fetching files:", error.message);
-    res.status(500).json({ error: "Error fetching files." });
+    console.error("Error fetching files 11:", error.message);
+    res.status(500).json({ error: "Error fetching files11." });
   }
 };
 

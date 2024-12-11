@@ -10,10 +10,13 @@ import {
   getIT_EMCFiles,
   getFilesByUploader,
   getMathematicsFiles,
+  getFilesByUserDepartment,
 } from "../controllers/file.controller.js";
 import verifyToken from '../middleware/verifyToken.js';
 
 const router = express.Router();
+
+router.get('/department', verifyToken, getFilesByUserDepartment);
 
 // Fetch all files
 router.get("/", getFiles);
