@@ -200,24 +200,7 @@ const SeniorFacultyDashboard = () => {
                   </td>
                 </tr>
               ))}
-              {files.map((file) => (
-                <tr key={`${file._id}-comments`} className="bg-light">
-                  <td colSpan="5">
-                    <strong>Comments:</strong>
-                    {file.revisionComments && file.revisionComments.length > 0 ? (
-                      <ul>
-                        {file.revisionComments.map((comment, index) => (
-                          <li key={index}>
-                            {comment.comment} <em>({new Date(comment.addedAt).toLocaleString()})</em>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-muted">No comments available.</p>
-                    )}
-                  </td>
-                </tr>
-              ))}
+             
             </tbody>
           </table>
         </div>
