@@ -11,6 +11,7 @@ import {
   getFilesByUploader,
   getMathematicsFiles,
   getFilesByUserDepartment,
+  getComments,
 } from "../controllers/file.controller.js";
 import verifyToken from '../middleware/verifyToken.js';
 
@@ -37,12 +38,14 @@ router.get('/it-emc-files', getIT_EMCFiles),
 
 router.get('/mathematics', getMathematicsFiles),
 
+router.get('/comments/:fileId', getComments),
 
 // Approve a file
 router.patch("/:id/approve", approveFile);
 
 // Revise a file
-router.patch("/:id/revise", reviseFile);
+router.post("/:id/revise", reviseFile);
+
 
 // Download a file by filepath
 router.get("/download/:filepath", downloadFileByPath);

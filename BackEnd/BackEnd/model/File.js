@@ -11,7 +11,12 @@ const fileSchema = new mongoose.Schema({
   recipientUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // Recipient user ID
   uploaderUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Uploader user ID
   status: { type: String, enum: ['pending', 'approved', 'revision'], default: 'pending' }, // File status
-  revisionComment: { type: String, default: '' }, // Comment for revision (if applicable)
+  revisionComments: [
+    {
+      comment: { type: String, required: true },
+      addedAt: { type: Date, default: Date.now },
+    },
+  ],
   college: { type: String, required: true }, // College of the uploader
   department: { type: String, required: true }, // Department of the uploader
   timestamp: { type: Date, default: Date.now },

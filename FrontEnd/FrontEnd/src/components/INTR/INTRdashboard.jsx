@@ -49,9 +49,8 @@ const INTRdashboard = () => {
       <aside className="sidebar bg-dark text-white p-4 d-flex flex-column align-items-center position-fixed vh-100">
         <div className="profile-section text-center mb-4">
           <Profileupload />
-          <h4 className="profile-title text-info">Instructor</h4>
-          <p className="profile-detail">{user.name}</p>
-          <p className="profile-detail">{user.email}</p>
+          <h4 className="profile-title text-info">{user.role}</h4>
+          <p className="profile-detail">{user.name}</p><hr/>
         </div>
         <nav className="menu w-100 mb-4">
           <Link to="/INTRdashboard/Home" className="menuItem d-flex align-items-center p-3 text-white">
@@ -60,11 +59,7 @@ const INTRdashboard = () => {
           </Link>
           <Link to="/INTRdashboard/Settings" className="menuItem d-flex align-items-center p-3 text-white">
           <FaCog className="menu-icon mr-3" size={24} />
-            <span>Settings</span>
-          </Link>
-          <Link to="/INTRdashboard/history" className="menuItem d-flex align-items-center p-3 text-white">
-          <FaHistory className="menu-icon mr-3" size={24} />
-            <span>History</span>
+            <span>College & Department</span>
           </Link>
           <Link to="/INTRdashboard/my-syllabus" className="menuItem d-flex align-items-center p-3 text-white">
           <FaFileAlt className="menu-icon mr-3" size={24} />

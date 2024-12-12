@@ -1,137 +1,138 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./Settings.css";
 
 const Settings = () => {
-    const [college, setCollege] = useState(""); // College state
-    const [department, setDepartment] = useState(""); // Department state
-    const [message, setMessage] = useState(""); // Success or error message
-    const [isError, setIsError] = useState(false); // Error state for styling
-    const [collegeDepartments, setCollegeDepartments] = useState({}); // To store dynamic departments
+  const [college, setCollege] = useState("");
+  const [department, setDepartment] = useState("");
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  const [collegeDepartments, setCollegeDepartments] = useState({});
 
-    // Fetch the department mapping from backend or static (you already have a static mapping here)
-    useEffect(() => {
-        // If you're fetching from the backend, replace this with your actual API call
-        // For now, I will keep the static values but you can replace it with API call.
-        setCollegeDepartments({
-            COT: ['BSIT', 'BSAT', 'BSET'],
-            CON: ["Nursing", "Midwifery"],
-            CAS: ["Biology", "Mathematics", "Physics"],
-        });
-    }, []); // Only run once when the component mounts
+  useEffect(() => {
+    setCollegeDepartments({
+      COT: ["BSIT", "BSAT", "BSET"],
+      CON: ["Nursing", "Midwifery"],
+      CAS: ["Biology", "Mathematics", "Physics"],
+    });
+  }, []);
 
-    // Handle the form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setMessage("");
-        setIsError(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setIsError(false);
 
-        // Validate if both college and department are selected
-        if (!college || !department) {
-            setMessage("Please select both college and department.");
-            setIsError(true);
-            return;
+    if (!college || !department) {
+      setMessage("Please select both college and department.");
+      setIsError(true);
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        "http://localhost:5000/api/auth/update-settings",
+        { college, department },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        try {
-            const response = await axios.put(
-                "http://localhost:5000/api/auth/update-settings",
-                { college, department },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+      setMessage("College and department successfully updated!");
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      const errorMessage =
+        error.response?.data?.message || "An error occurred";
+      if (
+        error.response?.status === 400 &&
+        errorMessage.includes("already updated")
+      ) {
+        setMessage("College and department are already updated.");
+      } else {
+        setMessage(errorMessage);
+      }
+      setIsError(true);
+    }
+  };
 
-            setMessage("College and department successfully updated!");
-        } catch (error) {
-            console.error("Error updating settings:", error);
+  return (
+    <div className="w-[1000px] mx-auto p-8 bg-white rounded-lg shadow-lg">
+  <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+    Set College & Department
+  </h2>
+  <form onSubmit={handleSubmit} className="space-y-6">
+    <div>
+      <label htmlFor="college" className="block text-gray-700 font-medium mb-2">
+        College:
+      </label>
+      <select
+        id="college"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        value={college}
+        onChange={(e) => {
+          setCollege(e.target.value);
+          setDepartment("");
+        }}
+        required
+      >
+        <option value="" disabled>
+          Select College
+        </option>
+        {Object.keys(collegeDepartments).map((collegeKey) => (
+          <option key={collegeKey} value={collegeKey}>
+            {collegeKey}
+          </option>
+        ))}
+      </select>
+    </div>
 
-            const errorMessage =
-                error.response?.data?.message || "An error occurred";
-            
-            // Handle known error case (already updated, etc.)
-            if (
-                error.response?.status === 400 &&
-                errorMessage.includes("already updated")
-            ) {
-                setMessage("College and department are already updated.");
-            } else {
-                setMessage(errorMessage);
-            }
+    {college && collegeDepartments[college] && (
+      <div>
+        <label
+          htmlFor="department"
+          className="block text-gray-700 font-medium mb-2"
+        >
+          Department:
+        </label>
+        <select
+          id="department"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={department}
+          onChange={(e) => setDepartment(e.target.value)}
+          required
+        >
+          <option value="" disabled>
+            Select Department
+          </option>
+          {collegeDepartments[college].map((dept) => (
+            <option key={dept} value={dept}>
+              {dept}
+            </option>
+          ))}
+        </select>
+      </div>
+    )}
 
-            setIsError(true);
-        }
-    };
+    <button
+      type="submit"
+      className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      Update Settings
+    </button>
+  </form>
 
-    return (
-        <div className="settings-container">
-            <h2 className="settings-title">Update Your Settings</h2>
-            <form onSubmit={handleSubmit} className="settings-form">
-                {/* College Selection */}
-                <div className="form-group">
-                    <label htmlFor="college">College:</label>
-                    <select
-                        id="college"
-                        className="form-control"
-                        value={college}
-                        onChange={(e) => {
-                            setCollege(e.target.value);
-                            setDepartment(""); // Reset department when college changes
-                        }}
-                        required
-                    >
-                        <option value="" disabled>
-                            Select College
-                        </option>
-                        {Object.keys(collegeDepartments).map((collegeKey) => (
-                            <option key={collegeKey} value={collegeKey}>
-                                {collegeKey}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Department Selection */}
-                {college && collegeDepartments[college] && (
-                    <div className="form-group">
-                        <label htmlFor="department">Department:</label>
-                        <select
-                            id="department"
-                            className="form-control"
-                            value={department}
-                            onChange={(e) => setDepartment(e.target.value)}
-                            required
-                        >
-                            <option value="" disabled>
-                                Select Department
-                            </option>
-                            {collegeDepartments[college].map((dept) => (
-                                <option key={dept} value={dept}>
-                                    {dept}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
-                <button type="submit" className="btn btn-primary">
-                    Update Settings
-                </button>
-            </form>
-
-            {/* Message Display */}
-            {message && (
-                <p
-                    className={`settings-message ${isError ? "error" : "success"}`}
-                >
-                    {message}
-                </p>
-            )}
-        </div>
-    );
+  {message && (
+    <p
+      className={`mt-6 p-4 rounded-lg text-center font-medium ${
+        isError ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"
+      }`}
+    >
+      {message}
+    </p>
+  )}
+</div>
+  );
 };
 
 export default Settings;
