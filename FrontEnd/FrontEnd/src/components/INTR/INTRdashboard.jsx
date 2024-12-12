@@ -7,7 +7,7 @@ import syllabusIcon from '../../assets/syllabus.svg';
 import { useAuthStore } from '../../store/authStore';
 import Profileupload from './profile';
 import Swal from "sweetalert2";
-
+import {MdFeedback} from 'react-icons/md';
 import { FaHome, FaCog, FaHistory, FaFileAlt } from 'react-icons/fa';
 
 
@@ -71,7 +71,7 @@ const INTRdashboard = () => {
             <span>My Syllabi</span>
           </Link>
           <Link to="/INTRdashboard/Feedback" className="menuItem d-flex align-items-center p-3 text-white">
-          <FaFileAlt className="menu-icon mr-3" size={24} />
+          <MdFeedback className="menu-icon mr-3" size={24} />
             <span>Feedback</span>
           </Link>
         </nav>

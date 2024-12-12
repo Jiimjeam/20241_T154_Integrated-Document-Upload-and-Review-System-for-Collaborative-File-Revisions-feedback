@@ -42,7 +42,7 @@ router.get('/mathematics', getMathematicsFiles),
 router.patch("/:id/approve", approveFile);
 
 // Revise a file
-router.put("/:id/revise", reviseFile);
+router.patch("/:id/revise", reviseFile);
 
 // Download a file by filepath
 router.get("/download/:filepath", downloadFileByPath);

@@ -14,6 +14,7 @@ const fileSchema = new mongoose.Schema({
   revisionComment: { type: String, default: '' }, // Comment for revision (if applicable)
   college: { type: String, required: true }, // College of the uploader
   department: { type: String, required: true }, // Department of the uploader
+  timestamp: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 export default mongoose.model('File', fileSchema);

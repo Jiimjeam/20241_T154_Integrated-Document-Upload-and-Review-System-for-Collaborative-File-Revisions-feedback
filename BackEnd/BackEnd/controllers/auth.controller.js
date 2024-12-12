@@ -287,13 +287,6 @@ export const googleAuthCallback = (req, res) => {
     })(req, res);
 };
 
-<<<<<<< HEAD
-  
-  
-  
-  
-=======
->>>>>>> 599e36fc75a729e0b3ed566f121e386e79d60f92
 
 // Fetch users with 'Pending' status
 export const getPendingAccounts = async (req, res) => {

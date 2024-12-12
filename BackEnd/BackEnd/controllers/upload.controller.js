@@ -92,11 +92,12 @@ export const uploadFile = async (req, res) => {
 // Fetch all uploaded files
 export const getUploadedFiles = async (req, res) => {
   try {
-    const files = await File.find();
+    const files = await File.find().sort({ timestamp: -1 });
+    console.log("Files retrieved from database:", files); // Add this log
     res.status(200).json({ files });
   } catch (error) {
-    console.error("Error fetching uploaded :", error.message);
-    res.status(500).json({ message: 'Error fetching files upload.controller', error: error.message });
+    console.error('Error fetching uploaded files:', error.message);
+    res.status(500).json({ message: 'Error fetching files', error: error.message });
   }
 };
 

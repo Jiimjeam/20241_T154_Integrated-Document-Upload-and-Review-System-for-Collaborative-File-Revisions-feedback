@@ -37,7 +37,7 @@ import Senior from './components/SENF/Senior';
 import PendingPage from './pages/pendingPage';
 import CITLdashboard from './components/CITL/CITLdashboard';
 import CITLhome from './components/CITL/CITLhome';
-
+import CITLHistory from './components/CITL/History';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -166,7 +166,7 @@ function App() {
             </ProtectedRoute>}
         >
           <Route path='Home' element={<CITLhome />} />
-
+          <Route path='history' element={<CITLHistory />} />
           <Route path="Colleges" element={<Colleges />}>
             <Route path="cot" element={<COT />}>
                 {/* Nested routes for departments */}

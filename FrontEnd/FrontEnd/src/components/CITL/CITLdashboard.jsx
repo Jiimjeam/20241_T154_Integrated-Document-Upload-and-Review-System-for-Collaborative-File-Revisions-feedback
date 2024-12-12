@@ -58,7 +58,7 @@ const CITLdashboard = () => {
           <FaCog className="menu-icon mr-3" size={24} />
             <span>Settings</span>
           </Link>
-          <Link to="/CITL/" className="menuItem d-flex align-items-center p-3 text-white">
+          <Link to="/CITL/History" className="menuItem d-flex align-items-center p-3 text-white">
           <FaHistory className="menu-icon mr-3" size={24} />
             <span>History</span>
           </Link>
