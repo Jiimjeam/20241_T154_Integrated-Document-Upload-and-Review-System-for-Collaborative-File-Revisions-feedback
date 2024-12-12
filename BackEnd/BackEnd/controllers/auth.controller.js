@@ -223,7 +223,7 @@ const defaultDashboards = {
     Instructor: "http://localhost:5173/INTRdashboard",
     Senior_Faculty: "http://localhost:5173/Senior",
     Program_Chair: "http://localhost:5173/admin/home",
-    CITL: "http://localhost:5173/admin/home",
+    CITL: "http://localhost:5173/CITL/home",
     Admin: "http://localhost:5173/admin/home",
 };
 

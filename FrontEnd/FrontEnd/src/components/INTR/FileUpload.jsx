@@ -229,7 +229,7 @@ const FileUpload = () => {
 
   return (
     <div className="container mt-4">
-      <h1> Add File </h1>
+      <h1 className='font-bold'> Add File </h1>
 
       {/* Button to trigger modal */}
       <button onClick={() => setShowModal(true)} className="btn btn-primary mb-3">Upload File</button>
@@ -282,95 +282,110 @@ const FileUpload = () => {
         </Modal.Body>
       </Modal>
 
-      <h2 className="mt-4">Uploaded Files</h2>
+      <h2 className="mt-4 font-bold pb-2">Uploaded Files</h2>
       {loadingFiles ? (
         <p>Loading files...</p>
       ) : uploadedFiles.length > 0 ? (
-        <table className="table table-striped table-responsive uploaded-files-table">
-          <thead>
+        <table className="table-auto w-[950px] border-collapse shadow-2xl rounded-lg overflow-hidden">
+          <thead className="bg-gray-100 text-gray-900">
             <tr>
-              <th>Subject Code</th>
-              <th>Author</th>
-              <th>Co-Author</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th className="p-2 text-left font-semibold shadow-md rounded-md">Subject Code</th>
+              <th className="p-2 text-left font-semibold shadow-md rounded-md">Author</th>
+              <th className="p-2 text-left font-semibold shadow-md rounded-md">Co-Author</th>
+              <th className="p-2 text-left font-semibold shadow-md rounded-md">Status</th>
+              <th className="p-2 text-left font-semibold shadow-md rounded-md">Actions</th>
             </tr>
           </thead>
           <tbody>
-          {uploadedFiles.map((file) => (
-  <tr key={file._id}>
-    <td>{file.subjectCode}</td>
-    <td>{file.author}</td>
-    <td>{file.coAuthor || 'N/A'}</td>
-    <td>
-      <span className={getStatusBadgeClass(file.status)}>
-        {file.status || 'Pending'}
-      </span>
-    </td>
-    <td>
-      <button
-        onClick={() => handleViewFile(file._id, file.filepath, file.revisionComment)}
-        className="btn btn-info btn-sm mx-1"
-      >
-        View File & Comments
-      </button>
-      <button onClick={() => downloadFile(file.filepath)} className="btn btn-success btn-sm mx-2">
-        Download
-      </button>
-      <button onClick={() => handleDelete(file._id)} className="btn btn-danger btn-sm">
-        Delete
-      </button>
-    </td>
-  </tr>
-))}
+            {uploadedFiles.map((file, index) => (
+              <tr
+                key={file._id}
+                className={`${
+                  index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                } hover:bg-gray-100 transition-colors`}
+              >
+                <td className="p-2 text-gray-800 shadow-md rounded-md">{file.subjectCode}</td>
+                <td className="p-2 text-gray-800 shadow-md rounded-md">{file.author}</td>
+                <td className="p-2 text-gray-800 shadow-md rounded-md">{file.coAuthor || 'N/A'}</td>
+                <td className="p-2 shadow-sm rounded-md">
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded ${getStatusBadgeClass(file.status)}`}
+                  >
+                    {file.status || 'Pending'}
+                  </span>
+                </td>
+                <td className="p-3 shadow-sm rounded-md">
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleViewFile(file._id, file.filepath, file.revisionComment)}
+                      className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600 transition"
+                    >
+                      View Comments
+                    </button>
+                    <button
+                      onClick={() => downloadFile(file.filepath)}
+                      className="bg-green-500 text-white text-xs px-2 py-1 rounded hover:bg-green-600 transition"
+                    >
+                      Download
+                    </button>
+                    <button
+                      onClick={() => handleDelete(file._id)}
+                      className="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600 transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       ) : (
-        <p>No files uploaded yet.</p>
+        <p className='w-[950px]'>No files uploaded yet.</p>
       )}
 
       {/* File Preview Modal */}
-<Modal show={previewModalShow} onHide={closePreview} size="xl" centered>
-  <Modal.Header closeButton>
-    <Modal.Title>File Preview</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <div className="row">
-      <div className="col-md-8">
-        {/* PDF Preview */}
-        {fileType === 'pdf' ? (
-          <iframe
-            src={`${API_URL}/files/preview/${encodeURIComponent(selectedFile)}`}
-            title="PDF Preview"
-            style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
-          ></iframe>
-        ) : fileType === 'docx' || fileType === 'doc' ? (
-          <iframe
-            src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
-            title="Word Document Preview"
-            style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
-          ></iframe>
+      <Modal show={previewModalShow} onHide={closePreview} size="xl" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>File Preview</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="row">
+            <div className="col-md-8">
+              {/* PDF Preview */}
+              {fileType === 'pdf' ? (
+                <iframe
+                  src={`${API_URL}/files/preview/${encodeURIComponent(selectedFile)}`}
+                  title="PDF Preview"
+                  style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
+                ></iframe>
+              ) : fileType === 'docx' || fileType === 'doc' ? (
+                <iframe
+                  src={`https://docs.google.com/gview?url=${selectedFile}&embedded=true`}
+                  title="Word Document Preview"
+                  style={{ width: '100%', height: '500px', border: 'none' }} // Increased height for larger preview
+                ></iframe>
+              ) : (
+                <p>File preview not available for this type.</p>
+              )}
+            </div>
+            <div className="col-md-4">
+        <h5 className='font-bold'>Revision Comment</h5>
+        {revisionComment ? (
+          <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+            {revisionComment.split('\n').map((line, index) => (
+              <li key={index} style={{ fontSize: '16px', color: 'black' }}>
+                {line}
+              </li>
+            ))}
+          </ul>
         ) : (
-          <p>File preview not available for this type.</p>
+          <p style={{ fontSize: '16px', color: 'black' }}>No comments available.</p>
         )}
       </div>
-      <div className="col-md-4">
-  <h5>Revision Comment</h5>
-  {revisionComment ? (
-    <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-      {revisionComment.split('\n').map((line, index) => (
-        <li key={index} style={{ fontSize: '16px', color: 'black' }}>
-          {line}
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p style={{ fontSize: '16px', color: 'black' }}>No comments available.</p>
-  )}
-</div>
-    </div>
-  </Modal.Body>
-</Modal>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
