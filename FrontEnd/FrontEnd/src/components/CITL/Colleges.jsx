@@ -40,7 +40,7 @@ const Colleges = () => {
             </Link>
             <Link to="coe" className="p-4 border rounded-lg bg-green-100 shadow-md text-center hover:bg-green-200">
               <h3 className="text-lg font-semibold">COE</h3>
-              <p className="text-sm text-gray-600">College of Engineering</p>
+              <p className="text-sm text-gray-600">College of Education</p>
             </Link>
           </div>
         </>

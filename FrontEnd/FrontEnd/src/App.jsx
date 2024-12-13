@@ -163,6 +163,7 @@ function App() {
 
           <Route path='Calendar' element={<PCalendar />} />
           <Route path='Syllabi' element={<Syllabi />} />
+          <Route path="collegeDepartment" element={<CollegeDepartment />}></Route>
 			  
       </Route>
 

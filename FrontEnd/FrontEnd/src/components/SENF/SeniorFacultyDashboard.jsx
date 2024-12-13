@@ -184,7 +184,7 @@ const SeniorFacultyDashboard = () => {
                         : 'Pending'}
                     </span>
                   </td>
-                  <td>
+                  <td>                 
                     <button
                       onClick={() => handleViewFile(file._id, file.filepath)}
                       className="btn btn-info btn-sm mx-1"

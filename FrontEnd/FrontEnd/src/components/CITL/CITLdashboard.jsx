@@ -40,7 +40,6 @@ const CITLdashboard = () => {
           <Profileupload />
           <h4 className="profile-title text-info">CITL</h4>
           <p className="profile-detail">{user.name}</p>
-          <p className="profile-detail">{user.email}</p>
           <hr />
         </div>
         <nav className="menu w-100 mb-4">
