@@ -25,6 +25,7 @@ import { useEffect } from "react";
 import ProgramChairDashboard from './components/PROGRAMCHAIR/ProgramChairDashboard';
 import Program from './components/PROGRAMCHAIR/Program';
 import Syllabi from './components/PROGRAMCHAIR/Syllabi';
+import CollegeDepartment from './components/PROGRAMCHAIR/CollegeDepartment';
 
 import Colleges from './components/CITL/Colleges';
 import COT from './components/CITL/COT';
@@ -154,6 +155,7 @@ function App() {
 
             
           <Route path='Syllabi' element={<Syllabi />} />
+          <Route path="collegeDepartment" element={<CollegeDepartment/> }/>
 			  
       </Route>
 

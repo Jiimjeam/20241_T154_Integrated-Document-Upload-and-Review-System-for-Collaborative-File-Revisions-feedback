@@ -48,9 +48,9 @@ const Program = () => {
             <FaHome className="menu-icon me-3" size={24} />
             <span>Home</span>
           </Link>
-          <Link to="/Program/Settings" className="menuItem d-flex align-items-center p-3 text-white">
+          <Link to="/Program/collegeDepartment" className="menuItem d-flex align-items-center p-3 text-white">
             <FaCog className="menu-icon me-3" size={24} />
-            <span>Settings</span>
+            <span>College & Department</span>
           </Link>
           <Link to="/Program/History" className="menuItem d-flex align-items-center p-3 text-white">
             <FaHistory className="menu-icon me-3" size={24} />

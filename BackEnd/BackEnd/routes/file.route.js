@@ -12,12 +12,15 @@ import {
   getMathematicsFiles,
   getFilesByUserDepartment,
   getComments,
+  getFilesByUserDepartment_Status,
 } from "../controllers/file.controller.js";
 import verifyToken from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
 router.get('/department', verifyToken, getFilesByUserDepartment);
+
+router.get('/allApprovedFiles', verifyToken, getFilesByUserDepartment_Status);
 
 // Fetch all files
 router.get("/", getFiles);
