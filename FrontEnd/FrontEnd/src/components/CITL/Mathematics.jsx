@@ -10,15 +10,18 @@ const Mathematics = ({ show, handleClose }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchApprovedFiles = async () => {
+    setLoading(true); // Ensure loading state is handled properly.
+    
     try {
       const response = await axios.get('http://localhost:5000/api/files/mathematics', {
         params: { department: 'Mathematics' },
       });
-      const approvedFiles = response.data.files.filter((file) => file.status === 'approved');
-      setApprovedFiles(approvedFiles);
+      setApprovedFiles(response.data.files || []); // Handle undefined `files`.
     } catch (error) {
       console.error('Error fetching approved files:', error.response?.data || error.message);
-      toast.error('Failed to fetch approved files. Please try again.');
+      toast.error(
+        error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
