@@ -28,8 +28,8 @@ const COT = () => {
       <p className="text-gray-700 mb-6">Explore the departments under COT:</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         <Link to="it_emc" className="p-4 border rounded-lg bg-blue-100 shadow-md hover:bg-blue-200">
-          <h3 className="text-lg font-semibold">IT and EMC</h3>
-          <p className="text-sm text-gray-600">Information Technology and EMC</p>
+          <h3 className="text-lg font-semibold">BSIT</h3>
+          <p className="text-sm text-gray-600">Information Technology</p>
         </Link>
         <Link to="automotive" className="p-4 border rounded-lg bg-blue-100 shadow-md hover:bg-blue-200">
           <h3 className="text-lg font-semibold">Automotive</h3>

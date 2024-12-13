@@ -7,7 +7,7 @@ import {
   getFileStats, 
   getFilesByStatus, 
   getApprovedFiles, 
-  getIT_EMCFiles,
+  getITFiles,
   getFilesByUploader,
   getMathematicsFiles,
   getFilesByUserDepartment,
@@ -37,7 +37,7 @@ router.get("/stats", getFileStats);
 // Fetch approved files
 router.get('/approved', getApprovedFiles);
 
-router.get('/it-emc-files', getIT_EMCFiles),
+router.get('/it-emc-files', getITFiles),
 
 router.get('/mathematics', getMathematicsFiles),
 
