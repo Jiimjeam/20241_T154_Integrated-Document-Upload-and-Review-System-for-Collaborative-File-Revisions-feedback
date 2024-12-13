@@ -4,7 +4,7 @@ import ProgramChairDashboard from './ProgramChairDashboard';
 const Syllabi = () => {
   return (
     <div>
-      <h1>My Syllabi</h1>
+      <h1>Syllabi</h1>
       <ProgramChairDashboard />
     </div>
   );

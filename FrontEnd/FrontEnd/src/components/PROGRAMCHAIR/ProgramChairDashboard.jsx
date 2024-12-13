@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const fetchFiles = async () => {
+const fetchFiles = async (page = 1, limit = 10) => {
   try {
-    const response = await axios.get('http://localhost:5000/api/files/approved', {
-      params: { status: 'approved' }, // Filter for approved files
-    });
-    return response.data;
+    const response = await axios.get(
+      `http://localhost:5000/api/files/allApprovedFiles?page=${page}&limit=${limit}`,
+      { withCredentials: true }
+    );
+    const { files, pagination } = response.data;
+    return { files, totalPages: Math.ceil(pagination.totalFiles / pagination.limit) };
   } catch (error) {
-    throw new Error('Error fetching approved files.');
+    console.error(error.message);
+    throw new Error('Error fetching files by department.');
   }
 };
 
@@ -28,72 +31,47 @@ const approveFile = async (fileId) => {
 
 const reviseFile = async (fileId, comment) => {
   try {
-    const response = await axios.patch(
+    const response = await axios.post(
       `http://localhost:5000/api/files/${fileId}/revise`,
       { comment }
     );
     return response.data;
   } catch (error) {
-    throw new Error('Error revising file.');
-  }
-};
-
-const downloadFile = async (filepath) => {
-  try {
-    if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
-      window.open(filepath, '_blank');
-      toast.success('File download initiated.');
-      return;
-    }
-
-    const response = await axios.get(
-      `http://localhost:5000/api/files/download/${encodeURIComponent(filepath)}`,
-      { responseType: 'blob' }
-    );
-
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-
-    const disposition = response.headers['content-disposition'];
-    const filename = disposition
-      ? disposition.split('filename=')[1].replace(/"/g, '')
-      : filepath.split('/').pop();
-
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    toast.success(`File "${filename}" downloaded successfully.`);
-  } catch (error) {
-    toast.error('Error downloading file.');
+    console.error("Error revising file:", error.message);
+    throw new Error("Error revising file.");
   }
 };
 
 const ProgramChairDashboard = () => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileType, setFileType] = useState(null);
-  const [showFilePreviewModal, setShowFilePreviewModal] = useState(false);
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [revisionComment, setRevisionComment] = useState('');
+  const [showFilePreviewModal, setShowFilePreviewModal] = useState(false);
 
   useEffect(() => {
     const loadFiles = async () => {
       try {
-        const fetchedFiles = await fetchFiles(); // Fetch only approved files
-        setFiles(fetchedFiles);
+        const { files, totalPages } = await fetchFiles(currentPage);
+        setFiles(files);
+        setTotalPages(totalPages);
         setLoading(false);
       } catch (error) {
-        toast.error('Error fetching approved files.');
+        toast.error('Error fetching files.');
         setLoading(false);
       }
     };
 
     loadFiles();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleApprove = async (fileId) => {
     try {
@@ -120,8 +98,8 @@ const ProgramChairDashboard = () => {
           file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
         )
       );
-      setShowFilePreviewModal(false); // Close modal after submitting
-      setRevisionComment(''); // Clear the comment input
+      setShowFilePreviewModal(false);
+      setRevisionComment('');
     } catch (error) {
       toast.error('Error revising file.');
     }
@@ -132,33 +110,54 @@ const ProgramChairDashboard = () => {
     setSelectedFileId(fileId);
     const fileExtension = filepath.split('.').pop().toLowerCase();
     setFileType(fileExtension);
-    setShowFilePreviewModal(true); // Show the preview modal
+    setShowFilePreviewModal(true);
+  };
+
+  const downloadFile = async (filepath) => {
+    try {
+      if (filepath.startsWith('http://') || filepath.startsWith('https://')) {
+        window.open(filepath, '_blank');
+        toast.success('File download initiated.');
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:5000/api/files/download/${encodeURIComponent(filepath)}`,
+        { responseType: 'blob' }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      const disposition = response.headers['content-disposition'];
+      const filename = disposition
+        ? disposition.split('filename=')[1].replace(/"/g, '')
+        : filepath.split('/').pop();
+
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success(`File "${filename}" downloaded successfully.`);
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Error downloading file.');
+    }
   };
 
   if (loading) return <div>Loading...</div>;
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case 'approved':
-        return 'bg-success text-white';
-      case 'revision':
-        return 'bg-warning text-dark';
-      case 'pending':
-      default:
-        return 'bg-secondary text-white';
-    }
-  };
 
   return (
     <div className="container mt-4">
       <ToastContainer />
       <div className="row">
         <div className="col-md-12">
-          <table className="table table-striped table-bordered table-hover">
+          <table className="table table-striped table-bordered table-hover shadow-sm rounded">
             <thead className="table-dark">
               <tr>
-                <th>Filename</th>
                 <th>Subject Code</th>
+                <th>Co Author</th>
                 <th>Author</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -167,12 +166,22 @@ const ProgramChairDashboard = () => {
             <tbody>
               {files.map((file) => (
                 <tr key={file._id} className={file.reviewed ? 'table-success' : ''}>
-                  <td>{file.filename}</td>
                   <td>{file.subjectCode}</td>
+                  <td>{file.coAuthor}</td>
                   <td>{file.author}</td>
                   <td>
-                    <span className={`badge ${getStatusClass(file.status || 'pending')}`}>
-                      {file.status || 'Pending'}
+                    <span
+                      className={`badge rounded-pill text-white ${
+                        file.status === 'approved'
+                          ? 'bg-success'
+                          : file.status === 'revision'
+                          ? 'bg-warning'
+                          : 'bg-secondary'
+                      }`}
+                    >
+                      {file.status
+                        ? file.status.charAt(0).toUpperCase() + file.status.slice(1)
+                        : 'Pending'}
                     </span>
                   </td>
                   <td>
@@ -180,20 +189,42 @@ const ProgramChairDashboard = () => {
                       onClick={() => handleViewFile(file._id, file.filepath)}
                       className="btn btn-info btn-sm mx-1"
                     >
-                      <i className="bi bi-eye"></i> View
+                      View & Revise
                     </button>
                     <button
                       onClick={() => downloadFile(file.filepath)}
                       className="btn btn-primary btn-sm mx-1"
                     >
-                      <i className="bi bi-download"></i> Download
+                      Download
                     </button>
                   </td>
                 </tr>
               ))}
+             
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="pagination mt-3">
+        <nav>
+          <ul className="pagination">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <li
+                key={index + 1}
+                className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
       {/* File Preview and Revise Modal */}
@@ -234,7 +265,6 @@ const ProgramChairDashboard = () => {
 
                 {/* Revision and Approve Section */}
                 <div className="actions-section" style={{ width: '30%' }}>
-                  {/* Revision Comments Section */}
                   <h6>Revision Comments</h6>
                   <textarea
                     className="form-control"

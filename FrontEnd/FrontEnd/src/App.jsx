@@ -29,6 +29,7 @@ import { useEffect } from "react";
 import ProgramChairDashboard from './components/PROGRAMCHAIR/ProgramChairDashboard';
 import Program from './components/PROGRAMCHAIR/Program';
 import Syllabi from './components/PROGRAMCHAIR/Syllabi';
+import CollegeDepartment from './components/PROGRAMCHAIR/CollegeDepartment';
 import PCalendar from './components/PROGRAMCHAIR/PCalendar';
 
 import Colleges from './components/CITL/Colleges';
@@ -162,7 +163,7 @@ function App() {
 
           <Route path='Calendar' element={<PCalendar />} />
           <Route path='Syllabi' element={<Syllabi />} />
-          <Route path='Feedback' element={<Feedback />} />
+			  
       </Route>
 
 

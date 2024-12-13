@@ -17,6 +17,10 @@ const Colleges = () => {
               <h3 className="text-lg font-semibold">COT</h3>
               <p className="text-sm text-gray-600">College of Technology</p>
             </Link>
+            <Link to="cas" className="p-4 border rounded-lg bg-green-100 shadow-md text-center hover:bg-green-200">
+              <h3 className="text-lg font-semibold">CAS</h3>
+              <p className="text-sm text-gray-600">College of Arts and Sciences</p>
+            </Link>
             <Link to="cob" className="p-4 border rounded-lg bg-green-100 shadow-md text-center hover:bg-green-200">
               <h3 className="text-lg font-semibold">COB</h3>
               <p className="text-sm text-gray-600">College of Business</p>
@@ -29,10 +33,7 @@ const Colleges = () => {
               <h3 className="text-lg font-semibold">COM</h3>
               <p className="text-sm text-gray-600">College of Medicine</p>
             </Link>
-            <Link to="cas" className="p-4 border rounded-lg bg-green-100 shadow-md text-center hover:bg-green-200">
-              <h3 className="text-lg font-semibold">CAS</h3>
-              <p className="text-sm text-gray-600">College of Arts and Sciences</p>
-            </Link>
+            
             <Link to="cpag" className="p-4 border rounded-lg bg-green-100 shadow-md text-center hover:bg-green-200">
               <h3 className="text-lg font-semibold">CPAG</h3>
               <p className="text-sm text-gray-600">College of Public Administration and Governance</p>

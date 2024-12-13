@@ -183,12 +183,6 @@ export const getUsers = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 export const getFilesByDepartment = async (req, res) => {
   try {
     // Retrieve userId from the token middleware

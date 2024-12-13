@@ -5,26 +5,29 @@ import { Modal, Button } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const IT_EMCFiles = ({ show, handleClose }) => {
+const ITFiles = ({ show, handleClose }) => {
   const [approvedFiles, setApprovedFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
 
   const fetchApprovedFiles = async () => {
+    setLoading(true); // Ensure loading state is handled properly.
+    
     try {
       const response = await axios.get('http://localhost:5000/api/files/it-emc-files', {
-        params: { department: 'Bachelor of Science in Information Technology & Bachelor of Science in EMC' },
+        params: { department: 'BSIT' },
       });
-      const approvedFiles = response.data.files.filter((file) => file.status === 'approved');
-      setApprovedFiles(approvedFiles);
+      setApprovedFiles(response.data.files || []); // Handle undefined `files`.
     } catch (error) {
       console.error('Error fetching approved files:', error.response?.data || error.message);
-      toast.error('Failed to fetch approved files. Please try again.');
+      toast.error(
+        error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchApprovedFiles();
   }, []);
@@ -98,7 +101,7 @@ const IT_EMCFiles = ({ show, handleClose }) => {
     <Modal show={show} onHide={handleClose} size="lg" centered>
       <ToastContainer />
       <Modal.Header closeButton>
-        <Modal.Title>CITL Dashboard - IT and EMC Files</Modal.Title>
+        <Modal.Title>CITL Dashboard - BSIT Files</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {approvedFiles.length === 0 ? (
@@ -161,4 +164,4 @@ const IT_EMCFiles = ({ show, handleClose }) => {
   );
 };
 
-export default IT_EMCFiles;
+export default ITFiles;
