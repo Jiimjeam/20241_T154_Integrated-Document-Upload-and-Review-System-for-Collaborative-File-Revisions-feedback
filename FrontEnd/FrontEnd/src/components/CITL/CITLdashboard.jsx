@@ -3,6 +3,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import Profileupload from './profile';
 import Swal from "sweetalert2";
+import { MdFeedback, MdCalendarToday } from 'react-icons/md';
 import { FaHome, FaCog, FaHistory, FaFileAlt } from 'react-icons/fa';
 
 const CITLdashboard = () => {
@@ -47,6 +48,10 @@ const CITLdashboard = () => {
             <FaHome className="menu-icon me-3" size={24} />
             <span>Home</span>
           </Link>
+          <Link to="/CITL/Calendar" className="menuItem d-flex align-items-center p-3 text-white">
+              <MdCalendarToday className="menu-icon me-3" size={24} />
+              <span>Calendar</span>
+          </Link>
           <Link to="/CITL/" className="menuItem d-flex align-items-center p-3 text-white">
             <FaCog className="menu-icon me-3" size={24} />
             <span>Settings</span>
@@ -70,7 +75,7 @@ const CITLdashboard = () => {
         <div className="container-fluid">
           <div className="content-header mb-4">
             <h1 className="content-title"> CITL Dashboard</h1>
-            <hr />
+            <hr /> 
           </div>
           {/* Render child routes */}
           <Outlet />

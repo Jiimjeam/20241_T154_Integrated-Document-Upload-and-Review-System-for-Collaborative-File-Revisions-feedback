@@ -3,7 +3,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import Profileupload from './profile';
 import Swal from "sweetalert2";
-
+import { MdFeedback, MdCalendarToday } from 'react-icons/md';
 import { FaHome, FaCog, FaHistory, FaFileAlt } from 'react-icons/fa';
 
 const Program = () => {
@@ -48,6 +48,10 @@ const Program = () => {
             <FaHome className="menu-icon me-3" size={24} />
             <span>Home</span>
           </Link>
+          <Link to="/Program/Calendar" className="menuItem d-flex align-items-center p-3 text-white">
+            <MdCalendarToday className="menu-icon me-3" size={24} />
+            <span>Calendar</span>
+          </Link>
           <Link to="/Program/Settings" className="menuItem d-flex align-items-center p-3 text-white">
             <FaCog className="menu-icon me-3" size={24} />
             <span>Settings</span>
@@ -59,6 +63,10 @@ const Program = () => {
           <Link to="/Program/Syllabi" className="menuItem d-flex align-items-center p-3 text-white">
             <FaFileAlt className="menu-icon me-3" size={24} />
             <span>Syllabi</span>
+          </Link>
+          <Link to="/Program/Feedback" className="menuItem d-flex align-items-center p-3 text-white">
+            <MdFeedback className="menu-icon me-3" size={24} />
+            <span>Feedback</span>
           </Link>
         </nav>
         <button className="btn btn-danger mt-auto w-100" onClick={handleLogout}>

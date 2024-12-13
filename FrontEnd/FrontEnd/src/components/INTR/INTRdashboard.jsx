@@ -3,7 +3,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import Profileupload from './profile';
 import Swal from "sweetalert2";
-import { MdFeedback } from 'react-icons/md';
+import { MdFeedback, MdCalendarToday } from 'react-icons/md';
 import { FaHome, FaCog, FaFileAlt } from 'react-icons/fa';
 
 const INTRdashboard = () => {
@@ -47,6 +47,10 @@ const INTRdashboard = () => {
           <Link to="/INTRdashboard/Home" className="menuItem d-flex align-items-center p-3 text-white">
             <FaHome className="menu-icon me-3" size={24} />
             <span>Home</span>
+          </Link>
+          <Link to="/INTRdashboard/Calendar" className="menuItem d-flex align-items-center p-3 text-white">
+            <MdCalendarToday className="menu-icon me-3" size={24} />
+            <span>Calendar</span>
           </Link>
           <Link to="/INTRdashboard/Settings" className="menuItem d-flex align-items-center p-3 text-white">
             <FaCog className="menu-icon me-3" size={24} />

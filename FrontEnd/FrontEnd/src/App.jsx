@@ -9,8 +9,8 @@ import Settings from './components/INTR/Settings';
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import MySyllabus from "./components/INTR/MySyllabus";
 import Home from './components/INTR/Home';
-import History from './components/INTR/history';
-import Feedback from './components/INTR/Feedback'
+import Calendar from './components/INTR/history';
+import Feedback from './components/INTR/Feedback';
 
 import AdminUsers from './pages/adminUsers'
 import AdminHome from './pages/adminHome'
@@ -19,12 +19,17 @@ import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
 import SettingsSENF from './components/SENF/SettingsSENF';
 import MySyllabi from './components/SENF/MySyllabi';
+import SCalendar from './components/SENF/SCalendar';
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
+
+
+
 import ProgramChairDashboard from './components/PROGRAMCHAIR/ProgramChairDashboard';
 import Program from './components/PROGRAMCHAIR/Program';
 import Syllabi from './components/PROGRAMCHAIR/Syllabi';
+import PCalendar from './components/PROGRAMCHAIR/PCalendar';
 
 import Colleges from './components/CITL/Colleges';
 import COT from './components/CITL/COT';
@@ -38,6 +43,7 @@ import PendingPage from './pages/pendingPage';
 import CITLdashboard from './components/CITL/CITLdashboard';
 import CITLhome from './components/CITL/CITLhome';
 import CITLHistory from './components/CITL/History';
+import CCalendar from './components/CITL/CCalendar';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -120,7 +126,7 @@ function App() {
 			<Route path='Home' element={<Home />} />	
           <Route path='my-syllabus' element={<MySyllabus />} />
           <Route path='Settings' element={<Settings />} />
-          <Route path='history' element={<History />} />
+          <Route path='Calendar' element={<Calendar />} />
           <Route path='Feedback' element={<Feedback />} />
       </Route>
 
@@ -135,9 +141,11 @@ function App() {
         }>
 
 			    <Route path='Home' element={<Home />} />	
+          <Route path='Calendar' element={<SCalendar />} />
           <Route path='my-syllabi' element={<MySyllabi />} />
           <Route path='SettingsSENF' element={<SettingsSENF />} />
           <Route path='history' element={<History />} />
+          <Route path='Feedback' element={<Feedback />} />
       </Route>
 
 
@@ -152,9 +160,9 @@ function App() {
           
         }>
 
-            
+          <Route path='Calendar' element={<PCalendar />} />
           <Route path='Syllabi' element={<Syllabi />} />
-			  
+          <Route path='Feedback' element={<Feedback />} />
       </Route>
 
 
@@ -166,6 +174,7 @@ function App() {
             </ProtectedRoute>}
         >
           <Route path='Home' element={<CITLhome />} />
+          <Route path='Calendar' element={<CCalendar />} />
           <Route path='history' element={<CITLHistory />} />
           <Route path="Colleges" element={<Colleges />}>
             <Route path="cot" element={<COT />}>

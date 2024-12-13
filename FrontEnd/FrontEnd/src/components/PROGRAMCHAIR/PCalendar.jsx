@@ -1,7 +1,7 @@
 import React from 'react';
 import 'tailwindcss/tailwind.css';
 
-const Calendar = () => {
+const PCalendar = () => {
   return (
     <div className="calendar-container flex justify-center items-center p-6 bg-gray-50">
       <iframe
@@ -15,4 +15,4 @@ const Calendar = () => {
   );
 };
 
-export default Calendar;
+export default PCalendar;
