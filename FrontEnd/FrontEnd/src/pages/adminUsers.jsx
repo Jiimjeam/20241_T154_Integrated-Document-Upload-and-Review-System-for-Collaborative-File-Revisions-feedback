@@ -109,7 +109,7 @@ const AdminDashboard = () => {
         <nav className="menu w-full mb-4">
           <Profileupload />
           <p className="text-center">{user.name}</p>
-          <p className="text-center text-sm">Admin</p>
+          <p className="text-center text-sm">Admin123</p>
 
           
           <Link to="/admin/home" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">

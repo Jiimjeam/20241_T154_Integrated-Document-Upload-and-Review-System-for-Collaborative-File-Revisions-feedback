@@ -109,7 +109,7 @@ const AdminHome = () => {
           
           <Link to="/admin/home" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
             <FaHome className="menu-icon mr-3" size={24} />
-            <span>Home</span>
+            <span>Home1</span>
           </Link>
 
           <Link to="/admin/user" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
@@ -122,7 +122,7 @@ const AdminHome = () => {
           onClick={handleLogout}
         >
           <FaSignOutAlt className="menu-icon mr-3" size={24} />
-          Logout
+          Logouts
         </button>
       </aside>
     </motion.div>
