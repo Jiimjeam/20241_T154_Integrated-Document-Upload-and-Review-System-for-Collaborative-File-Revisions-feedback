@@ -77,7 +77,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h2 className="dashboard-title">Dashboard Overview</h2>
+      <h2 className="dashboard-title">File Status Report</h2>
       <div className="card-deck">
         {/* Approved Files Card */}
         <div className="card">

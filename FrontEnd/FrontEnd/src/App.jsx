@@ -5,6 +5,7 @@ import EmailVerificationPage from "./pages/EmailVerificationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LoadingSpinner from "./components/LoadingSpinner";
+
 import Settings from './components/INTR/Settings';
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import MySyllabus from "./components/INTR/MySyllabus";
@@ -12,8 +13,9 @@ import Home from './components/INTR/Home';
 import Calendar from './components/INTR/history';
 import Feedback from './components/INTR/Feedback';
 
-import AdminUsers from './pages/adminUsers'
-import AdminHome from './pages/adminHome'
+import Admin from './pages/admindashboard'
+import AdminApproval from './pages/adminApproval';
+import ExistingUsers from './pages/existingUsers';
 
 import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
@@ -34,17 +36,20 @@ import PCalendar from './components/PROGRAMCHAIR/PCalendar';
 
 import Colleges from './components/CITL/Colleges';
 import COT from './components/CITL/COT';
-import IT_EMCFiles from './components/CITL/IT_EMCFiles';
+import IT_EMCFiles from './components/CITL/COT/IT_EMCFiles';
+import Automotive from './components/CITL/COT/Automotive';
+import Electronics from './components/CITL/COT/Electronics';
+import Food from './components/CITL/COT/Food';
 import Mathematics from './components/CITL/Mathematics';
 import CAS from './components/CITL/CAS';
-import AdminApproval from './pages/adminApproval';
-import ExistingUsers from './pages/existingUsers';
+
 import Senior from './components/SENF/Senior';
 import PendingPage from './pages/pendingPage';
 import CITLdashboard from './components/CITL/CITLdashboard';
 import CITLhome from './components/CITL/CITLhome';
 import CITLHistory from './components/CITL/History';
 import CCalendar from './components/CITL/CCalendar';
+import DashboardPage from './pages/DashboardPage';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -87,13 +92,12 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         {/*<Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />*/}
         {/*<Route path="/program-chair-dashboard" element={<ProgramChairDashboard />} /> */}
+        <Route path="/Dashboard" element={<DashboardPage />} />
         {/*<Route path="/colleges" element={<Colleges />} />*/}
         <Route path="/colleges/cot" element={<COT />} />
         <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
         <Route path="/colleges/cas" element={<CAS />} />
         <Route path="/cas/mathematics" element={<Mathematics />} />
-        <Route path="/admin/approve" element={<AdminApproval />} />
-        <Route path="/admin/existing-users" element={<ExistingUsers />} />
         <Route path="/pending" element={<PendingPage />} />
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
@@ -131,21 +135,18 @@ function App() {
           <Route path='Feedback' element={<Feedback />} />
       </Route>
 
+       
 
       {/* Nested Routes for SENF */}
       <Route path='/Senior' element={
           <ProtectedRoute>
             <Senior />
-          </ProtectedRoute>
-
-          
-        }>
+          </ProtectedRoute>}>
 
 			    <Route path='Home' element={<Home />} />	
           <Route path='Calendar' element={<SCalendar />} />
           <Route path='my-syllabi' element={<MySyllabi />} />
           <Route path='SettingsSENF' element={<SettingsSENF />} />
-          <Route path='history' element={<History />} />
           <Route path='Feedback' element={<Feedback />} />
       </Route>
 
@@ -157,13 +158,13 @@ function App() {
           <ProtectedRoute>
             <Program />
           </ProtectedRoute>
-            
-          
         }>
 
           <Route path='Calendar' element={<PCalendar />} />
+          <Route path="CollegeDepartment" element={<CollegeDepartment />}></Route>
           <Route path='Syllabi' element={<Syllabi />} />
           <Route path="collegeDepartment" element={<CollegeDepartment />}></Route>
+          <Route path='Feedback' element={<Feedback />} />
 			  
       </Route>
 
@@ -182,9 +183,9 @@ function App() {
             <Route path="cot" element={<COT />}>
                 {/* Nested routes for departments */}
                 <Route path="it_emc" element={<IT_EMCFiles />} />
-                <Route path="automotive" element={<div>Automotive Department Content</div>} />
-                <Route path="electronics" element={<div>Electronics Department Content</div>} />
-                <Route path="food-tech" element={<div>Food Technology Department Content</div>} />
+                <Route path="automotive"  element={<Automotive />} />
+                <Route path="electronics"  element={<Electronics />} />
+                <Route path="food-tech"  element={<Food />} />
             </Route>
             <Route path="cas" element={<CAS />}>
                 <Route path="mathematics" element={<Mathematics />} />
@@ -195,9 +196,23 @@ function App() {
           </Route>
         </Route>
 
+         {/* Admin Routes with ProtectedRoute */}
+      <Route
+          path="Admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        >
+          {/* Nested Routes */}
+          <Route path="existing-users" element={<ExistingUsers />} />
+          <Route path="approve" element={<AdminApproval />} />
+        </Route>    
+       
 
-        <Route path='/admin/home' element={<AdminHome />} />	
-        <Route path='/admin/user' element={<AdminUsers />} />	
+
+        
 
        
         <Route path='*' element={<Navigate to='/' replace />} />

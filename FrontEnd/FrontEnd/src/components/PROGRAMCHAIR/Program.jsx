@@ -55,10 +55,6 @@ const Program = () => {
             <FaCog className="menu-icon me-3" size={24} />
             <span>College & Department</span>
           </Link>
-          <Link to="/Program/History" className="menuItem d-flex align-items-center p-3 text-white">
-            <FaHistory className="menu-icon me-3" size={24} />
-            <span>History</span>
-          </Link>
           <Link to="/Program/Syllabi" className="menuItem d-flex align-items-center p-3 text-white">
             <FaFileAlt className="menu-icon me-3" size={24} />
             <span>Syllabi</span>

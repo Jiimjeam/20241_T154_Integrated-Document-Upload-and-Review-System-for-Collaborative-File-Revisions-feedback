@@ -221,7 +221,7 @@ export const googleAuth = passport.authenticate("google", { scope: ["profile", "
 
 const defaultDashboards = {
     Instructor: "http://localhost:5173/INTRdashboard/Home",
-    Senior_Faculty: "http://localhost:5173/Senior",
+    Senior_Faculty: "http://localhost:5173/Senior/Home",
     Program_Chair: "http://localhost:5173/Program",
     CITL: "http://localhost:5173/CITL/Home",
     Admin: "http://localhost:5173/admin/home",

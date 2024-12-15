@@ -53,11 +53,7 @@ const Senior = () => {
           </Link>
           <Link to="/Senior/SettingsSENF" className="menuItem d-flex align-items-center p-3 text-white">
             <FaCog className="menu-icon me-3" size={24} />
-            <span>Settings</span>
-          </Link>
-          <Link to="/Senior/History" className="menuItem d-flex align-items-center p-3 text-white">
-            <FaHistory className="menu-icon me-3" size={24} />
-            <span>History</span>
+            <span>College & Department</span>
           </Link>
           <Link to="/Senior/my-syllabi" className="menuItem d-flex align-items-center p-3 text-white">
             <FaFileAlt className="menu-icon me-3" size={24} />
