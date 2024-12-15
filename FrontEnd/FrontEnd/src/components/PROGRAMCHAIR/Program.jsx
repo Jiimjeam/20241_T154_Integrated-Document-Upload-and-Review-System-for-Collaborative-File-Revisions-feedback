@@ -38,9 +38,8 @@ const Program = () => {
       <aside className="sidebar bg-dark text-white p-4 d-flex flex-column align-items-center vh-100 overflow-auto">
         <div className="profile-section text-center mb-4">
           <Profileupload />
-          <h4 className="profile-title text-info">ProgramChair</h4>
+          <h4 className="profile-title text-info">{user.role}</h4>
           <p className="profile-detail">{user.name}</p>
-          <p className="profile-detail">{user.email}</p>
           <hr />
         </div>
         <nav className="menu w-100 mb-4">

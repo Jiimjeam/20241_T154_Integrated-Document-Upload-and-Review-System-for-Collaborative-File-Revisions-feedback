@@ -164,6 +164,7 @@ function App() {
           <Route path='Calendar' element={<PCalendar />} />
           <Route path="CollegeDepartment" element={<CollegeDepartment />}></Route>
           <Route path='Syllabi' element={<Syllabi />} />
+          <Route path="collegeDepartment" element={<CollegeDepartment />}></Route>
           <Route path='Feedback' element={<Feedback />} />
 			  
       </Route>

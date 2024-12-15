@@ -254,8 +254,6 @@ export const googleAuthCallback = (req, res) => {
                     message: "Your account has been rejected. Please contact the administrator for assistance.",
                 });
             } else if (user.status === 'Approved') {
-                // Send approval email if the account is approved
-                await sendAccountApprovedEmail(user.email);  // Send approval email
 
                 // Generate token and set cookie for approved accounts
 				generateTokenAndSetCookie(res, user._id);
