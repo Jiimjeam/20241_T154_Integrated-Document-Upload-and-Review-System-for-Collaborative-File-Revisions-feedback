@@ -224,7 +224,7 @@ const defaultDashboards = {
     Senior_Faculty: "http://localhost:5173/Senior",
     Program_Chair: "http://localhost:5173/Program",
     CITL: "http://localhost:5173/CITL",
-    Admin: "http://localhost:5173/admin/home",
+    Admin: "http://localhost:5173/Admin",
 };
 
 export const googleAuthCallback = (req, res) => {

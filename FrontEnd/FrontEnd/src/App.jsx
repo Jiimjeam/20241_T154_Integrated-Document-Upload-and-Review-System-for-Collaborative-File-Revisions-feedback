@@ -5,6 +5,7 @@ import EmailVerificationPage from "./pages/EmailVerificationPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LoadingSpinner from "./components/LoadingSpinner";
+
 import Settings from './components/INTR/Settings';
 import INTRdashboard from "./components/INTR/INTRdashboard";
 import MySyllabus from "./components/INTR/MySyllabus";
@@ -12,8 +13,9 @@ import Home from './components/INTR/Home';
 import Calendar from './components/INTR/history';
 import Feedback from './components/INTR/Feedback';
 
-import AdminUsers from './pages/adminUsers'
-import AdminHome from './pages/adminHome'
+import Admin from './pages/admindashboard'
+import AdminApproval from './pages/adminApproval';
+import ExistingUsers from './pages/existingUsers';
 
 import LandingPage from './components/LandingPage/body';
 import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
@@ -37,8 +39,7 @@ import COT from './components/CITL/COT';
 import IT_EMCFiles from './components/CITL/IT_EMCFiles';
 import Mathematics from './components/CITL/Mathematics';
 import CAS from './components/CITL/CAS';
-import AdminApproval from './pages/adminApproval';
-import ExistingUsers from './pages/existingUsers';
+
 import Senior from './components/SENF/Senior';
 import PendingPage from './pages/pendingPage';
 import CITLdashboard from './components/CITL/CITLdashboard';
@@ -92,8 +93,6 @@ function App() {
         <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
         <Route path="/colleges/cas" element={<CAS />} />
         <Route path="/cas/mathematics" element={<Mathematics />} />
-        <Route path="/admin/approve" element={<AdminApproval />} />
-        <Route path="/admin/existing-users" element={<ExistingUsers />} />
         <Route path="/pending" element={<PendingPage />} />
         <Route path='/signup' element={
           <RedirectAuthenticatedUser>
@@ -131,15 +130,25 @@ function App() {
           <Route path='Feedback' element={<Feedback />} />
       </Route>
 
+      {/* Admin Routes with ProtectedRoute */}
+      <Route
+          path="Admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        >
+          {/* Nested Routes */}
+          <Route path="existing-users" element={<ExistingUsers />} />
+          <Route path="approve" element={<AdminApproval />} />
+        </Route>  
 
       {/* Nested Routes for SENF */}
       <Route path='/Senior' element={
           <ProtectedRoute>
             <Senior />
-          </ProtectedRoute>
-
-          
-        }>
+          </ProtectedRoute>}>
 
 			    <Route path='Home' element={<Home />} />	
           <Route path='Calendar' element={<SCalendar />} />
@@ -157,14 +166,12 @@ function App() {
           <ProtectedRoute>
             <Program />
           </ProtectedRoute>
-            
-          
         }>
 
           <Route path='Calendar' element={<PCalendar />} />
           <Route path='Syllabi' element={<Syllabi />} />
           <Route path="collegeDepartment" element={<CollegeDepartment />}></Route>
-			  
+
       </Route>
 
 
@@ -195,9 +202,11 @@ function App() {
           </Route>
         </Route>
 
+            
+       
 
-        <Route path='/admin/home' element={<AdminHome />} />	
-        <Route path='/admin/user' element={<AdminUsers />} />	
+
+        
 
        
         <Route path='*' element={<Navigate to='/' replace />} />
