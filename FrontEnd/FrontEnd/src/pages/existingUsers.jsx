@@ -162,43 +162,7 @@ const ExistingUsers = () => {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <aside
-        className={`sidebar bg-dark text-white p-4 flex flex-col items-center fixed h-full z-10 transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:w-[250px]`}
-      >
-        <nav className="menu w-full mb-4">
-        <Profileupload />
-          <p className="text-center">Arvin Aguid</p>
-          <p className="text-center text-sm">Admin</p>
-          <hr/>
-          <Link to="/home" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
-            <FaHome className="menu-icon mr-3" size={24} />
-            <span>Home</span>
-          </Link>
-
-          <Link to="/admin/existing-users" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
-            <FaUsers className="menu-icon mr-3" size={24} />
-            <span>All Users</span>
-          </Link>
-
-          <Link to="/admin/approve" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
-            <FaUsers className="menu-icon mr-3" size={24} />
-            <span>Add Users</span>
-          </Link>
-
-          <Link to="/users" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
-            <FaUsers className="menu-icon mr-3" size={24} />
-            <span>Add College</span>
-          </Link>
-
-          <button
-          className="btn btn-danger mt-auto w-full flex justify-center items-center p-3 hover:bg-red-700 rounded-md"
-          onClick={() => console.log('Logout')}
-        >
-          <FaSignOutAlt className="menu-icon mr-3" size={24} />
-          Logout
-        </button>
-        </nav>
-      </aside> <aside
+        <aside
         className={`sidebar bg-dark text-white p-4 flex flex-col items-center fixed h-full z-10 transition-transform duration-300 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 lg:w-[250px]`}
@@ -239,7 +203,7 @@ const ExistingUsers = () => {
       </aside>
 
       {/* Main Content */}
-      <main className={`main-content p-6 w-full transition-all duration-300 ${isSidebarOpen ? "ml-[250px]" : "ml-0"}`}>
+      <main className={`w-[1000px] main-content p-6 w-full transition-all duration-300 ${isSidebarOpen ? "ml-[250px]" : "ml-0"}`}>
         {/* Sidebar toggle for smaller screens */}
         <button className="lg:hidden mb-4 text-white bg-gray-700 p-2 rounded-md" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           <FaBars size={24} />
@@ -264,7 +228,7 @@ const ExistingUsers = () => {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <table className="max-w-full bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
+          <table className="w-[1130px] bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
             <thead className="bg-gray-300 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Name</th>

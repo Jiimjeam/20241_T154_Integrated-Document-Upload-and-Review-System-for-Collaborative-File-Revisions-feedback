@@ -51,10 +51,6 @@ const CITLdashboard = () => {
               <MdCalendarToday className="menu-icon me-3" size={24} />
               <span>Calendar</span>
           </Link>
-          <Link to="/CITL/" className="menuItem d-flex align-items-center p-3 text-white">
-            <FaCog className="menu-icon me-3" size={24} />
-            <span>Settings</span>
-          </Link>
           <Link to="/CITL/History" className="menuItem d-flex align-items-center p-3 text-white">
             <FaHistory className="menu-icon me-3" size={24} />
             <span>History</span>

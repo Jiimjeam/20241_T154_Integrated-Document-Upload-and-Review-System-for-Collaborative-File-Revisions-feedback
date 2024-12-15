@@ -166,6 +166,22 @@ export const approveFile = async (req, res) => {
   }
 };
 
+// Approve a file
+export const ReadyToPrint = async (req, res) => {
+  try {
+    const file = await File.findByIdAndUpdate(
+      req.params.id,
+      { status: "ready to print" },
+      { new: true }
+    );
+    res.status(200).json({ file });
+  } catch (error) {
+    console.error("Error ready to print file:", error.message);
+    res.status(500).json({ error: "Error ready to print file." });
+  }
+};
+
+
 // Revise a file with a comment
 export const reviseFile = async (req, res) => {
   try {

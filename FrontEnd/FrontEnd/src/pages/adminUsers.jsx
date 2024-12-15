@@ -109,7 +109,7 @@ const AdminDashboard = () => {
         <nav className="menu w-full mb-4">
           <Profileupload />
           <p className="text-center">{user.name}</p>
-          <p className="text-center text-sm">Admin</p>
+          <p className="text-center text-sm">{user.role}</p>
 
           
           <Link to="/admin/home" className="menuItem flex items-center p-3 text-white hover:bg-gray-700 rounded-md">
@@ -157,7 +157,7 @@ const AdminDashboard = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <table className="table-auto w-full bg-gray-800 text-white rounded-lg shadow-lg">
+            <table className="table-auto w-[1000px] bg-gray-800 text-white rounded-lg shadow-lg">
               <thead>
                 <tr className="bg-gray-700 text-left">
                   <th className="p-3">Name</th>

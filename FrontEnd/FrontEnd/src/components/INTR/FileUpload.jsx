@@ -222,6 +222,8 @@ const FileUpload = () => {
         return 'badge bg-warning';
       case 'pending':
         return 'badge bg-secondary';
+      case 'ready to print':
+        return 'badge bg-success';
       default:
         return 'badge bg-secondary';
     }
