@@ -130,19 +130,7 @@ function App() {
           <Route path='Feedback' element={<Feedback />} />
       </Route>
 
-      {/* Admin Routes with ProtectedRoute */}
-      <Route
-          path="Admin"
-          element={
-            <ProtectedRoute>
-              <Admin />
-            </ProtectedRoute>
-          }
-        >
-          {/* Nested Routes */}
-          <Route path="existing-users" element={<ExistingUsers />} />
-          <Route path="approve" element={<AdminApproval />} />
-        </Route>  
+       
 
       {/* Nested Routes for SENF */}
       <Route path='/Senior' element={
@@ -202,7 +190,19 @@ function App() {
           </Route>
         </Route>
 
-            
+         {/* Admin Routes with ProtectedRoute */}
+      <Route
+          path="Admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        >
+          {/* Nested Routes */}
+          <Route path="existing-users" element={<ExistingUsers />} />
+          <Route path="approve" element={<AdminApproval />} />
+        </Route>    
        
 
 

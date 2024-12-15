@@ -3,7 +3,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import Profileupload from './adminProfile';
 import Swal from "sweetalert2";
-import { FaUsers, FaSignOutAlt, FaBars, FaHome, FaDashcube } from 'react-icons/fa';  // Added FaBars for the toggle button
+import { FaUsers, FaSignOutAlt, FaBars, FaDashcube } from 'react-icons/fa';  // Added FaBars for the toggle button
 import { useState } from 'react';
 
 const Admin = () => {
