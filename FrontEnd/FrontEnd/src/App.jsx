@@ -34,7 +34,10 @@ import PCalendar from './components/PROGRAMCHAIR/PCalendar';
 
 import Colleges from './components/CITL/Colleges';
 import COT from './components/CITL/COT';
-import IT_EMCFiles from './components/CITL/IT_EMCFiles';
+import IT_EMCFiles from './components/CITL/COT/IT_EMCFiles';
+import Automotive from './components/CITL/COT/Automotive';
+import Electronics from './components/CITL/COT/Electronics';
+import Food from './components/CITL/COT/Food';
 import Mathematics from './components/CITL/Mathematics';
 import CAS from './components/CITL/CAS';
 import AdminApproval from './pages/adminApproval';
@@ -45,6 +48,7 @@ import CITLdashboard from './components/CITL/CITLdashboard';
 import CITLhome from './components/CITL/CITLhome';
 import CITLHistory from './components/CITL/History';
 import CCalendar from './components/CITL/CCalendar';
+import DashboardPage from './pages/DashboardPage';
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -87,6 +91,7 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         {/*<Route path="/senior-faculty-dashboard" element={<SeniorFacultyDashboard />} />*/}
         {/*<Route path="/program-chair-dashboard" element={<ProgramChairDashboard />} /> */}
+        <Route path="/Dashboard" element={<DashboardPage />} />
         {/*<Route path="/colleges" element={<Colleges />} />*/}
         <Route path="/colleges/cot" element={<COT />} />
         <Route path="/cot/it_emc" element={<IT_EMCFiles />} />
@@ -145,7 +150,6 @@ function App() {
           <Route path='Calendar' element={<SCalendar />} />
           <Route path='my-syllabi' element={<MySyllabi />} />
           <Route path='SettingsSENF' element={<SettingsSENF />} />
-          <Route path='history' element={<History />} />
           <Route path='Feedback' element={<Feedback />} />
       </Route>
 
@@ -184,9 +188,9 @@ function App() {
             <Route path="cot" element={<COT />}>
                 {/* Nested routes for departments */}
                 <Route path="it_emc" element={<IT_EMCFiles />} />
-                <Route path="automotive" element={<div>Automotive Department Content</div>} />
-                <Route path="electronics" element={<div>Electronics Department Content</div>} />
-                <Route path="food-tech" element={<div>Food Technology Department Content</div>} />
+                <Route path="automotive"  element={<Automotive />} />
+                <Route path="electronics"  element={<Electronics />} />
+                <Route path="food-tech"  element={<Food />} />
             </Route>
             <Route path="cas" element={<CAS />}>
                 <Route path="mathematics" element={<Mathematics />} />

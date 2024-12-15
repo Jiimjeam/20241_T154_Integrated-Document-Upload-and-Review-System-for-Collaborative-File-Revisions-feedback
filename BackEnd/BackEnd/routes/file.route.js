@@ -8,6 +8,9 @@ import {
   getFilesByStatus, 
   getApprovedFiles, 
   getITFiles,
+  getAutomotiveFiles,
+  getElectronicsFiles,
+  getFoodFiles,
   getFilesByUploader,
   getMathematicsFiles,
   getFilesByUserDepartment,
@@ -38,6 +41,9 @@ router.get("/stats", getFileStats);
 router.get('/approved', getApprovedFiles);
 
 router.get('/it-emc-files', getITFiles),
+router.get('/automotive', getAutomotiveFiles),
+router.get('/electronics', getElectronicsFiles),
+router.get('/food', getFoodFiles),
 
 router.get('/mathematics', getMathematicsFiles),
 

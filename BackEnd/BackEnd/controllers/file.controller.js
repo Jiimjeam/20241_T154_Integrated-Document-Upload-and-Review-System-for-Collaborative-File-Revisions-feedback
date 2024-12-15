@@ -314,6 +314,109 @@ export const getITFiles = async (req, res) => {
   }
 };
 
+export const getAutomotiveFiles = async (req, res) => {
+  const { department } = req.query; 
+  const status = 'approved'; 
+
+  try {
+    const query = { status };
+    if (department) query.department = department;
+
+    const files = await File.find(query);
+
+    if (!files.length) {
+      return res.status(404).json({
+        success: false,
+        message: department
+          ? `No approved files found for the department: ${department}.`
+          : 'No approved files found.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Approved files fetched successfully.',
+      files,
+    });
+  } catch (error) {
+    console.error('Error fetching files:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch approved files.',
+      error: error.message,
+    });
+  }
+};
+
+
+export const getElectronicsFiles = async (req, res) => {
+  const { department } = req.query; 
+  const status = 'approved'; 
+
+  try {
+    const query = { status };
+    if (department) query.department = department;
+
+    const files = await File.find(query);
+
+    if (!files.length) {
+      return res.status(404).json({
+        success: false,
+        message: department
+          ? `No approved files found for the department: ${department}.`
+          : 'No approved files found.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Approved files fetched successfully.',
+      files,
+    });
+  } catch (error) {
+    console.error('Error fetching files:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch approved files.',
+      error: error.message,
+    });
+  }
+};
+
+export const getFoodFiles = async (req, res) => {
+  const { department } = req.query; 
+  const status = 'approved'; 
+
+  try {
+    const query = { status };
+    if (department) query.department = department;
+
+    const files = await File.find(query);
+
+    if (!files.length) {
+      return res.status(404).json({
+        success: false,
+        message: department
+          ? `No approved files found for the department: ${department}.`
+          : 'No approved files found.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Approved files fetched successfully.',
+      files,
+    });
+  } catch (error) {
+    console.error('Error fetching files:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch approved files.',
+      error: error.message,
+    });
+  }
+};
+
 export const getMathematicsFiles = async (req, res) => {
   const { department } = req.query; 
   const status = 'approved'; 

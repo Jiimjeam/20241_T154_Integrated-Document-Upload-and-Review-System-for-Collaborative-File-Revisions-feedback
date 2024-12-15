@@ -10,7 +10,7 @@ const CollegeDepartment = () => {
 
   useEffect(() => {
     setCollegeDepartments({
-      COT: ["BSIT", "BSAT", "BSET"],
+      COT: ["BSIT", "BSAT", "BSET", "BSF"],
       CON: ["Nursing", "Midwifery"],
       CAS: ["Biology", "Mathematics", "Physics"],
     });
