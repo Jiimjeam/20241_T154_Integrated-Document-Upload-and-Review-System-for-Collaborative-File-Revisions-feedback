@@ -1,0 +1,22 @@
+/* Tailwind Modal Styles */
+
+/* Ensures smooth transitions */
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Shadow Effect */
+.shadow-lg {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Textarea Resizing */
+textarea {
+  resize: vertical;
+}
+
+/* Date/Close Button for Calendar Picker */
+button.bg-gray-200 {
+  background: #e0e0e0;
+  font-weight: bold;
+}

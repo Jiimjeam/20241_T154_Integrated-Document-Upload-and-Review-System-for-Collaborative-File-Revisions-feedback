@@ -1,0 +1,87 @@
+import './SF.css';
+import { Link, Outlet } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
+import Profileupload from './profile';
+import Swal from "sweetalert2";
+import { MdFeedback, MdCalendarToday } from 'react-icons/md';
+import { FaHome, FaCog, FaHistory, FaFileAlt } from 'react-icons/fa';
+
+const Senior = () => {
+  const { user, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Logged out!",
+          text: "You have been successfully logged out.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        });
+        logout();
+      }
+    });
+  };
+
+  return (
+    <div className="dashboard-container d-flex flex-column flex-lg-row w-100">
+      {/* Sidebar */}
+      <aside className="sidebar bg-dark text-white p-4 d-flex flex-column align-items-center vh-100 overflow-auto">
+        <div className="profile-section text-center mb-4">
+          <Profileupload />
+          <h4 className="profile-title text-info">{user.role}</h4>
+          <p className="profile-detail">{user.name}</p>
+          <hr />
+        </div>
+        <nav className="menu w-100 mb-4">
+          <Link to="/Senior" className="menuItem d-flex align-items-center p-3 text-white">
+            <FaHome className="menu-icon me-3" size={24} />
+            <span>Home</span>
+          </Link>
+          <Link to="/Senior/Calendar" className="menuItem d-flex align-items-center p-3 text-white">
+            <MdCalendarToday className="menu-icon me-3" size={24} />
+            <span>Calendar</span>
+          </Link>
+          <Link to="/Senior/SettingsSENF" className="menuItem d-flex align-items-center p-3 text-white">
+            <FaCog className="menu-icon me-3" size={24} />
+            <span>College & Department</span>
+          </Link>
+          <Link to="/Senior/my-syllabi" className="menuItem d-flex align-items-center p-3 text-white">
+            <FaFileAlt className="menu-icon me-3" size={24} />
+            <span>Syllabi</span>
+          </Link>
+          <Link to="/Senior/Feedback" className="menuItem d-flex align-items-center p-3 text-white">
+            <MdFeedback className="menu-icon me-3" size={24} />
+            <span>Feedback</span>
+          </Link>
+        </nav>
+        <button className="btn btn-danger mt-auto w-100" onClick={handleLogout}>
+          Logout
+        </button>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="main-content flex-grow-1 p-4">
+        <div className="container-fluid">
+          <div className="content-header mb-4">
+            <h1 className="content-title"> Senior Faculty Dashboard</h1>
+            <hr />
+          </div>
+          {/* Render child routes */}
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Senior;
