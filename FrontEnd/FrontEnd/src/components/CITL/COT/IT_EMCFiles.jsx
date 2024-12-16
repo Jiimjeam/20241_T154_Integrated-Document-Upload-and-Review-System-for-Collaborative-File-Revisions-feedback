@@ -5,9 +5,6 @@ import { Modal, Button } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-
-
 const reviseFile = async (fileId, comment) => {
   try {
     const response = await axios.post(
@@ -66,22 +63,22 @@ const ITFiles = ({ show, handleClose }) => {
   };
 
   const handleReviseSubmit = async () => {
-      if (!revisionComment) return;
-  
-      try {
-        const response = await reviseFile(selectedFileId, revisionComment);
-        toast.info(`File "${response.file.filename}" marked for revision.`);
-        setFiles((prev) =>
-          prev.map((file) =>
-            file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
-          )
-        );
-        setShowFilePreviewModal(false);
-        setRevisionComment('');
-      } catch (error) {
-        toast.error('Error revising file.');
-      }
-    };
+    if (!revisionComment) return;
+
+    try {
+      const response = await reviseFile(selectedFileId, revisionComment);
+      toast.info(`File "${response.file.filename}" marked for revision.`);
+      setApprovedFiles((prev) =>
+        prev.map((file) =>
+          file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
+        )
+      );
+      setShowFilePreviewModal(false);
+      setRevisionComment('');
+    } catch (error) {
+      toast.error('Error revising file.');
+    }
+  };
 
   const handleViewFile = (fileId, filepath) => {
     setSelectedFile(filepath);

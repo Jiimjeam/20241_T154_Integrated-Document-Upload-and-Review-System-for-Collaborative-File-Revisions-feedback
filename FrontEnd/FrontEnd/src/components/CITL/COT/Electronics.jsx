@@ -5,9 +5,6 @@ import { Modal, Button } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-
-
 const reviseFile = async (fileId, comment) => {
   try {
     const response = await axios.post(
@@ -16,8 +13,8 @@ const reviseFile = async (fileId, comment) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error revising file:", error.message);
-    throw new Error("Error revising file.");
+    console.error('Error revising file:', error.message);
+    throw new Error('Error revising file.');
   }
 };
 
@@ -66,22 +63,22 @@ const Electronics = ({ show, handleClose }) => {
   };
 
   const handleReviseSubmit = async () => {
-      if (!revisionComment) return;
-  
-      try {
-        const response = await reviseFile(selectedFileId, revisionComment);
-        toast.info(`File "${response.file.filename}" marked for revision.`);
-        setFiles((prev) =>
-          prev.map((file) =>
-            file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
-          )
-        );
-        setShowFilePreviewModal(false);
-        setRevisionComment('');
-      } catch (error) {
-        toast.error('Error revising file.');
-      }
-    };
+    if (!revisionComment) return;
+
+    try {
+      const response = await reviseFile(selectedFileId, revisionComment);
+      toast.info(`File "${response.file.filename}" marked for revision.`);
+      setApprovedFiles((prev) =>
+        prev.map((file) =>
+          file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
+        )
+      );
+      setShowFilePreviewModal(false);
+      setRevisionComment('');
+    } catch (error) {
+      toast.error('Error revising file.');
+    }
+  };
 
   const handleViewFile = (fileId, filepath) => {
     setSelectedFile(filepath);
@@ -130,7 +127,7 @@ const Electronics = ({ show, handleClose }) => {
       <ToastContainer />
       <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>CITL Dashboard - BSIT Files</Modal.Title>
+          <Modal.Title>CITL Dashboard - BSET Files</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {approvedFiles.length === 0 ? (
@@ -180,7 +177,6 @@ const Electronics = ({ show, handleClose }) => {
         </Modal.Footer>
       </Modal>
 
-      {/* File Preview and Revise Modal */}
       {selectedFile && (
         <Modal show={showFilePreviewModal} onHide={() => setShowFilePreviewModal(false)} size="xl" centered>
           <Modal.Header closeButton>
