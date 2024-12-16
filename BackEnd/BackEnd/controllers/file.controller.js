@@ -3,6 +3,8 @@ import { User } from "../model/User.js";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import nodemailer from 'nodemailer';
+import  { Notification } from "../model/Notification.js";
 
 // Convert __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -151,20 +153,162 @@ export const getFilesByUploader = async (req, res) => {
   }
 };
 
-// Approve a file
 export const approveFile = async (req, res) => {
   try {
+    // Update file status to "approved" and populate uploader details
     const file = await File.findByIdAndUpdate(
       req.params.id,
       { status: "approved" },
       { new: true }
-    );
-    res.status(200).json({ file });
+    ).populate('uploaderUserId'); // Populate uploader's details
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found." });
+    }
+
+    const uploader = file.uploaderUserId; // Fetch uploader details from populated data
+    if (!uploader || !uploader.email) {
+      return res.status(404).json({ error: "Uploader not found or missing email." });
+    }
+
+    // Email configuration using nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // Use your preferred email service
+      auth: {
+        user: process.env.EMAIL, // Email address from environment variables
+        pass: process.env.EMAIL_PASSWORD, // Password or app password from environment variables
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: uploader.email, // Send email to uploader's email
+      subject: "Your File has been Approved by Your Department",
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been approved by your Department. Your File is now forwarded to CITL.\n\nBest regards,\nYour Team`,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    // Create a notification for the uploader
+    await Notification.create({
+      userId: uploader._id,
+      title: "File Approved",
+      message: `Your file "${file.filename}" has been approved.`,
+    });
+
+    // Respond with success
+    res.status(200).json({ file, message: "File approved, email notification sent, and notification created." });
   } catch (error) {
     console.error("Error approving file:", error.message);
     res.status(500).json({ error: "Error approving file." });
   }
 };
+
+
+export const ReadyToPrint = async (req, res) => {
+  try {
+    // Fetch the file by ID and populate uploader's details
+    const file = await File.findByIdAndUpdate(
+      req.params.id,
+      { status: "ready to print" },
+      { new: true }
+    ).populate('uploaderUserId'); // Populate uploader details
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found." });
+    }
+
+    const uploader = file.uploaderUserId; // Extract uploader details
+    if (!uploader || !uploader.email) {
+      return res.status(404).json({ error: "Uploader not found or email missing." });
+    }
+
+    // Log the email (for debugging)
+    console.log("Uploader's Email:", uploader.email);
+
+    // Example: Use uploader.email in your email notification logic
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // Or another email provider
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: uploader.email,
+      subject: "File Ready to Print",
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been approved by CITL and is ready to print.\n\nBest regards,\nYour Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Email sent successfully", file });
+  } catch (error) {
+    console.error("Error fetching uploader's email or sending notification:", error.message);
+    res.status(500).json({ error: "Server error." });
+  }
+};
+
+// Revise a file with a comment
+export const RevisedSenior = async (req, res) => {
+  try {
+    const { comment } = req.body;
+    const fileId = req.params.id;
+
+    if (!comment || !fileId) {
+      return res.status(400).json({ error: "File ID and comment are required." });
+    }
+
+    // Fetch the file by ID and push the new comment to the revisions array
+    const file = await File.findByIdAndUpdate(
+      fileId,
+      {
+        status: "Subject for Revision: Department", // Update the status to "revision"
+        $push: { revisionComments: { comment } }, // Append the new comment
+      },
+      { new: true }
+    ).populate('uploaderUserId'); // Populate uploader details
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found." });
+    }
+
+    const uploader = file.uploaderUserId; // Extract uploader details
+    if (!uploader || !uploader.email) {
+      return res.status(404).json({ error: "Uploader not found or email missing." });
+    }
+
+    // Log the email (for debugging)
+    console.log("Uploader's Email:", uploader.email);
+
+    // Example: Use uploader.email in your email notification logic
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // Or another email provider
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: uploader.email,
+      subject: "Subject for Revision: Department",
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been revised by Department with a new comment: "${comment}".\n\nBest regards,\nYour Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "File revised successfully.", file });
+  } catch (error) {
+    console.error("Error revising file:", error.message);
+    res.status(500).json({ error: "Error revising file." });
+  }
+};
+
 
 // Revise a file with a comment
 export const reviseFile = async (req, res) => {
@@ -176,19 +320,45 @@ export const reviseFile = async (req, res) => {
       return res.status(400).json({ error: "File ID and comment are required." });
     }
 
-    // Find the file and push the new comment
+    // Fetch the file by ID and push the new comment to the revisions array
     const file = await File.findByIdAndUpdate(
       fileId,
       {
-        status: "revision",
+        status: "Subject for Revision: CITL", // Update the status to "revision"
         $push: { revisionComments: { comment } }, // Append the new comment
       },
       { new: true }
-    );
+    ).populate('uploaderUserId'); // Populate uploader details
 
     if (!file) {
       return res.status(404).json({ error: "File not found." });
     }
+
+    const uploader = file.uploaderUserId; // Extract uploader details
+    if (!uploader || !uploader.email) {
+      return res.status(404).json({ error: "Uploader not found or email missing." });
+    }
+
+    // Log the email (for debugging)
+    console.log("Uploader's Email:", uploader.email);
+
+    // Example: Use uploader.email in your email notification logic
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // Or another email provider
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: uploader.email,
+      subject: "File Under Revision",
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been Subject for Revised by CITL with a new comment: "${comment}".\n\nBest regards,\nYour Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: "File revised successfully.", file });
   } catch (error) {
@@ -450,6 +620,9 @@ export const getMathematicsFiles = async (req, res) => {
     });
   }
 };
+
+
+
 
 
   

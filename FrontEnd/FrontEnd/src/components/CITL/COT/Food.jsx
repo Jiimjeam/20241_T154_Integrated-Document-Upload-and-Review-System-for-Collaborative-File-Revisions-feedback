@@ -50,11 +50,11 @@ const Food = ({ show, handleClose }) => {
 
   const handleApprove = async (fileId) => {
     try {
-      const response = await axios.patch(`http://localhost:5000/api/files/${fileId}/approve`);
+      const response = await axios.patch(`http://localhost:5000/api/files/${fileId}/ready-to-print`);
       toast.success(`File "${response.data.file.filename}" approved successfully.`);
       setApprovedFiles((prev) =>
         prev.map((file) =>
-          file._id === fileId ? { ...file, status: 'approved', reviewed: true } : file
+          file._id === fileId ? { ...file, status: 'ready to print', reviewed: true } : file
         )
       );
     } catch (error) {
@@ -230,7 +230,7 @@ const Food = ({ show, handleClose }) => {
                   setShowFilePreviewModal(false);
                 }}
               >
-                Approve File
+                Ready to print
               </button>
             </div>
           </Modal.Body>

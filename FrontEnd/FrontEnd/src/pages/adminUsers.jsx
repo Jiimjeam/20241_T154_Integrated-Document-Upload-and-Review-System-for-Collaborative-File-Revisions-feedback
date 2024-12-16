@@ -157,7 +157,7 @@ const AdminDashboard = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            <table className="table-auto w-full bg-gray-800 text-white rounded-lg shadow-lg">
+            <table className="table-auto w-[1000px] bg-gray-800 text-white rounded-lg shadow-lg">
               <thead>
                 <tr className="bg-gray-700 text-left">
                   <th className="p-3">Name</th>

@@ -218,10 +218,14 @@ const FileUpload = () => {
     switch (status) {
       case 'approved':
         return 'badge bg-success';
-      case 'revision':
+      case 'Subject for Revision: CITL':
         return 'badge bg-warning';
       case 'pending':
         return 'badge bg-secondary';
+      case 'ready to print':
+        return 'badge bg-success';
+      case 'Subject for Revision: Department':
+        return 'badge bg-warning';  
       default:
         return 'badge bg-secondary';
     }
