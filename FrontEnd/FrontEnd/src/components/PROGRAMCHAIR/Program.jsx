@@ -43,7 +43,7 @@ const Program = () => {
           <hr />
         </div>
         <nav className="menu w-100 mb-4">
-          <Link to="/Program" className="menuItem d-flex align-items-center p-3 text-white">
+          <Link to="/Program/Home" className="menuItem d-flex align-items-center p-3 text-white">
             <FaHome className="menu-icon me-3" size={24} />
             <span>Home</span>
           </Link>

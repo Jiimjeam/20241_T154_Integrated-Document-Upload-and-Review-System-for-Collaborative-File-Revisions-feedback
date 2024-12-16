@@ -23,6 +23,7 @@ import SeniorFacultyDashboard from "./components/SENF/SeniorFacultyDashboard";
 import SettingsSENF from './components/SENF/SettingsSENF';
 import MySyllabi from './components/SENF/MySyllabi';
 import SCalendar from './components/SENF/SCalendar';
+import SENFWelcomeMessage from './components/SENF/SENFWelcomeMessage';
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
@@ -30,6 +31,7 @@ import { useEffect } from "react";
 
 
 import ProgramChairDashboard from './components/PROGRAMCHAIR/ProgramChairDashboard';
+import PRCHWelcomeMessage from './components/PROGRAMCHAIR/PRCHhome';
 import Program from './components/PROGRAMCHAIR/Program';
 import Syllabi from './components/PROGRAMCHAIR/Syllabi';
 import CollegeDepartment from './components/PROGRAMCHAIR/CollegeDepartment';
@@ -144,7 +146,7 @@ function App() {
             <Senior />
           </ProtectedRoute>}>
 
-			    <Route path='Home' element={<Home />} />	
+			    <Route path='Home' element={<SENFWelcomeMessage />} />	
           <Route path='Calendar' element={<SCalendar />} />
           <Route path='my-syllabi' element={<MySyllabi />} />
           <Route path='SettingsSENF' element={<SettingsSENF />} />
@@ -160,7 +162,7 @@ function App() {
             <Program />
           </ProtectedRoute>
         }>
-
+          <Route path='Home' element={<PRCHWelcomeMessage />} />
           <Route path='Calendar' element={<PCalendar />} />
           <Route path="CollegeDepartment" element={<CollegeDepartment />}></Route>
           <Route path='Syllabi' element={<Syllabi />} />

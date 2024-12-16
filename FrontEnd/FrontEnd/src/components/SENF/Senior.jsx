@@ -5,6 +5,7 @@ import Profileupload from './profile';
 import Swal from "sweetalert2";
 import { MdFeedback, MdCalendarToday } from 'react-icons/md';
 import { FaHome, FaCog, FaHistory, FaFileAlt } from 'react-icons/fa';
+import WelcomeMessage from './SENFWelcomeMessage';
 
 const Senior = () => {
   const { user, logout } = useAuthStore();
@@ -43,7 +44,7 @@ const Senior = () => {
           <hr />
         </div>
         <nav className="menu w-100 mb-4">
-          <Link to="/Senior" className="menuItem d-flex align-items-center p-3 text-white">
+          <Link to="/Senior/Home" className="menuItem d-flex align-items-center p-3 text-white">
             <FaHome className="menu-icon me-3" size={24} />
             <span>Home</span>
           </Link>
