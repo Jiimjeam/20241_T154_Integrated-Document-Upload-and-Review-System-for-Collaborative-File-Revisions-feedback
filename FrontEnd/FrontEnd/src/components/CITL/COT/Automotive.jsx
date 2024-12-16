@@ -5,9 +5,6 @@ import { Modal, Button } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-
-
 const reviseFile = async (fileId, comment) => {
   try {
     const response = await axios.post(
@@ -43,7 +40,7 @@ const Automotive = ({ show, handleClose }) => {
         error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
       );
     } finally {
-      setLoading(false);
+      setLoading(true);
     }
   };
 
@@ -66,22 +63,22 @@ const Automotive = ({ show, handleClose }) => {
   };
 
   const handleReviseSubmit = async () => {
-      if (!revisionComment) return;
-  
-      try {
-        const response = await reviseFile(selectedFileId, revisionComment);
-        toast.info(`File "${response.file.filename}" marked for revision.`);
-        setFiles((prev) =>
-          prev.map((file) =>
-            file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
-          )
-        );
-        setShowFilePreviewModal(false);
-        setRevisionComment('');
-      } catch (error) {
-        toast.error('Error revising file.');
-      }
-    };
+    if (!revisionComment) return;
+
+    try {
+      const response = await reviseFile(selectedFileId, revisionComment);
+      toast.info(`File "${response.file.filename}" marked for revision.`);
+      setApprovedFiles((prev) =>
+        prev.map((file) =>
+          file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
+        )
+      );
+      setShowFilePreviewModal(false);
+      setRevisionComment('');
+    } catch (error) {
+      toast.error('Error revising file.');
+    }
+  };
 
   const handleViewFile = (fileId, filepath) => {
     setSelectedFile(filepath);
@@ -123,17 +120,17 @@ const Automotive = ({ show, handleClose }) => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
   return (
     <>
       <ToastContainer />
       <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>CITL Dashboard - BSIT Files</Modal.Title>
+          <Modal.Title>CITL Dashboard - BSAT Files</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {approvedFiles.length === 0 ? (
+          {loading ? (
+            <div>Loading files...</div>
+          ) : approvedFiles.length === 0 ? (
             <div>No files available for review.</div>
           ) : (
             <table className="table table-striped">

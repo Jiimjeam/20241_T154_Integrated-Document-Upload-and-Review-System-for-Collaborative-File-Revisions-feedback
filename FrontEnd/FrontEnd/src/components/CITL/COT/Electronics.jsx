@@ -5,9 +5,6 @@ import { Modal, Button } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-
-
 const reviseFile = async (fileId, comment) => {
   try {
     const response = await axios.post(
@@ -43,7 +40,7 @@ const Electronics = ({ show, handleClose }) => {
         error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
       );
     } finally {
-      setLoading(false);
+      setLoading(true);
     }
   };
 
@@ -66,22 +63,22 @@ const Electronics = ({ show, handleClose }) => {
   };
 
   const handleReviseSubmit = async () => {
-      if (!revisionComment) return;
-  
-      try {
-        const response = await reviseFile(selectedFileId, revisionComment);
-        toast.info(`File "${response.file.filename}" marked for revision.`);
-        setFiles((prev) =>
-          prev.map((file) =>
-            file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
-          )
-        );
-        setShowFilePreviewModal(false);
-        setRevisionComment('');
-      } catch (error) {
-        toast.error('Error revising file.');
-      }
-    };
+    if (!revisionComment) return;
+
+    try {
+      const response = await reviseFile(selectedFileId, revisionComment);
+      toast.info(`File "${response.file.filename}" marked for revision.`);
+      setApprovedFiles((prev) =>
+        prev.map((file) =>
+          file._id === selectedFileId ? { ...file, status: 'revision', reviewed: true } : file
+        )
+      );
+      setShowFilePreviewModal(false);
+      setRevisionComment('');
+    } catch (error) {
+      toast.error('Error revising file.');
+    }
+  };
 
   const handleViewFile = (fileId, filepath) => {
     setSelectedFile(filepath);
@@ -123,54 +120,60 @@ const Electronics = ({ show, handleClose }) => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
   return (
     <>
       <ToastContainer />
       <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>CITL Dashboard - BSIT Files</Modal.Title>
+          <Modal.Title>CITL Dashboard - BSF Files</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {approvedFiles.length === 0 ? (
-            <div>No files available for review.</div>
+          {loading ? (
+            <div>Loading files...</div>
           ) : (
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Filename</th>
-                  <th>Subject Code</th>
-                  <th>Author</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {approvedFiles.map((file) => (
-                  <tr key={file._id} className={file.reviewed ? 'table-success' : ''}>
-                    <td>{file.filename}</td>
-                    <td>{file.subjectCode}</td>
-                    <td>{file.author}</td>
-                    <td>{file.status || 'Pending'}</td>
-                    <td>
-                      <button
-                        onClick={() => handleViewFile(file._id, file.filepath)}
-                        className="btn btn-info btn-sm mx-1"
-                      >
-                        View & Revise
-                      </button>
-                      <button
-                        onClick={() => downloadFile(file.filepath)}
-                        className="btn btn-primary btn-sm mx-1"
-                      >
-                        Download
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <>
+              {approvedFiles.length === 0 ? (
+                <div className="text-center text-muted">
+                  No files available for review.
+                </div>
+              ) : (
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Filename</th>
+                      <th>Subject Code</th>
+                      <th>Author</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {approvedFiles.map((file) => (
+                      <tr key={file._id} className={file.reviewed ? 'table-success' : ''}>
+                        <td>{file.filename}</td>
+                        <td>{file.subjectCode}</td>
+                        <td>{file.author}</td>
+                        <td>{file.status || 'Pending'}</td>
+                        <td>
+                          <button
+                            onClick={() => handleViewFile(file._id, file.filepath)}
+                            className="btn btn-info btn-sm mx-1"
+                          >
+                            View & Revise
+                          </button>
+                          <button
+                            onClick={() => downloadFile(file.filepath)}
+                            className="btn btn-primary btn-sm mx-1"
+                          >
+                            Download
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
           )}
         </Modal.Body>
         <Modal.Footer>

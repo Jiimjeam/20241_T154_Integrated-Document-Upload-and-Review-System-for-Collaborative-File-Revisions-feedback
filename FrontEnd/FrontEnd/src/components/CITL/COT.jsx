@@ -1,42 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import IT_EMCFiles from './COT/IT_EMCFiles';
-import AutomotiveModal from './COT/Automotive';
-import ElectronicsModal from './COT/Electronics';
-import FoodTechModal from './COT/Food';
+import Automotive from './COT/Automotive';
+import Electronics from './COT/Electronics';
+import Food from './COT/Food';
 
 const COT = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [activeModal, setActiveModal] = useState('');
 
-  // Detect if the current path is IT and EMC
-  const isIT_EMCPath = location.pathname.endsWith('it_emc');
-  const isCOTPath = location.pathname === '/cot';
-
   useEffect(() => {
-    if (isIT_EMCPath) {
+    const pathParts = location.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+
+    // Determine which modal to show based on the route
+    if (lastPart === 'it_emc') {
       setShowModal(true);
       setActiveModal('IT_EMC');
-    }  else {
+    } else if (lastPart === 'automotive') {
+      setShowModal(true);
+      setActiveModal('Automotive');
+    } else if (lastPart === 'electronics') {
+      setShowModal(true);
+      setActiveModal('Electronics');
+    } else if (lastPart === 'food-tech') {
+      setShowModal(true);
+      setActiveModal('Food');
+    } else {
       setShowModal(false);
       setActiveModal('');
     }
-  }, [isIT_EMCPath, isCOTPath]);
+  }, [location.pathname]);
 
   const handleCloseModal = () => {
     setShowModal(false);
     setActiveModal('');
-  };
-
-  const openModal = (modalName) => {
-    setShowModal(true);
-    setActiveModal(modalName);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setActiveModal('');
+    navigate('/CITL/Colleges/cot'); // Navigate back to the COT route when the modal is closed
   };
 
   return (
@@ -79,18 +80,18 @@ const COT = () => {
         </button>
       </div>
 
-      {/* Render modals */}
+      {/* Render modals based on the active modal */}
+      {showModal && activeModal === 'IT_EMC' && (
+        <IT_EMCFiles show={showModal} handleClose={handleCloseModal} />
+      )}
       {showModal && activeModal === 'Automotive' && (
-        <AutomotiveModal show={showModal} handleClose={closeModal} />
+        <Automotive show={showModal} handleClose={handleCloseModal} />
       )}
       {showModal && activeModal === 'Electronics' && (
-        <ElectronicsModal show={showModal} handleClose={closeModal} />
+        <Electronics show={showModal} handleClose={handleCloseModal} />
       )}
-      {showModal && activeModal === 'FoodTech' && (
-        <FoodTechModal show={showModal} handleClose={closeModal} />
-      )}
-      {showModal && activeModal === 'IT_EMC' && (
-        <IT_EMCFiles show={showModal} handleClose={closeModal} />
+      {showModal && activeModal === 'Food' && (
+        <Food show={showModal} handleClose={handleCloseModal} />
       )}
 
       {/* Nested routes for other departments */}
