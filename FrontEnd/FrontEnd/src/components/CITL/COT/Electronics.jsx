@@ -13,8 +13,8 @@ const reviseFile = async (fileId, comment) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Error revising file:', error.message);
-    throw new Error('Error revising file.');
+    console.error("Error revising file:", error.message);
+    throw new Error("Error revising file.");
   }
 };
 
@@ -120,54 +120,60 @@ const Electronics = ({ show, handleClose }) => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
   return (
     <>
       <ToastContainer />
       <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>CITL Dashboard - BSET Files</Modal.Title>
+          <Modal.Title>CITL Dashboard - BSF Files</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {approvedFiles.length === 0 ? (
-            <div>No files available for review.</div>
+          {loading ? (
+            <div>Loading files...</div>
           ) : (
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Filename</th>
-                  <th>Subject Code</th>
-                  <th>Author</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {approvedFiles.map((file) => (
-                  <tr key={file._id} className={file.reviewed ? 'table-success' : ''}>
-                    <td>{file.filename}</td>
-                    <td>{file.subjectCode}</td>
-                    <td>{file.author}</td>
-                    <td>{file.status || 'Pending'}</td>
-                    <td>
-                      <button
-                        onClick={() => handleViewFile(file._id, file.filepath)}
-                        className="btn btn-info btn-sm mx-1"
-                      >
-                        View & Revise
-                      </button>
-                      <button
-                        onClick={() => downloadFile(file.filepath)}
-                        className="btn btn-primary btn-sm mx-1"
-                      >
-                        Download
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <>
+              {approvedFiles.length === 0 ? (
+                <div className="text-center text-muted">
+                  No files available for review.
+                </div>
+              ) : (
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Filename</th>
+                      <th>Subject Code</th>
+                      <th>Author</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {approvedFiles.map((file) => (
+                      <tr key={file._id} className={file.reviewed ? 'table-success' : ''}>
+                        <td>{file.filename}</td>
+                        <td>{file.subjectCode}</td>
+                        <td>{file.author}</td>
+                        <td>{file.status || 'Pending'}</td>
+                        <td>
+                          <button
+                            onClick={() => handleViewFile(file._id, file.filepath)}
+                            className="btn btn-info btn-sm mx-1"
+                          >
+                            View & Revise
+                          </button>
+                          <button
+                            onClick={() => downloadFile(file.filepath)}
+                            className="btn btn-primary btn-sm mx-1"
+                          >
+                            Download
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
           )}
         </Modal.Body>
         <Modal.Footer>
@@ -177,6 +183,7 @@ const Electronics = ({ show, handleClose }) => {
         </Modal.Footer>
       </Modal>
 
+      {/* File Preview and Revise Modal */}
       {selectedFile && (
         <Modal show={showFilePreviewModal} onHide={() => setShowFilePreviewModal(false)} size="xl" centered>
           <Modal.Header closeButton>
