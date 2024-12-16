@@ -4,6 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Modal, Button } from 'react-bootstrap';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { GoTrueClient } from '@supabase/supabase-js';
 
 const reviseFile = async (fileId, comment) => {
   try {
@@ -40,7 +41,7 @@ const Food = ({ show, handleClose }) => {
         error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
       );
     } finally {
-      setLoading(false);
+      setLoading(true);
     }
   };
 

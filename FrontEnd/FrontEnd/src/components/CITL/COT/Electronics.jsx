@@ -40,7 +40,7 @@ const Electronics = ({ show, handleClose }) => {
         error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
       );
     } finally {
-      setLoading(false);
+      setLoading(true);
     }
   };
 
