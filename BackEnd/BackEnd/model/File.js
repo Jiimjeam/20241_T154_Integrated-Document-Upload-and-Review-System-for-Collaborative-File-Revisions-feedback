@@ -10,7 +10,7 @@ const fileSchema = new mongoose.Schema({
   coAuthor: { type: String, default: '' },
   recipientUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // Recipient user ID
   uploaderUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Uploader user ID
-  status: { type: String, enum: ['pending', 'approved', 'revision', 'ready to print'], default: 'pending' }, // File status
+  status: { type: String, enum: ['pending', 'approved', 'Subject for Revision: CITL', 'ready to print' , 'Subject for Revision: Department'], default: 'pending' }, // File status
   revisionComments: [
     {
       comment: { type: String, required: true },

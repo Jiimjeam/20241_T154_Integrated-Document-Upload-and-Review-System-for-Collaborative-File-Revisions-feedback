@@ -32,7 +32,7 @@ const approveFile = async (fileId) => {
 const reviseFile = async (fileId, comment) => {
   try {
     const response = await axios.post(
-      `http://localhost:5000/api/files/${fileId}/revise`,
+      `http://localhost:5000/api/files/${fileId}/revisedSenior`,
       { comment }
     );
     return response.data;

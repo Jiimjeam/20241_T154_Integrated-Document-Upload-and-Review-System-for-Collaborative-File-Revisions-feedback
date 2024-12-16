@@ -17,6 +17,7 @@ import {
   getComments,
   getFilesByUserDepartment_Status,
   ReadyToPrint,
+  RevisedSenior,
 } from "../controllers/file.controller.js";
 import verifyToken from '../middleware/verifyToken.js';
 
@@ -54,6 +55,7 @@ router.get('/comments/:fileId', getComments),
 router.patch("/:id/approve", approveFile);
 
 router.patch("/:id/ready-to-print", ReadyToPrint);
+router.post("/:id/revisedSenior", RevisedSenior);
 
 // Revise a file
 router.post("/:id/revise", reviseFile);

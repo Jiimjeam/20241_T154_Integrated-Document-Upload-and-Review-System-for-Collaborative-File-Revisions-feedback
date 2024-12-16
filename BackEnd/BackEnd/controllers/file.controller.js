@@ -184,7 +184,7 @@ export const approveFile = async (req, res) => {
       from: process.env.EMAIL,
       to: uploader.email, // Send email to uploader's email
       subject: "Your File has been Approved by Your Department",
-      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been approved by your Department. Please review its status in the system.\n\nBest regards,\nYour Team`,
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been approved by your Department. Your File is now forwarded to CITL.\n\nBest regards,\nYour Team`,
     };
 
     // Send the email
@@ -204,7 +204,6 @@ export const approveFile = async (req, res) => {
     res.status(500).json({ error: "Error approving file." });
   }
 };
-
 
 
 export const ReadyToPrint = async (req, res) => {
@@ -241,7 +240,7 @@ export const ReadyToPrint = async (req, res) => {
       from: process.env.EMAIL,
       to: uploader.email,
       subject: "File Ready to Print",
-      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been approved and is ready to print.\n\nBest regards,\nYour Team`,
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been approved by CITL and is ready to print.\n\nBest regards,\nYour Team`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -253,6 +252,62 @@ export const ReadyToPrint = async (req, res) => {
   }
 };
 
+// Revise a file with a comment
+export const RevisedSenior = async (req, res) => {
+  try {
+    const { comment } = req.body;
+    const fileId = req.params.id;
+
+    if (!comment || !fileId) {
+      return res.status(400).json({ error: "File ID and comment are required." });
+    }
+
+    // Fetch the file by ID and push the new comment to the revisions array
+    const file = await File.findByIdAndUpdate(
+      fileId,
+      {
+        status: "Subject for Revision: Department", // Update the status to "revision"
+        $push: { revisionComments: { comment } }, // Append the new comment
+      },
+      { new: true }
+    ).populate('uploaderUserId'); // Populate uploader details
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found." });
+    }
+
+    const uploader = file.uploaderUserId; // Extract uploader details
+    if (!uploader || !uploader.email) {
+      return res.status(404).json({ error: "Uploader not found or email missing." });
+    }
+
+    // Log the email (for debugging)
+    console.log("Uploader's Email:", uploader.email);
+
+    // Example: Use uploader.email in your email notification logic
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // Or another email provider
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: uploader.email,
+      subject: "Subject for Revision: Department",
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been revised by Department with a new comment: "${comment}".\n\nBest regards,\nYour Team`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "File revised successfully.", file });
+  } catch (error) {
+    console.error("Error revising file:", error.message);
+    res.status(500).json({ error: "Error revising file." });
+  }
+};
 
 
 // Revise a file with a comment
@@ -269,7 +324,7 @@ export const reviseFile = async (req, res) => {
     const file = await File.findByIdAndUpdate(
       fileId,
       {
-        status: "revision", // Update the status to "revision"
+        status: "Subject for Revision: CITL", // Update the status to "revision"
         $push: { revisionComments: { comment } }, // Append the new comment
       },
       { new: true }
@@ -300,7 +355,7 @@ export const reviseFile = async (req, res) => {
       from: process.env.EMAIL,
       to: uploader.email,
       subject: "File Under Revision",
-      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been revised with a new comment: "${comment}".\n\nBest regards,\nYour Team`,
+      text: `Hello ${uploader.name},\n\nYour file "${file.filename}" has been Subject for Revised by CITL with a new comment: "${comment}".\n\nBest regards,\nYour Team`,
     };
 
     await transporter.sendMail(mailOptions);
