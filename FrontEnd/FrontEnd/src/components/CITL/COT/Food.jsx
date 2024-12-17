@@ -41,7 +41,7 @@ const Food = ({ show, handleClose }) => {
         error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
       );
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 

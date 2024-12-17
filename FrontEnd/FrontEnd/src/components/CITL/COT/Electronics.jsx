@@ -40,7 +40,7 @@ const Electronics = ({ show, handleClose }) => {
         error.response?.data?.message || 'Failed to fetch approved files. Please try again.'
       );
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -125,7 +125,7 @@ const Electronics = ({ show, handleClose }) => {
       <ToastContainer />
       <Modal show={show} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>CITL Dashboard - BSF Files</Modal.Title>
+          <Modal.Title>CITL Dashboard - BS Files</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {loading ? (
