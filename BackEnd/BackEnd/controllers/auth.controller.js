@@ -11,6 +11,8 @@ import {
 	sendWelcomeEmail,
 } from "../mailtrap/emails.js";
 import { User } from "../model/User.js";
+import mongoose from 'mongoose'; // Add this line at the top of the file
+
 
 
 //admin functions 
@@ -117,6 +119,8 @@ export const login = async (req, res) => {
 
         // Generate token and set cookie
         const token = generateTokenAndSetCookie(res, user._id);
+		localStorage.setItem("userId", response.data.userId);
+    	localStorage.setItem("token", response.data.token);
 
         // Update last login date
         user.lastLogin = new Date();
@@ -126,6 +130,7 @@ export const login = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Logged in successfully",
+			userId: user._id, // Include userId
             token, // Include the token in the response body
             user: {
                 ...user._doc,
@@ -373,34 +378,122 @@ export const getApprovedAccounts = async (req, res) => {
   };
 
   export const updateRole = async (req, res) => {
-	const { userId } = req.params;
-	const { role } = req.body;  // Extract new role from the request body
+	const { userId } = req.params; // ID of the user whose role is being updated
+	const { role, editorId } = req.body; // New role and editor's ID
   
-	// Validate the role
-	if (!role || !['Instructor', 'Senior_Faculty', 'Program_Chair', 'CITL', 'Admin'].includes(role)) {
-	  return res.status(400).json({ message: "Invalid role" });
+	// Validate role input
+	const validRoles = ['Instructor', 'Senior_Faculty', 'Program_Chair', 'CITL', 'Admin'];
+	if (!role || !validRoles.includes(role)) {
+	  return res.status(400).json({ message: "Invalid role specified." });
 	}
+  
+	
   
 	try {
-	  // Find the user by ID and update the role
-	  const updatedUser = await User.findByIdAndUpdate(
-		userId,
-		{ role },
-		{ new: true } // Return the updated document
-	  );
-  
-	  // If user not found, return error
-	  if (!updatedUser) {
-		return res.status(404).json({ message: "User not found" });
+	  // Fetch user from the database
+	  const user = await User.findById(userId);
+	  if (!user) {
+		return res.status(404).json({ message: "User not found." });
 	  }
   
-	  // Return the updated user with the new role
-	  res.status(200).json(updatedUser); 
+	  // Lock management
+	  const LOCK_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+	  const currentTime = Date.now();
+  
+	  const lockExpired =
+		!user.lock?.userId || user.lock.lockedAt < currentTime - LOCK_TIMEOUT;
+  
+	  // If lock has expired or no lock exists, assign a new lock to the current editor
+	  if (lockExpired) {
+		user.lock = { userId: new mongoose.Types.ObjectId(editorId), lockedAt: currentTime };
+	  } 
+	  // If lock exists and belongs to another editor, deny access
+	  else if (user.lock.userId.toString() !== editorId) {
+		return res.status(423).json({
+		  message: "User role is currently locked by another editor.",
+		  lockedBy: user.lock.userId,
+		  lockedAt: user.lock.lockedAt,
+		});
+	  }
+  
+	  // At this point, the lock is either expired or belongs to the current editor
+	  user.role = role;
+	  await user.save();
+  
+	  return res.status(200).json({
+		message: "Role updated successfully.",
+		user: {
+		  _id: user._id,
+		  role: user.role,
+		  lock: user.lock,
+		},
+	  });
 	} catch (err) {
-	  console.error(err);
-	  res.status(500).json({ message: "Failed to update the user role", error: err });
+	  console.error("Error updating role:", err);
+	  return res.status(500).json({ message: "Failed to update role.", error: err.message });
 	}
   };
+  
+  export const unlockRole = async (req, res) => {
+	const { userId } = req.params;
+  
+	try {
+	  // Remove the lock from the user document
+	  const user = await User.findByIdAndUpdate(
+		userId,
+		{ $unset: { lock: "" } }, // Unset the lock field
+		{ new: true }
+	  );
+  
+	  if (!user) {
+		return res.status(404).json({ message: "User not found." });
+	  }
+  
+	  return res.status(200).json({
+		message: "Role lock removed successfully.",
+		user
+	  });
+	} catch (err) {
+	  console.error("Error unlocking role:", err);
+	  return res.status(500).json({ message: "Failed to unlock role.", error: err.message });
+	}
+  };
+  
+  export const checkRoleLock = async (req, res) => {
+	const { userId } = req.params;
+  
+	try {
+	  const user = await User.findById(userId);
+  
+	  if (!user) {
+		return res.status(404).json({ message: "User not found." });
+	  }
+  
+	  const LOCK_TIMEOUT = 5 * 60 * 1000; // Lock timeout: 5 minutes
+	  const lockExpired = !user.lock?.userId || user.lock.lockedAt < Date.now() - LOCK_TIMEOUT;
+  
+	  if (lockExpired) {
+		return res.status(200).json({
+		  message: "No active lock on this role.",
+		  lockStatus: "unlocked",
+		});
+	  }
+  
+	  return res.status(423).json({
+		message: "Role is currently locked.",
+		lockStatus: "locked",
+		lockedBy: user.lock.userId,
+		lockedAt: user.lock.lockedAt,
+	  });
+	} catch (err) {
+	  console.error("Error checking role lock:", err);
+	  return res.status(500).json({ message: "Failed to check role lock.", error: err.message });
+	}
+  };
+  
+  
+  
+  
 
   export const deleteUser = async (req, res) => {
 	const { userId } = req.params;  // Extract the userId from the request parameters

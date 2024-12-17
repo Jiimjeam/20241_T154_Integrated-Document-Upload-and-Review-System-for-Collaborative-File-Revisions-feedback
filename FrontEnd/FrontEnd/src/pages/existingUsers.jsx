@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaLock, FaUnlock } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const ExistingUsers = () => {
@@ -9,8 +9,9 @@ const ExistingUsers = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lockStatus, setLockStatus] = useState({}); // State to store lock status for each user
+  const [timeoutStatus, setTimeoutStatus] = useState({}); // State to store the timer for lock status update
 
-  // Fetch approved accounts from the backend
   const fetchApprovedAccounts = async () => {
     try {
       setLoading(true);
@@ -18,6 +19,8 @@ const ExistingUsers = () => {
       if (response.status === 200) {
         setApprovedAccounts(response.data);
         setFilteredAccounts(response.data);
+        // Check role lock for each user after loading the users
+        checkRoleLocks(response.data);
       } else {
         setError("No approved accounts found.");
       }
@@ -31,6 +34,22 @@ const ExistingUsers = () => {
   useEffect(() => {
     fetchApprovedAccounts();
   }, []);
+
+  const checkRoleLocks = async (users) => {
+    for (let user of users) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/auth/${user._id}/check-role-lock`
+        );
+        setLockStatus((prevState) => ({
+          ...prevState,
+          [user._id]: response.data.lockStatus,
+        }));
+      } catch (err) {
+        console.error("Error checking role lock:", err);
+      }
+    }
+  };
 
   // Handle search functionality
   const handleSearch = (event) => {
@@ -48,9 +67,10 @@ const ExistingUsers = () => {
     setFilteredAccounts(filtered);
   };
 
-  // Handle edit user role
   const handleEdit = async (userId) => {
     const selectedAccount = approvedAccounts.find((account) => account._id === userId);
+    console.log("Selected Account:", selectedAccount); // Log selected account
+
     const { value: newRole } = await Swal.fire({
       title: `Edit Role for ${selectedAccount.name}`,
       input: "select",
@@ -66,21 +86,47 @@ const ExistingUsers = () => {
     });
 
     if (newRole) {
+      console.log("Selected new role:", newRole); // Log selected role
+
       try {
-        const response = await axios.patch(`http://localhost:5000/api/auth/users/${userId}/role`, { role: newRole });
+        const response = await axios.put(
+          `http://localhost:5000/api/auth/${userId}/update-role`,
+          {
+            role: newRole,
+          }
+        );
+
+        console.log("API Response:", response); // Log API response
+
         if (response.status === 200) {
           setApprovedAccounts((prev) =>
-            prev.map((account) => (account._id === userId ? { ...account, role: newRole } : account))
+            prev.map((account) =>
+              account._id === userId ? { ...account, role: newRole } : account
+            )
           );
           setFilteredAccounts((prev) =>
-            prev.map((account) => (account._id === userId ? { ...account, role: newRole } : account))
+            prev.map((account) =>
+              account._id === userId ? { ...account, role: newRole } : account
+            )
           );
           Swal.fire("Success", "Role updated successfully", "success");
+
+          // Start a timer of 5 minutes to recheck the lock status
+          setTimeout(() => {
+            // After 5 minutes, recheck the lock status
+            checkRoleLockStatus(userId);
+          }, 5 * 60 * 1000); // 5 minutes in milliseconds
         } else {
           Swal.fire("Error", "Failed to update the role", "error");
         }
       } catch (err) {
-        Swal.fire("Error", "Failed to update the role", "error");
+        console.error("Error details:", err); // Log the full error details
+        if (err.response) {
+          console.error("Error response:", err.response);
+          Swal.fire("Error", err.response.data.message || "Failed to update the role", "error");
+        } else {
+          Swal.fire("Error", "Something went wrong", "error");
+        }
       }
     }
   };
@@ -108,6 +154,29 @@ const ExistingUsers = () => {
     } catch (err) {
       Swal.fire("Error", "Failed to delete user", "error");
     }
+  };
+
+  // Function to check lock status after the timeout
+  const checkRoleLockStatus = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/auth/${userId}/check-role`
+      );
+      setLockStatus((prevState) => ({
+        ...prevState,
+        [userId]: response.data.lockStatus,
+      }));
+    } catch (err) {
+      console.error("Error checking role lock:", err);
+    }
+  };
+
+  // Get the lock/unlock icon based on the lock status
+  const getLockIcon = (userId) => {
+    if (lockStatus[userId] === "locked") {
+      return <FaLock className="text-red-500" />;
+    }
+    return <FaUnlock className="text-green-500" />;
   };
 
   return (
@@ -148,16 +217,17 @@ const ExistingUsers = () => {
                 <td className="px-6 py-4">{account.email}</td>
                 <td className="px-6 py-4">{account.role}</td>
                 <td className="px-6 py-4">{account.lastLogin}</td>
-                <td className="px-6 py-4 flex space-x-2">
+                <td className="px-6 py-4 flex space-x-4">
+                  {getLockIcon(account._id)}
                   <button
                     onClick={() => handleEdit(account._id)}
-                    className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+                    className="text-blue-500 hover:text-blue-700"
                   >
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDelete(account._id)}
-                    className="p-2 bg-red-500 text-white rounded-md hover:bg-red-700"
+                    className="text-red-500 hover:text-red-700"
                   >
                     <FaTrash />
                   </button>
