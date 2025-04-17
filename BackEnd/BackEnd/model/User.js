@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: function () { return !this.googleId; }
   },
+  profileImageUrl: {
+    type: String,
+    default: '', // Default to blank if no image uploaded
+  },
   googleId: { type: String, unique: true, sparse: true },
   name: { type: String, required: true },
   lastLogin: { type: Date, default: Date.now },

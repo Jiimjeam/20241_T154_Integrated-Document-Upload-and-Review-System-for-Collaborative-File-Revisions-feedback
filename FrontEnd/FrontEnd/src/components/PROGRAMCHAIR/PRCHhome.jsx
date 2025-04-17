@@ -8,11 +8,7 @@ const PRCHWelcomeMessage = ({ username }) => {
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-lg shadow-lg p-6 md:p-8">
       <div className="flex items-center space-x-4">
-        <img
-          src="https://via.placeholder.com/80"
-          alt="User Avatar"
-          className="w-16 h-16 rounded-full border-4 border-white shadow-md"
-        />
+        
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">Welcome, {user.name}!</h1>
           <p className="mt-1 text-sm md:text-base text-white/80">

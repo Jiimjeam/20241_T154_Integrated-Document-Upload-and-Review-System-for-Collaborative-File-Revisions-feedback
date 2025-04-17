@@ -10,6 +10,7 @@ import uploadRoutes from "./routes/upload.route.js";
 import fileRoutes from "./routes/file.route.js"; // Import the new file routes
 import { connectDB } from "./db/connectDB.js";
 import authRoutes from "./routes/auth.route.js";
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ app.use(cookieParser());
 
 // Routes
 
-
+app.use('/api/user', userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes); // File upload route
 app.use("/api/files", fileRoutes); // New file management route
